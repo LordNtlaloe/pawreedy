@@ -1,14 +1,15 @@
 import React from 'react'
-import { BeatLoader } from 'react-spinners'
+import Image from 'next/image'
+import logo from '/public/logo01.png' // Ensure the path is correct
 
 const Loading = () => {
     return (
-        <main className='text-center h-full w-full flex items-center justify-cent bg-transparent'>
-
-            <div className='w-52 h-52 rounded bord flex flex-col items-center justify-center'>
+        <main className='text-center h-screen w-full flex items-center justify-center bg-transparent'>
+            <div className='w-52 h-52 flex flex-col items-center justify-center'>
                 <h1 className='font-semibold mb-6'>System Busy</h1>
-                <BeatLoader color="#0a09f5" size={30} />
-                <h1></h1>
+                <div className="animate-blink">
+                    <Image src={logo} alt="Loading..." width={120} height={60} className="rounded-[5px]" />
+                </div>
             </div>
         </main>
     )
