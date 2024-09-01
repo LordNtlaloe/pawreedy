@@ -3,7 +3,7 @@ import { revalidatePath } from "next/cache";
 import { connectToDB } from "../_database/database";
 import { ObjectId, MongoClient, Db } from "mongodb";
 import { redirect } from "next/navigation";
-import { error } from "console";
+import { count, error } from "console";
 
 let dbConnection: MongoClient;
 let database: Db;
@@ -209,6 +209,119 @@ export const saveNewProductRating = async ( formData: FormData ) => {
             console.log("Product Not Found");
             return { error: "Product Not Found" }
         }
+
+        const newRatingsCount = (product.ratingsCount ?? 0) + 1;
+        const previousOverallRating = isNaN(product.ratings) ? 0 : products.ratings;
+        const newOverallRating = ((previousOverallRating * (product.ratingsCount ?? 0)) + rating) / newRatingsCount;
+
+        const updateResult = await productsCollection.updateOne(
+            { "_id": productObjectId },
+            { $set: {
+                ratings: newOverallRating,
+                ratingsCount: newRatingsCount
+            }}
+        );
+
+        if(updateResult.matchedCount === 0){
+            console.log("Failed To Update Product Ratings");
+            return { error: "Failed To Update Product Ratings"}
+        }
+
+        await ratingsCollection.insertOne({
+            productId: productObjectId,
+            userId: userID,
+            rating,
+            comment,
+            createdAt: new Date,
+            updatedAt: new Date
+        });
+
+        return {success: true };
+    }
+    catch(error: any){
+        console.log("An Error Occured... ", error.message);
+        return { "error ": error.message }
+    }
+}
+
+export const getProductCount = async () => {
+    if(!dbConnection) await init();
+
+    try{
+        const collection = database?.collection("products");
+        if(!database || !collection){
+            console.log("Failed To Get Products");
+            return { count: 0 };
+        }
+
+        const count = await collection.countDocuments({});
+        return { count };
+    }
+    catch(error: any){
+        console.log("An Error Occured... ", error.message);
+        return { "error ": error.message }
+    }
+}
+
+export const getAllRatingsByProductId = async ( productId: string ) =>{
+    if(!dbConnection) await init();
+    
+    try{
+        const collection = database?.collection("ratings");
+
+        if(!database || !collection){
+            console.log("Failed To Get Product Ratings");
+            return { error: "Failed To Get Product Ratings"};
+        }
+
+        const ratings = await collection.find({ productId: new ObjectId(productId)})
+            .map((rating: any) => ({...rating, _id: rating._id.toString()})).toArray();
+        
+        return ratings;
+    }
+    catch(error: any){
+        console.log("An Error Occured... ", error.message);
+        return { "error ": error.message }
+    }
+}
+
+export const getProductByName = async (productName: string) => {
+    if(!dbConnection) await init();
+
+    try{
+        const collection = database?.collection("products");
+        if(!database || !collection){
+            console.log("Failed To Get Product Name");
+            return {error: "Failed To Get Product Name"};
+        }
+
+        const result = await collection.find({ $or: 
+            [
+                { productName: {$regex: productName, $options: "i"}},
+                { category: {$regex: productName, $options: "i"}}
+            ]
+        }).map((product: any) => ({ ...product, _id: product._id.toString() })).toArray();
+
+        return result;
+    }
+    catch(error: any){
+        console.log("An Error Occured... ", error.message);
+        return { "error ": error.message }
+    }
+}
+
+export const getUserRatingCount = async (userId: string, businessId: string) => {
+    if(!dbConnection) await init();
+
+    try{
+        const collection = database?.collection("ratings");
+        if(!database || !collection){
+            console.log("Failed To Get Product Ratings");
+            return { error: "Failed To Get Product Ratings"};
+        }
+
+        const ratingCount = await collection.countDocuments({userId: userId, businessId: new ObjectId(businessId)});
+        return ratingCount;
     }
     catch(error: any){
         console.log("An Error Occured... ", error.message);
