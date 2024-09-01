@@ -1,20 +1,16 @@
 "use server"
 import { revalidatePath } from "next/cache";
 import { connectToDB } from "../_database/database";
-import { ObjectId, MongoClient, Db } from "mongodb";
+import { ObjectId } from "mongodb";
 import { redirect } from "next/navigation";
-import { count, error } from "console";
 
-let dbConnection: MongoClient;
-let database: Db;
+let dbConnection: any;
+let database: any;
 
 const init = async () => {
     const connection = await connectToDB();
-    if(!connection){
-        throw new Error("Failed To Connect To The Database")
-    }
     dbConnection = connection;
-    database = await dbConnection?.db('');
+    database = await dbConnection?.db("pawreedy")
 }
 
 export const saveNewProduct = async(formData: FormData) => {
@@ -181,50 +177,54 @@ export const updateProductStatus = async (_id: string, newStatus: string) => {
     }
 }
 
-export const saveNewProductRating = async ( formData: FormData ) => {
-    if(!dbConnection) await init ();
-    
-    try{
+export const saveNewProductRating = async (formData: FormData) => {
+    if (!dbConnection) await init();
+
+    try {
         const productsCollection = database?.collection("products");
         const ratingsCollection = database?.collection("ratings");
-        
+
         const productId = formData.get("productId") as string;
         const userID = formData.get("userId") as string;
         const rating = Number(formData.get("rating"));
         const comment = formData.get("comment");
 
-        if(!database || !productsCollection){
+        if (!database || !productsCollection) {
             console.log("Failed To Get Products");
             return;
         }
 
-        if(!ratingsCollection){
+        if (!ratingsCollection) {
             console.log("Failed To Get Ratings");
             return;
         }
 
         const productObjectId = new ObjectId(productId);
-        const product = await productsCollection.findOne( {"_id": productObjectId});
-        if(product){
+        const product = await productsCollection.findOne({ "_id": productObjectId });
+
+        // Handle case where product is null
+        if (!product) {
             console.log("Product Not Found");
-            return { error: "Product Not Found" }
+            return { error: "Product Not Found" };
         }
 
         const newRatingsCount = (product.ratingsCount ?? 0) + 1;
-        const previousOverallRating = isNaN(product.ratings) ? 0 : products.ratings;
+        const previousOverallRating = isNaN(product.ratings) ? 0 : product.ratings;
         const newOverallRating = ((previousOverallRating * (product.ratingsCount ?? 0)) + rating) / newRatingsCount;
 
         const updateResult = await productsCollection.updateOne(
             { "_id": productObjectId },
-            { $set: {
-                ratings: newOverallRating,
-                ratingsCount: newRatingsCount
-            }}
+            {
+                $set: {
+                    ratings: newOverallRating,
+                    ratingsCount: newRatingsCount
+                }
+            }
         );
 
-        if(updateResult.matchedCount === 0){
+        if (updateResult.matchedCount === 0) {
             console.log("Failed To Update Product Ratings");
-            return { error: "Failed To Update Product Ratings"}
+            return { error: "Failed To Update Product Ratings" };
         }
 
         await ratingsCollection.insertOne({
@@ -232,15 +232,14 @@ export const saveNewProductRating = async ( formData: FormData ) => {
             userId: userID,
             rating,
             comment,
-            createdAt: new Date,
-            updatedAt: new Date
+            createdAt: new Date(),
+            updatedAt: new Date()
         });
 
-        return {success: true };
-    }
-    catch(error: any){
-        console.log("An Error Occured... ", error.message);
-        return { "error ": error.message }
+        return { success: true };
+    } catch (error: any) {
+        console.log("An Error Occurred... ", error.message);
+        return { "error ": error.message };
     }
 }
 
