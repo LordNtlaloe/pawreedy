@@ -8,9 +8,13 @@ let dbConnection: any;
 let database: any;
 
 const init = async () => {
-    const connection = await connectToDB();
-    dbConnection = connection;
-    database = await dbConnection?.db("pawreedy")
+    try {
+        const connection = await connectToDB();
+        dbConnection = connection;
+        database = await dbConnection?.db("pawreedy");
+    } catch (error:any) {
+        console.error("Failed to connect to the database:", error.message);
+    }
 }
 
 export const saveNewProduct = async(formData: FormData) => {
@@ -92,7 +96,7 @@ export const getAllProductsByCategory = async (categoryName: string) => {
     }
 }
 
-export const getProductsById = async (_id: string) => {
+export const getProductById = async (_id: string) => {
     if(!dbConnection) await init();
 
     try{
@@ -183,6 +187,7 @@ export const saveNewProductRating = async (formData: FormData) => {
     try {
         const productsCollection = database?.collection("products");
         const ratingsCollection = database?.collection("ratings");
+        const ordersCollection = database?.collection("orders");
 
         const productId = formData.get("productId") as string;
         const userID = formData.get("userId") as string;
@@ -191,12 +196,17 @@ export const saveNewProductRating = async (formData: FormData) => {
 
         if (!database || !productsCollection) {
             console.log("Failed To Get Products");
-            return;
+            return { error: "Failed To Get Products" };
         }
 
         if (!ratingsCollection) {
             console.log("Failed To Get Ratings");
-            return;
+            return { error: "Failed To Get Ratings" };
+        }
+
+        if (!ordersCollection) {
+            console.log("Failed To Get Orders");
+            return { error: "Failed To Get Orders" };
         }
 
         const productObjectId = new ObjectId(productId);
@@ -206,6 +216,17 @@ export const saveNewProductRating = async (formData: FormData) => {
         if (!product) {
             console.log("Product Not Found");
             return { error: "Product Not Found" };
+        }
+
+        // Check if user has purchased the product
+        const userOrder = await ordersCollection.findOne({
+            "items.productId": productObjectId,
+            userId: userID
+        });
+
+        if (!userOrder) {
+            console.log("User has not purchased this product");
+            return { error: "You must purchase the product before rating it" };
         }
 
         const newRatingsCount = (product.ratingsCount ?? 0) + 1;
@@ -239,9 +260,9 @@ export const saveNewProductRating = async (formData: FormData) => {
         return { success: true };
     } catch (error: any) {
         console.log("An Error Occurred... ", error.message);
-        return { "error ": error.message };
+        return { error: error.message };
     }
-}
+};
 
 export const getProductCount = async () => {
     if(!dbConnection) await init();

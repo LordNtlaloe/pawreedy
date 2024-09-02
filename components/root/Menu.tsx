@@ -1,9 +1,13 @@
+"use client"
 import Link from "next/link";
 import { SignedIn, SignedOut, SignInButton, SignUpButton, UserButton } from "@clerk/nextjs";
 import { ShoppingCart, Heart, User, Search } from "lucide-react";
 import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem } from "@/components/ui/dropdown-menu";
+import { useState } from "react";
 
-const Menu = () => {
+const Menu = ({ userInput }: any) => {
+  const [searchText, setSearchText] = useState<string>("")
+
   return (
     <div className="flex justify-between gap-4 px-4 py-2 w-[100%]">
       {/* Search Bar on the left */}
@@ -13,8 +17,10 @@ const Menu = () => {
             type="text"
             placeholder="Search..."
             className="px-4 py-2 border rounded-md w-full max-w-xs pl-10"
+            onChange={(e) => setSearchText(e.target.value)}
           />
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500" size={16} />
+          <Search onClick={() => userInput(searchText)}
+ className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500" size={16} />
         </div>
       </div>
 

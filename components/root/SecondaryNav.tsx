@@ -39,10 +39,10 @@ const SecondaryNav = () => {
       </div>
 
       <div className="flex items-center gap-4">
-        <FacebookIcon className="text-blue-600" />
-        <Twitter className="text-sky-700" />
-        <YoutubeIcon className="text-red-500" />
-        <InstagramIcon className="text-orange-700" />
+        <FacebookIcon className="text-white" />
+        <Twitter className="text-white" />
+        <YoutubeIcon className="text-white" />
+        <InstagramIcon className="text-white" />
       </div>
     </main>
   );
