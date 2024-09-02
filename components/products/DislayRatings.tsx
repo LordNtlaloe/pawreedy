@@ -38,9 +38,6 @@ const ProductRatings = ({ productId }: { productId: string }) => {
 
   return (
     <div className="mt-5">
-      <h1 className="text-xl md:text-3xl font-bold mb-3 border-b pb-3">
-        Ratings
-      </h1>
       {ratings.length === 0 ? (
         <p>No ratings available</p>
       ) : (

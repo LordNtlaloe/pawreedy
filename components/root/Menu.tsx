@@ -1,26 +1,29 @@
-"use client"
+"use client";
 import Link from "next/link";
-import { SignedIn, SignedOut, SignInButton, SignUpButton, UserButton } from "@clerk/nextjs";
-import { ShoppingCart, Heart, User, Search } from "lucide-react";
+import { SignedIn, SignedOut, SignInButton, SignUpButton, UserButton, SignOutButton } from "@clerk/nextjs";
+import { ShoppingCart, Heart, User as UserIcon, Search } from "lucide-react";
 import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem } from "@/components/ui/dropdown-menu";
 import { useState } from "react";
 
-const Menu = ({ userInput }: any) => {
-  const [searchText, setSearchText] = useState<string>("")
+const Menu = ({ userInput = () => {} }: any) => {
+  const [searchText, setSearchText] = useState<string>("");
 
   return (
-    <div className="flex justify-between gap-4 px-4 py-2 w-[100%]">
+    <div className="flex justify-between gap-4 px-4 py-2 w-[75%]">
       {/* Search Bar on the left */}
       <div className="flex-1">
         <div className="relative">
           <input
             type="text"
             placeholder="Search..."
-            className="px-4 py-2 border rounded-md w-full max-w-xs pl-10"
+            className="px-4 py-2 border rounded-md w-full max-w-xs pr-10" // Add padding-right for the icon
             onChange={(e) => setSearchText(e.target.value)}
           />
-          <Search onClick={() => userInput(searchText)}
- className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500" size={16} />
+          <Search
+            onClick={() => userInput(searchText)}
+            className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500"
+            size={16}
+          />
         </div>
       </div>
 
@@ -30,7 +33,7 @@ const Menu = ({ userInput }: any) => {
         <Link href="/cart" className="hover:scale-105 transition-transform">
           <ShoppingCart size={24} />
         </Link>
-        
+
         {/* Wishlist Icon */}
         <Link href="/wishlist" className="hover:scale-105 transition-transform">
           <Heart size={24} />
@@ -39,12 +42,26 @@ const Menu = ({ userInput }: any) => {
         {/* User Dropdown */}
         <DropdownMenu>
           <DropdownMenuTrigger className="flex items-center gap-2">
-            <User size={24} className="cursor-pointer" />
+            <SignedIn>
+              <div className="w-8 h-8 rounded-full overflow-hidden border border-gray-300">
+                <UserButton afterSignOutUrl="/" />
+              </div>
+            </SignedIn>
+            <SignedOut>
+              <UserIcon size={24} className="cursor-pointer" />
+            </SignedOut>
           </DropdownMenuTrigger>
           <DropdownMenuContent className="bg-white shadow-md rounded p-2">
             <SignedIn>
               <DropdownMenuItem>
-                <UserButton afterSignOutUrl="/" />
+                <Link href="/dashboard">
+                  <button className="w-full text-left">Dashboard</button>
+                </Link>
+              </DropdownMenuItem>
+              <DropdownMenuItem>
+                <SignOutButton>
+                  <button className="w-full text-left">Logout</button>
+                </SignOutButton>
               </DropdownMenuItem>
             </SignedIn>
             <SignedOut>

@@ -9,12 +9,13 @@ import { getAllProducts, getProductByName } from "@/app/_actions/_productsAction
 import ProductList from "@/components/products/ProductList";
 
 
-export default function Home() {
-  const [popularProductes, setPopularProductes] = useState([])
+export default function Home({ userInput }: any) {
+  const [popularProducts, setPopularProducts] = useState([])
   const [searchText, setSearchText] = useState<string>("")
+  
   const [title, setTitle] = useState("Popular Productes")
 
-  const getProductes = async (_searchText: string) => {
+  const getProducts = async (_searchText: string) => {
     let results
     if (!searchText) {
       results = await getAllProducts()
@@ -23,20 +24,20 @@ export default function Home() {
       results = await getProductByName(_searchText)
       setTitle("Search Results")
     }
-    setPopularProductes(results)
+    setPopularProducts(results)
 
     return results
   }
 
   useEffect(() => {
-    getProductes(searchText)
+    getProducts(searchText)
   }, [searchText])
 
   return (
     <main className="">
-      <Hero userInput={(value: string) => setSearchText(value)} />
+      <Hero  />
       <div className="px-6 md:mt-6 mt-3">
-        <ProductList productList={popularProductes} title={title} />
+        <ProductList productList={popularProducts} title={title} />
       </div>
       <div className="flex items-center justify-center py-4">
         <Link

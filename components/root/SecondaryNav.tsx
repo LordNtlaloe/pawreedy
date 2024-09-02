@@ -12,12 +12,6 @@ const SecondaryNav = () => {
     <main className="h-12 bg-[#51358C] flex items-center justify-between py-2 px-4">
       <div className="flex items-center gap-4">
       <ul className="flex md:flex-row flex-col gap-1 md:gap-6 items-center text-white" >
-          <SignedIn>
-            <Link href={'/dashboard'}>
-              <button className="border  px-3 rounded my-1 bg-primary text-black transition-all hover:bg-primary/70" >Dashboard</button>
-            </Link>
-          </SignedIn>
-  
           <div className="hidden sm:ml-6 sm:block">
               <div className="flex space-x-4">
                 {menuItems.map((item) => (
