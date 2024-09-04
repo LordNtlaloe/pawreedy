@@ -1,300 +1,217 @@
-"use client";
-
-import React, { useEffect, useState } from "react";
-import { Button } from "../ui/button";
-import { ChevronDown, Image as ImageIcon } from "lucide-react";
-import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuItem,
-    DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-
-import Image from "next/image";
-import { getAllCategories } from "@/app/_actions/_categoryActions";
-import { showConfirmationMessage } from "@/lib/GeneralFunctions";
-import { saveNewProduct } from "@/app/_actions/_productsActions";
-import { useUser } from "@clerk/nextjs";
-import Swal from "sweetalert2";
-import LoadingDialog from "../general/LoadingDialog";
-import InputText from "../general/InputText";
+"use client"
+import React, { useState, useEffect } from 'react';
+import { Button } from '../ui/button';
+import { ChevronDown } from 'lucide-react';
+import InputText from '../general/InputText';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '../ui/dropdown-menu';
+import Image from 'next/image';
+import { getAllCategories } from '@/app/_actions/_categoryActions';
+import { showConfirmationMessage, showToastMessage } from '@/lib/GeneralFunctions';
+import { saveNewProduct } from '@/app/_actions/_productsActions';
+import Swal from 'sweetalert2';
+import LoadingDialog from '../general/LoadingDialog';
 
 const AddNewProductForm = () => {
+    // Update icon state to hold a File object instead of a string
     const [icon, setIcon] = useState<File | null>(null);
     const [iconPreview, setIconPreview] = useState<string | null>(null);
     const [isLoading, setIsLoading] = useState(false);
-    const [categoriesList, setCategoriesList] = useState([]);
+    const [categoryList, setCategoryList] = useState([]);
     const [selectedCategory, setSelectedCategory] = useState("");
-    const { user } = useUser();
+
+    const getCategoryList = async () => {
+        const categories = await getAllCategories();
+        setCategoryList(categories);
+        return categories;
+    }
 
     useEffect(() => {
-        const fetchCategories = async () => {
-            try {
-                const categories = await getAllCategories();
-                setCategoriesList(categories);
-            } catch (error) {
-                showConfirmationMessage("error", "Failed to fetch categories.");
-            }
-        };
-        fetchCategories();
+        getCategoryList();
     }, []);
 
     const validateInputs = (formData: FormData) => {
-        const requiredFields = [
-            { field: 'name', message: "REQUIRED: Product name is required!" },
-            { field: 'description', message: "REQUIRED: Contact person is required!" },
-            { field: 'productEmail', message: "REQUIRED: Product email is required!" },
-            { field: 'productPhoneNumber', message: "REQUIRED: Product phone number is required!" },
-            { field: 'productAddress', message: "REQUIRED: Product address is required!" },
-            { field: 'aboutProduct', message: "REQUIRED: Short description is required!" },
-            { field: 'productDetails', message: "REQUIRED: Detailed description is required!" },
-        ];
-
-        for (let { field, message } of requiredFields) {
-            if (!formData.get(field)) {
-                showConfirmationMessage("error", message);
-                return false;
-            }
-        }
-
-        if (!selectedCategory) {
-            showConfirmationMessage("error", "REQUIRED: Please select a category!");
+        if (!formData.get('name')) {
+            showConfirmationMessage("Error: ", "Product Name Is Required");
             return false;
         }
-
+        if (!formData.get('description')) {
+            showConfirmationMessage("Error: ", "Product Description Is Required");
+            return false;
+        }
+        if (!formData.get('price')) {
+            showConfirmationMessage("Error: ", "Product Price Is Required");
+            return false;
+        }
+        if (!selectedCategory) {
+            showConfirmationMessage("Error: ", "Please Select A Category");
+            return false;
+        }
         formData.append("category", selectedCategory);
         return true;
-    };
+    }
 
-    const uploadImage = async (): Promise<string | undefined> => {
+    const uploadImage = async () => {
         if (!icon) {
-            showConfirmationMessage("error", "Icon is required...");
+            showConfirmationMessage("Error: ", "An Image Is Required");
             return;
         }
 
         const imageData = new FormData();
         imageData.append("file", icon);
-        imageData.append("upload_preset", "experthub");
+        imageData.append("upload_preset", "pawreedy");
 
         try {
             const response = await fetch(
-                "https://api.cloudinary.com/v1_1/moteteletsa/image/upload",
+            `https://api.cloudinary.com/v1_1/dvbcqdbfa/image/upload`,
                 { method: "POST", body: imageData }
             );
-            const { secure_url } = await response.json();
-            return secure_url;
+            const uploadedImageData = await response.json();
+            return uploadedImageData.secure_url;
         } catch (error) {
-            showConfirmationMessage(
-                "error",
-                `Error uploading image: ${error}. Please verify you have internet connectivity.`
-            );
+            showConfirmationMessage("Error: ", `Error Uploading Image: ${error}. Please Verify You Have Internet Connection`);
             setIcon(null);
             setIconPreview(null);
             setIsLoading(false);
+            return null;
         }
-    };
+    }
 
-    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    const saveProduct = async (e: React.FormEvent) => {
         e.preventDefault();
-        const formData = new FormData(e.currentTarget);
+        
+        const formData = new FormData(e.currentTarget as HTMLFormElement);
+        
+        if (!validateInputs(formData)) return;
 
-        if (validateInputs(formData)) {
-            Swal.fire({
-                icon: "warning",
-                title: "Product Registration",
-                text: "You are about to register a product with Uniserve. Please confirm.",
-                showDenyButton: true,
-                showCancelButton: true,
-                confirmButtonText: "Register",
-                denyButtonText: "Abort",
-            }).then(async (result) => {
-                if (result.isConfirmed) {
-                    setIsLoading(true);
+        const result = await Swal.fire({
+            icon: "warning",
+            title: "Adding Product", 
+            text: "You Are About To Add A New Product. Please Confirm",
+            showDenyButton: true,
+            showCancelButton: true,
+            confirmButtonText: "Add Product",
+            denyButtonText: "Cancel Action",
+        });
 
-                    formData.append("userId", user?.id as string);
-                    formData.append("fullNames", user?.fullName as string);
+        if (result.isConfirmed) {
+            setIsLoading(true);
+            
+            const imageUrl = await uploadImage();
+            if (!imageUrl) {
+                setIsLoading(false);
+                return;
+            }
 
-                    const imageURL = await uploadImage();
-                    if (imageURL) {
-                        formData.append("faceImage", imageURL);
-                    }
+            formData.append("image", imageUrl);
 
-                    const newProduct = await saveNewProduct(formData);
+            const newProduct = await saveNewProduct(formData);
+            setIsLoading(false);
 
-                    if (newProduct.productId) {
-                        showConfirmationMessage(
-                            "success",
-                            "Your application has been submitted. You will receive communication from our team regarding the verification process. Thank you for your interest in using our services.",
-                            "Product Registration"
-                        );
-                    } else if (newProduct.error) {
-                        showConfirmationMessage("error", `Error: ${newProduct.error}`);
-                    }
-                    setIsLoading(false);
-                } else if (result.isDenied) {
-                    Swal.fire("Registration was aborted! Details not saved", "", "info");
-                }
-            });
+            if (newProduct?.productId) {
+                showConfirmationMessage("Success: ", "A New Product Has Been Added Successfully!");
+            } else {
+                showConfirmationMessage("Error: ", "Failed to Add Product. Please Try Again.");
+            }
+        } else if (result.isDenied) {
+            Swal.fire("Adding Product Failed. Please Try Again.", "", "info");
         }
-    };
+    }
 
     const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const image = e.target.files?.[0];
         if (image) {
-            setIcon(image);
+            setIcon(image); // Updated to handle File object
             setIconPreview(URL.createObjectURL(image));
         } else {
             setIcon(null);
             setIconPreview(null);
         }
-    };
+    }
 
     return (
-        <section className="max-w-4xl mx-auto p-6 bg-white rounded-md">
-            <form method="POST" encType="multipart/form-data">
-                <div className="mt-10 space-y-8">
-                    <div>
-                        <label htmlFor="name" className="block text-sm font-medium leading-6 text-gray-900">
-                            Product Name
-                        </label>
-                        <div className="mt-2">
-                            <div className="flex rounded-md shadow-sm ring-1 ring-inset ring-gray-300 focus-within:ring-2 focus-within:ring-inset focus-within:ring-indigo-600">
-                                <InputText
-                                    id="name"
-                                    name="name"
-                                    type="text"
-                                    placeholder="Product Name"
-                                    className="block w-full bg-transparent py-1.5 pl-1 text-gray-900 placeholder:text-gray-400 focus:ring-0 sm:text-sm sm:leading-6"
-                                    text={""}
-                                    required
-                                />
-                            </div>
-                        </div>
-                    </div>
-
-                    <div>
-                        <label htmlFor="description" className="block text-sm font-medium leading-6 text-gray-900">
-                            Product Description
-                        </label>
-                        <div className="mt-2">
-                            <textarea
-                                id="description"
-                                name="description"
-                                rows={3}
-                                className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-                                placeholder="Product Description"
-                                defaultValue=""
-                            />
-                        </div>
-                        <p className="mt-3 text-sm leading-6 text-gray-600">
-                            Write a few sentences about the product.
-                        </p>
-                    </div>
-
-                    <div>
-                        <label htmlFor="price" className="block text-sm font-medium leading-6 text-gray-900">
-                            Product Price
-                        </label>
-                        <div className="mt-2">
-                            <div className="flex rounded-md shadow-sm ring-1 ring-inset ring-gray-300 focus-within:ring-2 focus-within:ring-inset focus-within:ring-indigo-600">
-                                <InputText
-                                    id="price"
-                                    name="price"
-                                    type="number"
-                                    placeholder="Product Price"
-                                    className="block w-full border-0 bg-transparent py-1.5 pl-1 text-gray-900 placeholder:text-gray-400 focus:ring-0 sm:text-sm sm:leading-6"
-                                    text={""}
-                                    required
-                                />
-                            </div>
-                        </div>
-                    </div>
-
-                    <div>
-                        <label htmlFor="category" className="block text-sm font-medium leading-6 text-gray-900">
-                            Category
-                        </label>
-                        <div className="mt-2">
-                            <select
-                                id="category"
-                                name="category"
-                                className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:max-w-xs sm:text-sm sm:leading-6"
-                                value={selectedCategory}
-                                onChange={(e) => setSelectedCategory(e.target.value)}
-                            >
-                                <option value="" disabled>
-                                    Select a category
-                                </option>
-                                {categoriesList &&
-                                    categoriesList.map((category: any) => (
-                                        <option key={category._id} value={category.name}>
-                                            {category.name}
-                                        </option>
-                                    ))}
-                            </select>
-                        </div>
-                    </div>
-
-                    <div>
-                        <label htmlFor="quantity" className="block text-sm font-medium leading-6 text-gray-900">
-                            Product Quantity
-                        </label>
-                        <div className="mt-2">
-                            <div className="flex rounded-md shadow-sm ring-1 ring-inset ring-gray-300 focus-within:ring-2 focus-within:ring-inset focus-within:ring-indigo-600">
-                                <InputText
-                                    id="quantity"
-                                    name="quantity"
-                                    type="number"
-                                    placeholder="Product Quantity"
-                                    className="block w-full border-0 bg-transparent py-1.5 pl-1 text-gray-900 placeholder:text-gray-400 focus:ring-0 sm:text-sm sm:leading-6"
-                                    text={""}
-                                    required
-                                />
-                            </div>
-                        </div>
-                    </div>
-
-                    <div>
-                        <label htmlFor="image" className="block text-sm font-medium leading-6 text-gray-900">
-                            Product Image URL
-                        </label>
-                        <div className="mt-2 flex justify-center rounded-lg border border-dashed border-gray-900/25 px-6 py-10">
-                            <div className="text-center">
-                                <ImageIcon aria-hidden="true" className="mx-auto h-12 w-12 text-gray-300" />
-                                <div className="mt-4 flex text-sm leading-6 text-gray-600">
-                                    <label
-                                        htmlFor="image-upload"
-                                        className="relative cursor-pointer rounded-md bg-white font-semibold text-indigo-600 focus-within:outline-none focus-within:ring-2 focus-within:ring-indigo-600 focus-within:ring-offset-2 hover:text-indigo-500"
-                                    >
-                                        <span>Upload a file</span>
-                                        <input
-                                            id="image-upload"
-                                            name="image-upload"
-                                            type="file"
-                                            className="sr-only"
-                                            accept="image/*"
-                                            onChange={(e) => handleImageChange(e)}
-                                        />
-                                    </label>
-                                    <p className="pl-1">or drag and drop</p>
+        <form onSubmit={saveProduct}>
+            <div className="space-y-12">
+                <div className="p-2">
+                    <div className="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
+                        <div className="col-span-full">
+                            <label htmlFor="name" className="block text-sm font-medium leading-6 text-gray-900">Product Name</label>
+                            <div className="mt-2">
+                                <div className="flex rounded-md shadow-sm ring-1 ring-inset ring-gray-300 focus-within:ring-2 focus-within:ring-inset focus-within:ring-indigo-600 sm:max-w-md">
+                                    <InputText type="text" name="name" id="name" placeholder="Product Name" required={false} className="block flex-1 border-0 bg-transparent py-1.5 pl-1 text-gray-900 placeholder:text-gray-400 focus:ring-0 sm:text-sm sm:leading-6" text={''} />
                                 </div>
-                                <p className="text-xs leading-5 text-gray-600">PNG, JPG, GIF up to 10MB</p>
+                            </div>
+                        </div>
+
+                        <div className="col-span-full">
+                            <label htmlFor="description" className="block text-sm font-medium leading-6 text-gray-900">Description</label>
+                            <div className="mt-2">
+                                <textarea id="description" name="description" rows={3} className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"></textarea>
+                            </div>
+                            <p className="mt-3 text-sm leading-6 text-gray-600">Write A Few Sentences About The Product.</p>
+                        </div>
+
+                        <div className="col-span-full">
+                            <label htmlFor="category" className="block text-sm font-medium leading-6 text-gray-900">Select A Category</label>
+                            <div className="mt-2">
+                                <DropdownMenu>
+                                    <DropdownMenuTrigger className="flex items-center">
+                                        <span className="outline-none">
+                                            <ChevronDown />
+                                        </span>
+                                    </DropdownMenuTrigger>
+                                    <DropdownMenuContent className="bg-white">
+                                        {categoryList && categoryList.map((category: any) => (
+                                            <DropdownMenuItem key={category._id} onSelect={() => setSelectedCategory(category.name)}>
+                                                {category.name}
+                                            </DropdownMenuItem>
+                                        ))}
+                                    </DropdownMenuContent>
+                                </DropdownMenu>
+                                <div className='mt-2'>
+                                    {selectedCategory ? <h1 className="bg-green-500 text-white text-sm rounded px-2 py-4">{selectedCategory}</h1> : (
+                                        <h1 className="bg-red-500 rounded text-white text-sm px-2 py-4">Not Selected</h1>
+                                    )}
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="col-span-full">
+                            <label htmlFor="file_input" className="block text-sm font-medium leading-6 text-gray-900">Image/Cover Photo</label>
+                            <div className="mt-2 flex justify-center rounded-lg border border-dashed border-gray-900/25 px-6 py-10">
+                                <div className="text-center">
+                                    <svg className="mx-auto h-12 w-12 text-gray-300" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                                        <path fillRule="evenodd" d="M1.5 6a2.25 2.25 0 012.25-2.25h16.5A2.25 2.25 0 0122.5 6v12a2.25 2.25 0 01-2.25 2.25H3.75A2.25 2.25 0 011.5 18V6zM3 16.06V18c0 .414.336.75.75.75h16.5A.75.75 0 0021 18v-1.94l-2.69-2.689a1.5 1.5 0 00-2.12 0l-.88.879.97.97a.75.75 0 11-1.06 1.06l-2.22-2.22a1.5 1.5 0 00-2.12 0l-4.44 4.44zm2.47 2.47a1.5 1.5 0 002.12 0l4.44-4.44a1.5 1.5 0 012.12 0l2.22 2.22a.75.75 0 001.06-1.06l-.97-.97a1.5 1.5 0 00-2.12 0l-.88-.88a1.5 1.5 0 00-2.12 0l-4.44 4.44z" clipRule="evenodd" />
+                                    </svg>
+                                    <div className="mt-4 flex text-sm leading-6 text-gray-600">
+                                        <label htmlFor="file_input" className="relative cursor-pointer rounded-md bg-white font-semibold text-indigo-600 focus-within:outline-none focus-within:ring-2 focus-within:ring-indigo-600 focus-within:ring-offset-2 hover:text-indigo-500">
+                                            <span>Upload an image</span>
+                                            <input id="file_input" name="image" type="file" accept="image/*" className="sr-only" onChange={handleImageChange} />
+                                        </label>
+                                        <p className="pl-1">or drag and drop</p>
+                                    </div>
+                                    <p className="text-xs leading-5 text-gray-600">PNG, JPG, GIF up to 10MB</p>
+                                </div>
+                            </div>
+                            {iconPreview && (
+                                <div className='p-4 w-full'>
+                                    <Image src={iconPreview} width={100} height={100} className='rounded-lg' alt='product image' />
+                                </div>
+                            )}
+                        </div>
+
+                        <div className="col-span-full">
+                            <label htmlFor="price" className="block text-sm font-medium leading-6 text-gray-900">Price</label>
+                            <div className="mt-2">
+                                <input type="text" name="price" id="price" autoComplete="price" className="block w-full rounded-md border-0 py-1.5 pl-1 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" placeholder="Product Price" />
                             </div>
                         </div>
                     </div>
                 </div>
-                <button
-                    type="submit"
-                    className="mt-4 bg-indigo-600 text-white py-2 px-4 rounded-md shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                >
-                    Save Product
-                </button>
-            </form>
-
-            <LoadingDialog open={isLoading} message="Saving product..." />
-        </section>
-
+            </div>
+            <Button className='mt-2 ml-2 bg-[#51358C] text-white hover:bg-[#6C548C]' disabled={isLoading} type='submit'>{isLoading ? "Adding Product" : "Add Product"}</Button>
+            {isLoading && <LoadingDialog open={false} message={''} />}
+        </form>
     );
-};
+}
 
 export default AddNewProductForm;

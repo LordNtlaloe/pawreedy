@@ -1,16 +1,15 @@
 "use client";
 
 import { getProductById } from "@/app/_actions/_productsActions";
-import { MapPin } from "lucide-react";
+import { MapPin, Star, Heart, ShoppingCart } from "lucide-react";
 import Image from "next/image";
 import React, { useEffect, useState } from "react";
-import SimilarProducts from "./SimilarProducts";
-import ProductRatings from "./ProductRating";
-import DisplayRatings from "./DislayRatings";
+import { useCart } from "@/apis/CartContext";
 
 const ProductInfo = ({ id }: { id: string }) => {
   const [isLoaded, setIsLoaded] = useState(false);
   const [product, setProduct] = useState<any>({});
+  const { addToCart } = useCart();
 
   useEffect(() => {
     setIsLoaded(true);
@@ -22,120 +21,81 @@ const ProductInfo = ({ id }: { id: string }) => {
     setProduct(productById);
   };
 
-  if (!isLoaded) return <div>Loading...</div>;
+  if (!isLoaded) return null;
+
+  const handleAddToCart = () => {
+    if (product) {
+      addToCart({
+        id: product._id,
+        name: product.name,
+        price: product.price,
+        quantity: 1,
+        image: product.image,
+      });
+    }
+  };
 
   return (
-    <div className="bg-gray-100">
-      <div className="container mx-auto px-4 py-8">
-        <div className="flex flex-wrap -mx-4">
-          {/* Product Images */}
-          <div className="w-full md:w-1/2 px-4 mb-8">
-            <Image
-              src={product.image || '/image_placeholder.jpg'}
-              alt="Product"
-              className="w-full h-auto rounded-lg shadow-md mb-4"
-              width={1080}
-              height={720}
-            />
-            <div className="flex gap-4 py-4 justify-center overflow-x-auto">
-              {product.images?.map((img: string, index: number) => (
-                <img
-                  key={index}
-                  src={img}
-                  alt={`Thumbnail ${index + 1}`}
-                  className="size-16 sm:size-20 object-cover rounded-md cursor-pointer opacity-60 hover:opacity-100 transition duration-300"
-                  onClick={() => document.getElementById('mainImage')?.setAttribute('src', img)}
-                />
-              ))}
-            </div>
-          </div>
-
-          {/* Product Details */}
-          <div className="w-full md:w-1/2 px-4">
-            <h2 className="text-3xl font-bold mb-2">{product.name}</h2>
-            <p className="text-gray-600 mb-4">SKU: {product.sku}</p>
-            <div className="mb-4">
-              <span className="text-2xl font-bold mr-2">${product.price}</span>
-              <span className="text-gray-500 line-through">${product.originalPrice}</span>
-            </div>
-            <div className="flex items-center mb-4">
-              {/* Example stars for ratings */}
-              {[...Array(5)].map((_, index) => (
-                <svg
-                  key={index}
-                  xmlns="http://www.w3.org/2000/svg"
-                  viewBox="0 0 24 24"
-                  fill="currentColor"
-                  className={`w-6 h-6 ${index < product.ratings ? 'text-yellow-500' : 'text-gray-300'}`}
-                >
-                  <path
-                    fillRule="evenodd"
-                    d="M10.788 3.21c.448-1.077 1.976-1.077 2.424 0l2.082 5.006 5.404.434c1.164.093 1.636 1.545.749 2.305l-4.117 3.527 1.257 5.273c.271 1.136-.964 2.033-1.96 1.425L12 18.354 7.373 21.18c-.996.608-2.231-.29-1.96-1.425l1.257-5.273-4.117-3.527c-.887-.76-.415-2.212.749-2.305l5.404-.434 2.082-5.005Z"
-                    clipRule="evenodd"
-                  />
-                </svg>
-              ))}
-              <span className="ml-2 text-gray-600">{product.ratings} ({product.ratingsCount} reviews)</span>
-            </div>
-            <p className="text-gray-700 mb-6">{product.description}</p>
-
-            <div className="mb-6">
-              <h3 className="text-lg font-semibold mb-2">Color:</h3>
-              <div className="flex space-x-2">
-                {product.colors?.map((color: string, index: number) => (
-                  <button
-                    key={index}
-                    style={{ backgroundColor: color }}
-                    className="w-8 h-8 rounded-full focus:outline-none focus:ring-2 focus:ring-offset-2"
-                  />
-                ))}
-              </div>
-            </div>
-
-            <div className="mb-6">
-              <label htmlFor="quantity" className="block text-sm font-medium text-gray-700 mb-1">Quantity:</label>
-              <input
-                type="number"
-                id="quantity"
-                name="quantity"
-                min="1"
-                defaultValue="1"
-                className="w-12 text-center rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-              />
-            </div>
-
-            <div className="flex space-x-4 mb-6">
-              <button className="bg-indigo-600 flex gap-2 items-center text-white px-6 py-2 rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="w-6 h-6">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 0 0-3 3h15.75m-12.75-3h11.218c1.121-2.3 2.1-4.684 2.924-7.138a60.114 60.114 0 0 0-16.536-1.84M7.5 14.25 5.106 5.272M6 20.25a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Zm12.75 0a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Z" />
-                </svg>
-                Add to Cart
-              </button>
-              <button className="bg-gray-200 flex gap-2 items-center text-gray-800 px-6 py-2 rounded-md hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="w-6 h-6">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12Z" />
-                </svg>
-                Wishlist
-              </button>
-            </div>
-
-            <div>
-              <h3 className="text-lg font-semibold mb-2">Key Features:</h3>
-              <ul className="list-disc list-inside text-gray-700">
-                {product.features?.map((feature: string, index: number) => (
-                  <li key={index}>{feature}</li>
-                ))}
-              </ul>
-            </div>
-          </div>
+    <main className="py-6 px-4 sm:p-6 md:py-10 md:px-8 bg-white dark:bg-gray-900">
+      <div className="max-w-4xl mx-auto grid grid-cols-1 lg:max-w-5xl lg:gap-x-20 lg:grid-cols-2">
+        {/* Image Section */}
+        <div className="grid gap-4 col-start-1 col-end-3 row-start-1 sm:mb-6 sm:grid-cols-4 lg:gap-6 lg:col-start-2 lg:row-end-6 lg:row-span-6 lg:mb-0">
+          <Image
+            src={product?.image || "/placeholder-image.jpg"}
+            alt={product?.name || "Product Image"}
+            width={150}
+            height={200}
+            className="w-full h-60 object-cover rounded-lg sm:h-52 sm:col-span-2 lg:col-span-full"
+            loading="lazy"
+          />
         </div>
-      </div>
 
-      <div className="container mx-auto px-4 py-8">
-        <h2 className="text-2xl font-bold mb-6">Similar Products</h2>
-        <SimilarProducts categoryName={product?.category} />
+        {/* Title and Category */}
+        <div className="relative p-3 col-start-1 row-start-1 flex flex-col-reverse rounded-lg bg-gradient-to-t from-black/75 via-black/0 sm:bg-none sm:row-start-2 sm:p-0 lg:row-start-1">
+          <h1 className="mt-1 text-lg font-semibold text-white sm:text-gray-900 md:text-2xl dark:sm:text-white">
+            {product?.name}
+          </h1>
+          <p className="text-sm leading-4 font-medium text-white sm:text-gray-500 dark:sm:text-gray-400">
+            {product?.category}
+          </p>
+        </div>
+
+        {/* Reviews and Location */}
+        <dl className="mt-4 text-xs font-medium flex items-center row-start-2 sm:mt-1 sm:row-start-3 md:mt-2.5 lg:row-start-2">
+          <dt className="sr-only">Reviews</dt>
+          <dd className="text-indigo-600 flex items-center dark:text-indigo-400">
+            <Star className="w-4 h-4 mr-1" />
+            <span>
+              4.89 <span className="text-gray-400 font-normal">(128)</span>
+            </span>
+          </dd>
+          <dt className="sr-only">Location</dt>
+          <dd className="flex items-center">
+            <svg width="2" height="2" aria-hidden="true" fill="currentColor" className="mx-3 text-gray-300">
+              <circle cx="1" cy="1" r="1" />
+            </svg>
+            <MapPin className="w-4 h-4 mr-1 text-gray-400 dark:text-gray-500" />
+            Collingwood, Ontario
+          </dd>
+        </dl>
+
+        {/* Buttons */}
+        <div className="mt-4 col-start-1 row-start-3 self-center sm:mt-0 sm:col-start-2 sm:row-start-2 sm:row-span-2 lg:mt-6 lg:col-start-1 lg:row-start-3 lg:row-end-4">
+          <button
+            onClick={handleAddToCart}
+            className="bg-indigo-600 text-white text-sm leading-6 font-medium py-2 px-3 rounded-lg flex items-center justify-center w-full"
+          >
+            <ShoppingCart className="w-5 h-5 mr-2" />
+            Add to Cart
+          </button>
+        </div>
+
+        {/* Description */}
+        <p className="mt-4 text-sm leading-6 col-start-1 sm:col-span-2 lg:mt-6 lg:row-start-4 lg:col-span-1 dark:text-gray-400">
+          {product?.description}
+        </p>
       </div>
-    </div>
+    </main>
   );
 };
 

@@ -4,9 +4,14 @@ import { SignedIn, SignedOut, SignInButton, SignUpButton, UserButton, SignOutBut
 import { ShoppingCart, Heart, User as UserIcon, Search } from "lucide-react";
 import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem } from "@/components/ui/dropdown-menu";
 import { useState } from "react";
+import ShoppingCartModal from "@/components/products/cart/ShoppingCartModal"; // Adjust the import path as needed
 
 const Menu = ({ userInput = () => {} }: any) => {
   const [searchText, setSearchText] = useState<string>("");
+  const [isCartOpen, setIsCartOpen] = useState<boolean>(false);
+
+  const openCart = () => setIsCartOpen(true);
+  const closeCart = () => setIsCartOpen(false);
 
   return (
     <div className="flex justify-between gap-4 px-4 py-2 w-[75%]">
@@ -30,9 +35,9 @@ const Menu = ({ userInput = () => {} }: any) => {
       {/* Icons on the right */}
       <div className="flex items-center gap-4">
         {/* Cart Icon */}
-        <Link href="/cart" className="hover:scale-105 transition-transform">
+        <button onClick={openCart} className="hover:scale-105 transition-transform">
           <ShoppingCart size={24} />
-        </Link>
+        </button>
 
         {/* Wishlist Icon */}
         <Link href="/wishlist" className="hover:scale-105 transition-transform">
@@ -79,6 +84,9 @@ const Menu = ({ userInput = () => {} }: any) => {
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
+
+      {/* Cart Modal */}
+      <ShoppingCartModal isOpen={isCartOpen} onClose={closeCart} />
     </div>
   );
 };
