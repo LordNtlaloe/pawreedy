@@ -5,13 +5,15 @@ import { ShoppingCart, Heart, User as UserIcon, Search } from "lucide-react";
 import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem } from "@/components/ui/dropdown-menu";
 import { useState } from "react";
 import ShoppingCartModal from "@/components/products/cart/ShoppingCartModal"; // Adjust the import path as needed
+import { useCart } from "@/apis/CartContext";
 
-const Menu = ({ userInput = () => {} }: any) => {
+const Menu = ({ userInput = () => { } }: any) => {
   const [searchText, setSearchText] = useState<string>("");
   const [isCartOpen, setIsCartOpen] = useState<boolean>(false);
 
   const openCart = () => setIsCartOpen(true);
   const closeCart = () => setIsCartOpen(false);
+  const { cart } = useCart(); 
 
   return (
     <div className="flex justify-between gap-4 px-4 py-2 w-[75%]">
@@ -37,6 +39,14 @@ const Menu = ({ userInput = () => {} }: any) => {
         {/* Cart Icon */}
         <button onClick={openCart} className="hover:scale-105 transition-transform">
           <ShoppingCart size={24} />
+          <div>
+            {/* Rest of your MobileMenu */}
+            {cart.length > 0 && (
+              <span className="absolute top-[30px] right-[100px] bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+                {cart.length}
+              </span>
+            )}
+          </div>
         </button>
 
         {/* Wishlist Icon */}

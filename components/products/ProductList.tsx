@@ -1,24 +1,48 @@
+"use client"
 import Image from "next/image";
 import Link from "next/link";
 import Loading from "@/app/loading";
 import { useCart } from "@/apis/CartContext";
+import Swal from "sweetalert2";
+import withReactContent from "sweetalert2-react-content"; // Optional for using React components inside alerts
 
 type productProps = {
   productList: any;
   title: string;
 };
 
+const MySwal = withReactContent(Swal); // Optional but useful for React components
+
 const ProductList = ({ productList, title }: productProps) => {
   const { addToCart } = useCart();
 
   const handleAddToCart = (product: any) => {
-    addToCart({
-      id: product._id,
-      name: product.name,
-      price: product.price,
-      quantity: 1,
-      image: product.image,
-    });
+    try {
+      addToCart({
+        id: product._id,
+        name: product.name,
+        price: product.price,
+        quantity: 1,
+        image: product.image,
+      });
+
+      // Show success alert
+      MySwal.fire({
+        title: "Success!",
+        text: `${product.name} has been added to the cart`,
+        icon: "success",
+        confirmButtonText: "OK",
+        timer: 2000,
+      });
+    } catch (error) {
+      // Show error alert
+      Swal.fire({
+        title: "Error!",
+        text: "Failed to add the product to the cart",
+        icon: "error",
+        confirmButtonText: "Try Again",
+      });
+    }
   };
 
   return (

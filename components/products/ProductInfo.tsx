@@ -1,10 +1,10 @@
-"use client";
-
+"use client"
 import { getProductById } from "@/app/_actions/_productsActions";
-import { MapPin, Star, Heart, ShoppingCart } from "lucide-react";
+import { MapPin, Star, ShoppingCart } from "lucide-react";
 import Image from "next/image";
 import React, { useEffect, useState } from "react";
 import { useCart } from "@/apis/CartContext";
+import Swal from "sweetalert2";
 
 const ProductInfo = ({ id }: { id: string }) => {
   const [isLoaded, setIsLoaded] = useState(false);
@@ -24,13 +24,30 @@ const ProductInfo = ({ id }: { id: string }) => {
   if (!isLoaded) return null;
 
   const handleAddToCart = () => {
-    if (product) {
+    try {
       addToCart({
         id: product._id,
         name: product.name,
         price: product.price,
         quantity: 1,
         image: product.image,
+      });
+
+      // Show success alert
+      Swal.fire({
+        title: "Success!",
+        text: `${product.name} has been added to the cart`,
+        icon: "success",
+        confirmButtonText: "OK",
+        timer: 2000,
+      });
+    } catch (error) {
+      // Show error alert
+      Swal.fire({
+        title: "Error!",
+        text: "Failed to add the product to the cart",
+        icon: "error",
+        confirmButtonText: "Try Again",
       });
     }
   };
@@ -59,25 +76,6 @@ const ProductInfo = ({ id }: { id: string }) => {
             {product?.category}
           </p>
         </div>
-
-        {/* Reviews and Location */}
-        <dl className="mt-4 text-xs font-medium flex items-center row-start-2 sm:mt-1 sm:row-start-3 md:mt-2.5 lg:row-start-2">
-          <dt className="sr-only">Reviews</dt>
-          <dd className="text-indigo-600 flex items-center dark:text-indigo-400">
-            <Star className="w-4 h-4 mr-1" />
-            <span>
-              4.89 <span className="text-gray-400 font-normal">(128)</span>
-            </span>
-          </dd>
-          <dt className="sr-only">Location</dt>
-          <dd className="flex items-center">
-            <svg width="2" height="2" aria-hidden="true" fill="currentColor" className="mx-3 text-gray-300">
-              <circle cx="1" cy="1" r="1" />
-            </svg>
-            <MapPin className="w-4 h-4 mr-1 text-gray-400 dark:text-gray-500" />
-            Collingwood, Ontario
-          </dd>
-        </dl>
 
         {/* Buttons */}
         <div className="mt-4 col-start-1 row-start-3 self-center sm:mt-0 sm:col-start-2 sm:row-start-2 sm:row-span-2 lg:mt-6 lg:col-start-1 lg:row-start-3 lg:row-end-4">
