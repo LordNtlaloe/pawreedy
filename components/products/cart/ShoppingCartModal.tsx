@@ -1,18 +1,19 @@
 'use client';
 
-import { useState } from 'react';
 import { Dialog, DialogBackdrop, DialogPanel, DialogTitle } from '@headlessui/react';
 import { XMarkIcon } from '@heroicons/react/24/outline';
 import Image from 'next/image';
+import Link from 'next/link';
 import { useCart } from '@/apis/CartContext';
 
 const CartModal = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) => {
-  const { cart, removeFromCart, clearCart } = useCart();
+  const { cart, removeFromCart } = useCart();
 
   if (!isOpen) return null;
 
-  const handleCheckout = () => {
-    alert('Proceeding to checkout...');
+  // Convert price string to number when calculating total
+  const getTotal = () => {
+    return cart.reduce((total, item) => total + item.price * item.quantity, 0);
   };
 
   return (
@@ -60,7 +61,7 @@ const CartModal = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }
                               <div>
                                 <div className="flex justify-between text-base font-medium text-gray-900">
                                   <h3>{item.name}</h3>
-                                  <p className="ml-4">${item.price}</p>
+                                  <p className="ml-4">M{item.price}</p>
                                 </div>
                                 <p className="mt-1 text-sm text-gray-500">Qty {item.quantity}</p>
                               </div>
@@ -68,7 +69,7 @@ const CartModal = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }
                                 <button
                                   type="button"
                                   onClick={() => removeFromCart(item.id)}
-                                  className="font-medium text-indigo-600 hover:text-indigo-500"
+                                  className="font-medium text-[#51358C] hover:text-[#6845b4]"
                                 >
                                   Remove
                                 </button>
@@ -84,22 +85,22 @@ const CartModal = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }
                 <div className="border-t border-gray-200 px-4 py-6 sm:px-6">
                   <div className="flex justify-between text-base font-medium text-gray-900">
                     <p>Subtotal</p>
-                    <p>${cart.reduce((total, item) => total + item.price * item.quantity, 0).toFixed(2)}</p>
+                    <p>M{getTotal()}</p>
                   </div>
                   <p className="mt-0.5 text-sm text-gray-500">Shipping and taxes calculated at checkout.</p>
                   <div className="mt-6">
-                    <button
-                      onClick={handleCheckout}
-                      className="flex items-center justify-center rounded-md border border-transparent bg-indigo-600 px-6 py-3 text-base font-medium text-white shadow-sm hover:bg-indigo-700"
+                    <Link
+                      href="/checkout"
+                      className="flex items-center justify-center rounded-md border border-transparent bg-[#51358C] hover:bg-[#6845b4] px-6 py-3 text-base font-medium shadow-sm text-white"
                     >
                       Checkout
-                    </button>
+                    </Link>
                   </div>
                   <div className="mt-6 flex justify-center text-center text-sm text-gray-500">
                     <button
                       type="button"
                       onClick={onClose}
-                      className="font-medium text-indigo-600 hover:text-indigo-500"
+                      className="font-medium text-[#51358C] hover:text-[#6845b4]"
                     >
                       Continue Shopping
                       <span aria-hidden="true"> &rarr;</span>

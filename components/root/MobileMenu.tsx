@@ -82,7 +82,7 @@ const MobileMenu = ({ userInput = () => { } }: any) => {
                         <SheetClose asChild>
                             <div className="mt-6 flex items-start gap-6 absolute top-[300px]">
                                 {/* Cart Icon with Badge */}
-                                <button onClick={openCart} className="hover:scale-105 transition-transform">
+                                <button onClick={openCart} className="transition-transform">
                                     <ShoppingCart size={24} />
                                     {cart.length > 0 && (
                                         <span className="relative -top-[30px] -right-4 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">

@@ -248,3 +248,39 @@ export const getUsersCount = async () => {
         return { error: error.message };
     }
 };
+const seedAdminUser = async () => {
+    const adminEmail = "ntlal0e182@gmail.com";  // Replace with your email
+    const adminPassword = "admin123"; // Use a secure password
+
+    const hashedPassword = await bcrypt.hash(adminPassword, 10);
+    
+    const adminData = {
+        email: adminEmail,
+        name: "Admin",
+        surname: "User",
+        othernames: "",
+        phoneNumber: "1234567890",  // Replace with your phone number if needed
+        password: hashedPassword,
+        role: "admin", // You can add an admin role
+    };
+
+    if (!dbConnection) await init();
+
+    try {
+        const collection = await database.collection("users");
+
+        const existingAdmin = await collection.findOne({ email: adminEmail });
+
+        if (!existingAdmin) {
+            const newAdmin = await collection.insertOne(adminData);
+            console.log("Admin user created:", newAdmin.insertedId);
+        } else {
+            console.log("Admin user already exists");
+        }
+    } catch (error: any) {
+        console.error("Error creating admin user:", error.message);
+    }
+}
+
+// Call this function to seed the admin user when needed
+seedAdminUser();

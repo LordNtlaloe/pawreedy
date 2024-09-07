@@ -37,7 +37,7 @@ const Menu = ({ userInput = () => { } }: any) => {
       {/* Icons on the right */}
       <div className="flex items-center gap-4">
         {/* Cart Icon */}
-        <button onClick={openCart} className="hover:scale-105 transition-transform">
+        <button onClick={openCart} className="transition-transform">
           <ShoppingCart size={24} />
           <div>
             {/* Rest of your MobileMenu */}

@@ -23,7 +23,7 @@ export const saveNewProduct = async(formData: FormData) => {
         name: formData.get("name"),
         description: formData.get("description"),
         price: formData.get("price"),
-        image: formData.get("image"),
+        image: formData.get("imageUrl"),
         category: formData.get("category"),
         quantity: formData.get("quantity"),
         ratings: 0,
@@ -125,7 +125,7 @@ export const updateProduct = async (_id: string, formData: FormData) => {
         name: formData.get("name"),
         description: formData.get("description"),
         price: formData.get("price"),
-        image: formData.get("image"),
+        image: null,
         category: formData.get("category"),
         quantity: formData.get("quantity"),
         updatedAt: new Date()

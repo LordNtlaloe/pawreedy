@@ -47,34 +47,40 @@ export const dashboardMenu = [
     label: "Dashboard",
     href: "/dashboard",
     icon: LayoutDashboardIcon,
-    current: false
+    current: false,
+    color: "#202020"
   },
   {
     id: 2,
     label: "Products",
     href: "/dashboard/products",
     icon: Handshake,
-    current: false
+    current: false,
+    color: "#20283E"
   },
   {
     id: 3,
     label: "Category",
     href: "/dashboard/categories",
     icon: Box,
-    current: false
+    current: false,
+    color: "#25476A"
+
   },
   {
     id: 4,
     label: "Bookings",
     href: "/dashboard/bookings",
     icon: Calendar,
-    current: false
+    current: false,
+    color: "#191C24"
   },
   {
     id: 5,
     label: "Users",
     href: "/dashboard/users",
     icon: Users,
-    current: false
+    current: false,
+    color: "#1E1E2C"
   },
 ];

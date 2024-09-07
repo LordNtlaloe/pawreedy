@@ -3,40 +3,43 @@
 import { getAllProductsByCategory } from "@/app/_actions/_productsActions";
 import Image from "next/image";
 import React, { useEffect, useState } from "react";
-import { BeatLoader } from "react-spinners";
-// import LoadingSpinner from "../general/LoadingSpinner";
+import LoadingSpinner from "../general/LoadingSpinner";
 import Link from "next/link";
 
-const SimilarProductes = (category: any) => {
-  const [productes, setProductes] = useState<any>([]);
-
+const SimilarProducts = (category: any) => {
+  const [products, setProducts] = useState<any>([]);
+  
   useEffect(() => {
-    getSimilarProductes();
+    getSimilarProducts();
   }, [category]);
 
-  const getSimilarProductes = async () => {
-    const productes = await getAllProductsByCategory(
+  const getSimilarProducts = async () => {
+    const products = await getAllProductsByCategory(
       category.categoryName
     );
-    setProductes(productes);
+    setProducts(products);
   };
 
   return (
     <div className="grid grid-cols-2 gap-2 md:flex md:flex-col ">
-      {productes.length > 0 ? (
-        productes?.map((product: any) => (
+      {products.length > 0 ? (
+        products?.map((product: any) => {
+            let imageURL = "/placeholder-image.jpg";
+            if (product?.image !== "undefined") {
+              imageURL = product.image;
+            }
           <Link href={"/product/" + product._id} key={product._id}>
             <div className=" p-2 hover:border hover:shadow-md hover:shadow-sky-400 cursor-pointer hover:scale-105 transition-all">
               <div className="md:flex  gap-2">
                 <Image
-                  src={'/image_placeholder.jpg'}
+                  src={imageURL}
                   height={80}
                   width={80}
                   alt="Image"
                   className="rounded-[5px] object-cover"
                 />
                 <div>
-                  <h2 className="font-bold">{product.productName}</h2>
+                  <h2 className="font-bold">{product.name}</h2>
                   <h2 className="text-sm text-gray-400">
                     {product.productAddress}
                   </h2>
@@ -47,14 +50,14 @@ const SimilarProductes = (category: any) => {
               </div>
             </div>
           </Link>
-        ))
+        })
       ) : (
         <div>
-          {/* <LoadingSpinner /> */}
+          <LoadingSpinner />
         </div>
       )}
     </div>
   );
 };
 
-export default SimilarProductes;
+export default SimilarProducts;
