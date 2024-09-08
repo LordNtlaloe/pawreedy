@@ -2,6 +2,7 @@
 import { useCart } from '@/apis/CartContext';
 import { useState } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 
 const CheckoutPage = () => {
   const { cart, clearCart } = useCart();
@@ -106,15 +107,15 @@ const CheckoutPage = () => {
                   <div className="flex items-center">
                     <input type="radio" className="w-5 h-5 cursor-pointer" id="card" defaultChecked />
                     <label htmlFor="card" className="ml-4 flex gap-2 cursor-pointer">
-                      <img src="https://readymadeui.com/images/visa.webp" className="w-12" alt="visa" />
-                      <img src="https://readymadeui.com/images/master.webp" className="w-12" alt="master" />
+                      <Image src="https://readymadeui.com/images/visa.webp" className="w-12" alt="visa" />
+                      <Image src="https://readymadeui.com/images/master.webp" className="w-12" alt="master" />
                     </label>
                   </div>
 
                   <div className="flex items-center">
                     <input type="radio" className="w-5 h-5 cursor-pointer" id="paypal" />
                     <label htmlFor="paypal" className="ml-4 flex gap-2 cursor-pointer">
-                      <img src="https://readymadeui.com/images/paypal.webp" className="w-20" alt="paypal" />
+                      <Image src="https://readymadeui.com/images/paypal.webp" className="w-20" alt="paypal" />
                     </label>
                   </div>
                 </div>
@@ -178,7 +179,7 @@ const CheckoutPage = () => {
                   {cart.map((item) => (
                     <div key={item.id} className="flex flex-col gap-4">
                       <div className="max-w-[140px] p-4 rounded-md">
-                        <img src={item.image} className="w-full object-contain rounded-md" alt={item.name} />
+                        <Image src={item.image} className="w-full object-contain rounded-md" alt={item.name} />
                       </div>
 
                       <div className="w-full">

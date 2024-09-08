@@ -1,35 +1,37 @@
 'use client'
 
-import { useEffect, useState } from 'react'
-import ProductUpdateForm from '../UpdateProductForm'
-import Modal from '@/components/general/Modal'
-import { getProductById } from '@/app/_actions/_productsActions'
-import { useProductStore } from '@/lib/stores/productStore'
-
+import { useEffect, useState, useCallback } from 'react';
+import ProductUpdateForm from '../UpdateProductForm';
+import Modal from '@/components/general/Modal';
+import { getProductById } from '@/app/_actions/_productsActions';
+import { useProductStore } from '@/lib/stores/productStore';
 
 const UpdateProduct = ({ id }: { id: string }) => {
-    const [product, setProduct] = useState({})
-    const [isVisible, setIsVisible] = useState(true)
-    const { showProductUpdateModal } = useProductStore()
+    const [product, setProduct] = useState<any>({});
+    const [isVisible, setIsVisible] = useState(true);
+    const { showProductUpdateModal } = useProductStore();
 
-    const getProduct = async () => {
-        const result = await getProductById(id)
-        setProduct(result)
-    }
+    // Define getProduct inside useCallback to avoid unnecessary re-renders
+    const getProduct = useCallback(async () => {
+        const result = await getProductById(id);
+        setProduct(result);
+    }, [id]); // Dependency array includes `id`
+
     useEffect(() => {
-        getProduct()
-    }, [id])
+        getProduct();
+    }, [getProduct]); // Dependency array includes `getProduct`
+
     return (
         <div>
             {showProductUpdateModal &&
-                <Modal isVisible={isVisible} onClose={() => { }}>
+                <Modal isVisible={isVisible} onClose={() => setIsVisible(false)}>
                     <div className=''>
                         <ProductUpdateForm product={product} />
                     </div>
                 </Modal>
             }
         </div>
-    )
-}
+    );
+};
 
-export default UpdateProduct
+export default UpdateProduct;

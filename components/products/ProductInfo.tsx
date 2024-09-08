@@ -3,7 +3,7 @@
 import { getProductById } from "@/app/_actions/_productsActions";
 import { MapPin, Star, ShoppingCart, Heart } from "lucide-react";
 import Image from "next/image";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import { useCart } from "@/apis/CartContext";
 import Swal from "sweetalert2";
 import DisplayRatings from "./DislayRatings";
@@ -16,19 +16,22 @@ const ProductInfo = ({ id }: { id: string }) => {
   const [product, setProduct] = useState<any>({});
   const { addToCart } = useCart();
   let imageURL = "/placeholder-image.jpg";
-  if (product?.image !== "undefined") {
+  if (product?.image && product.image !== "undefined") {
     imageURL = product.image;
   }
 
-  useEffect(() => {
-    setIsLoaded(true);
-    id && getProduct();
+  // Define getProduct inside useCallback to avoid unnecessary re-renders
+  const getProduct = useCallback(async () => {
+    if (id) {
+      const productById = await getProductById(id);
+      setProduct(productById);
+      setIsLoaded(true);
+    }
   }, [id]);
 
-  const getProduct = async () => {
-    const productById = await getProductById(id);
-    setProduct(productById);
-  };
+  useEffect(() => {
+    getProduct();
+  }, [getProduct]);
 
   const handleAddToCart = () => {
     try {
@@ -223,7 +226,6 @@ const ProductInfo = ({ id }: { id: string }) => {
         </TabsContent>
       </Tabs>
     </div>
-
   );
 };
 

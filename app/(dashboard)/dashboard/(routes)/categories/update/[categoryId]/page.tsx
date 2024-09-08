@@ -17,7 +17,7 @@ const UpdateCategoryPage = () => {
             setCategoryName(name)
             setShowUpdateCategoryModal(true)
         }
-    }, [id, name])
+    }, [id, name, setCategoryID, setCategoryName, setShowUpdateCategoryModal])
 
     return (
         <main className='h-20 flex items-center justify-center'>

@@ -23,25 +23,25 @@ const CategoriesPage = () => {
   const [productList, setProductList] = useState([]);
 
   useEffect(() => {
+    const getProductList = async () => {
+      let productsByCategory;
+
+      if (params?.name === "all") {
+        productsByCategory = await getAllProducts();
+      } else {
+        productsByCategory = await getAllProductsByCategory(params?.name as string);
+      }
+      setProductList(productsByCategory);
+    };
+
     if (params?.name) {
       getProductList();
     }
   }, [params?.name]);
 
-  const getProductList = async () => {
-    let productsByCategory;
-
-    if (params?.name === "all") {
-      productsByCategory = await getAllProducts();
-    } else {
-      productsByCategory = await getAllProductsByCategory(params?.name as string);
-    }
-    setProductList(productsByCategory);
-  };
-
   return (
     <div className="mr-2 mt-2 md:mt-6">
-      <div className="font-bold text-[22px]  bg-blue-600 text-primary  px-2 uppercase text-white flex items-center justify-between">
+      <div className="font-bold text-[22px] bg-blue-600 text-primary px-2 uppercase text-white flex items-center justify-between">
         <div className="flex items-center gap-3">
           <h2>CATEGORY: </h2>
           <h2 className="bg-purple-200 text-black my-1 px-4 rounded">

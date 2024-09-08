@@ -16,15 +16,15 @@ const SimilarProducts = ({
   const [products, setProducts] = useState<any>([]);
 
   useEffect(() => {
-    if (category) {
-      getSimilarProducts();
-    }
-  }, [category]);
+    const fetchProducts = async () => {
+      if (category) {
+        const products = await getAllProductsByCategory(category);
+        setProducts(products);
+      }
+    };
 
-  const getSimilarProducts = async () => {
-    const products = await getAllProductsByCategory(category);
-    setProducts(products);
-  };
+    fetchProducts();
+  }, [category]);
 
   const truncateDescription = (description: string, maxLength: number) => {
     if (description.length > maxLength) {

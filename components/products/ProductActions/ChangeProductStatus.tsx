@@ -16,24 +16,10 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { showConfirmationMessage, showToastMessage } from '@/lib/GeneralFunctions'
 
-
 const menuItems = [
-    {
-        id: 1,
-        label: "active"
-    },
-    {
-        id: 1,
-        label: "pending"
-    },
-    {
-        id: 1,
-        label: "banned"
-    },
-    {
-        id: 1,
-        label: "Suspended"
-    },
+    { id: 1, label: "In-Stock" },
+    { id: 2, label: "Low On Stock" },
+    { id: 3, label: "Out Of Stock" },
 ]
 
 const ChangeProductStatus = ({ id }: { id: string }) => {
@@ -41,11 +27,14 @@ const ChangeProductStatus = ({ id }: { id: string }) => {
     const [product, setProduct] = useState<any>()
     const [selectedState, setSelectedState] = useState("Not Selected")
 
-    const getProduct = async () => {
-        const result = await getProductById(id)
-        setProduct(result)
-        return result
-    }
+    useEffect(() => {
+        const getProduct = async () => {
+            const result = await getProductById(id)
+            setProduct(result)
+        }
+
+        getProduct()
+    }, [id])
 
     const updateStatus = async () => {
         if (selectedState === "Not Selected") {
@@ -57,26 +46,20 @@ const ChangeProductStatus = ({ id }: { id: string }) => {
             return
         }
         try {
-
             await updateProductStatus(id, selectedState)
-
             showToastMessage('success', "Product status successfully updated.")
             setShowChangeProductStatusModal(false)
-
         } catch (error: any) {
-            showToastMessage("error", "An error occured updating product state: " + error.message,)
+            showToastMessage("error", "An error occurred updating product state: " + error.message)
         }
     }
 
-    useEffect(() => {
-        getProduct()
-    }, [id])
     return (
         <div>
             {showProductChangeStatusModal &&
-                <Modal isVisible={true} onClose={''} >
-                    <div className=' flex items-center justify-end'>
-                        <button onClick={() => setShowChangeProductStatusModal(false)} className=' hover:text-red-500 hover:scale-125 transition-all'><X /></button>
+                <Modal isVisible={true} onClose={() => setShowChangeProductStatusModal(false)} >
+                    <div className='flex items-center justify-end'>
+                        <button onClick={() => setShowChangeProductStatusModal(false)} className='hover:text-red-500 hover:scale-125 transition-all'><X /></button>
                     </div>
                     <div className='p-6 bg-blue-900 text-white my-4 md:w-[500px] w-[350px] rounded'>
                         <h1 className='text-lg font-bold'>CHANGE BUSINESS STATUS</h1>
@@ -91,25 +74,25 @@ const ChangeProductStatus = ({ id }: { id: string }) => {
                                 <DropdownMenuContent className='bg-blue-900 text-white'>
                                     <DropdownMenuSeparator />
                                     {menuItems.map((item) => (
-                                        <div className='py-1 border-b border-white/10 cursor-pointer hover:bg-gray-600/30 rounded-[5px]' key={item.id} onSelect={(selected) => setSelectedState(item.label)}>
-                                            <DropdownMenuItem className='cursor-pointer' onClick={() => setSelectedState(item.label)} >{item.label}</DropdownMenuItem>
-                                        </div>
+                                        <DropdownMenuItem 
+                                            key={item.id}
+                                            className='cursor-pointer py-1 border-b border-white/10 hover:bg-gray-600/30 rounded-[5px]' 
+                                            onClick={() => setSelectedState(item.label)}
+                                        >
+                                            {item.label}
+                                        </DropdownMenuItem>
                                     ))}
                                 </DropdownMenuContent>
                             </DropdownMenu>
                             <h1 className='ml-4 bg-green-700 text-white font-semibold px-4 my-6'>{selectedState}</h1>
-
                         </div>
-                        <div className='border-t mt-3 pt-3 border-black flex items-center '>
+                        <div className='border-t mt-3 pt-3 border-black flex items-center'>
                             <button onClick={updateStatus} className='bg-red-500 py-1 px-3 rounded text-white mr-3'>
                                 Change
                             </button>
-                            <button className='bg-blue-500 py-1 px-3 rounded text-white' onClick={() => {
-                                setShowChangeProductStatusModal(false)
-                            }}>
+                            <button className='bg-blue-500 py-1 px-3 rounded text-white' onClick={() => setShowChangeProductStatusModal(false)}>
                                 Cancel
                             </button>
-
                         </div>
                     </div>
                 </Modal>
