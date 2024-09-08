@@ -23,7 +23,7 @@ const Menu = ({ userInput = () => { } }: any) => {
           <input
             type="text"
             placeholder="Search..."
-            className="px-4 py-2 border rounded-md w-full max-w-xs pr-10" // Add padding-right for the icon
+          className="px-4 py-2 border rounded-md w-full max-w-xs pr-10" // Add padding-right for the icon
             onChange={(e) => setSearchText(e.target.value)}
           />
           <Search
@@ -42,7 +42,7 @@ const Menu = ({ userInput = () => { } }: any) => {
           <div>
             {/* Rest of your MobileMenu */}
             {cart.length > 0 && (
-              <span className="absolute top-[30px] right-[100px] bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+              <span className="absolute top-[30px] right-[110px] bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
                 {cart.length}
               </span>
             )}

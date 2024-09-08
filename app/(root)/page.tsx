@@ -36,7 +36,7 @@ export default function Home({ userInput }: any) {
   return (
     <main className="bg-violet-100">
       <Hero  />
-      <div className="px-6 md:mt-6 mt-3">
+      <div className="px-6 md:mt-6 mt-3 text-violet-700">
         <ProductList productList={popularProducts} title={title} />
       </div>
       <div className="flex items-center justify-center py-4">

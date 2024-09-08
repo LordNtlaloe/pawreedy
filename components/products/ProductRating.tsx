@@ -5,6 +5,7 @@ import { showConfirmationMessage, showToastMessage } from '@/lib/GeneralFunction
 import { Rate } from 'antd';
 import { useClerk } from '@clerk/nextjs';
 import { sendMail } from '@/app/_email/mail';
+import { Input } from '../ui/input';
 
 const ProductRatings = ({ isReadOnly, isEnabled, product }: { isReadOnly: boolean, isEnabled: boolean, product?: any }) => {
   const [selectedValue, setSelectedValue] = useState(product?.overallRating ?? 4);
@@ -37,7 +38,12 @@ const ProductRatings = ({ isReadOnly, isEnabled, product }: { isReadOnly: boolea
   const saveRating = async (formData: FormData) => {
     const comment = formData.get('comment');
     if (!comment) {
-      showConfirmationMessage('error', 'Please provide some rating details...');
+      showConfirmationMessage('error', 'Please Provide A Comment For Your Rating...');
+      return null;
+    }
+    const title = formData.get('title');
+    if(!title){
+      showConfirmationMessage('error', 'Please Provide A Title For Your Rating...');
       return null;
     }
     formData.append('productId', currentProduct._id);
@@ -64,8 +70,8 @@ const ProductRatings = ({ isReadOnly, isEnabled, product }: { isReadOnly: boolea
   };
 
   return (
-    <main className="p-2">
-      <div className="bg-primary/30 py-1 px-2 w-full flex items-center justify-between">
+    <main className="py-2">
+      <div className="bg-white py-1 w-full flex items-center justify-between">
         <div className="flex items-center gap-4">
           <Rate
             value={selectedValue}
@@ -102,13 +108,13 @@ const ProductRatings = ({ isReadOnly, isEnabled, product }: { isReadOnly: boolea
       {isEnabled && (
         <div className="flex justify-end pr-2 mt-2">
           <button
-            className={`transition-all flex gap-1 items-center px-2 py-1 rounded hover:border border-black/20 ${
-              userCanRate ? 'bg-primary hover:bg-primary/70' : 'bg-gray-400 cursor-not-allowed'
+            className={`transition-all flex gap-1 items-center px-2 py-1 rounded border border-violet-800 ${
+              userCanRate ? 'bg-white hover:bg-violet-100' : 'bg-violet-800 cursor-not-allowed'
             }`}
             onClick={() => userCanRate && setShowRatingComment(!showRatingComment)}
             disabled={!userCanRate}
           >
-            <StarsIcon />
+            <StarsIcon className='w-5 h-5' />
             Rate Product
           </button>
         </div>
@@ -123,10 +129,11 @@ const ProductRatings = ({ isReadOnly, isEnabled, product }: { isReadOnly: boolea
           className="flex flex-col"
         >
           <h1>
-            Rate {currentProduct?.name} <span className="bg-primary/50 px-1 rounded">: Your Rating: {selectedValue}</span>{' '}
+            Rate {currentProduct?.name} <span className="text-gray-600 font-bold px-1 rounded">: Your Rating: {selectedValue}</span>{' '}
           </h1>
-          <textarea name="comment" className="border rounded p-2" placeholder="your comment..." />
-          <button className="bg-primary mx-2 my-1 rounded py-1 px-2 hover:bg-primary/70 hover:border border-black/20 transition-all place-self-end mt-2 flex items-center gap-1">
+          <Input type="text" name='title' placeholder='A Catchy Title For Your Review...' required={true} className='my-4'/>
+          <textarea name="comment" className="border rounded p-2" placeholder="Post Your Comment..." />
+          <button className="text-white bg-violet-800 mx-2 my-1 rounded py-1 px-2 hover:bg-violet-600 transition-all place-self-end mt-2 flex items-center gap-1">
             <Save size={16} />
             <span>Submit Rating</span>
           </button>

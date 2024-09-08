@@ -154,22 +154,22 @@ const CheckoutPage = () => {
               </div>
 
               <div className="flex flex-wrap gap-4 mt-8">
-                <Link href="/" className="min-w-[150px] px-6 py-3.5 text-sm bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300">
+                <Link href="/" className="min-w-[150px] text-center px-6 py-3.5 text-sm bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300">
                   Back
                 </Link>
                 <button
                   type="button"
                   onClick={handleCheckout}
-                  className="min-w-[150px] px-6 py-3.5 text-sm bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+                  className="min-w-[150px] text-center px-6 py-3.5 text-sm bg-violet-800 text-white rounded-lg hover:bg-violet-700"
                 >
-                  Confirm payment
+                  Confirm Payment
                 </button>
               </div>
             </form>
           </div>
 
           {/* Order Summary */}
-          <div className="bg-gray-100 lg:h-screen lg:sticky lg:top-0">
+          <div className="bg-violet-100 lg:h-screen lg:sticky lg:top-0">
             <div className="relative h-full">
               <div className="p-6 overflow-auto max-lg:max-h-[400px] lg:h-[calc(100vh-60px)] max-lg:mb-8">
                 <h2 className="text-xl font-bold text-gray-800">Order Summary</h2>
@@ -177,8 +177,8 @@ const CheckoutPage = () => {
                 <div className="space-y-8 mt-8">
                   {cart.map((item) => (
                     <div key={item.id} className="flex flex-col gap-4">
-                      <div className="max-w-[140px] p-4 shrink-0 bg-gray-200 rounded-lg">
-                        <img src={item.image} className="w-full object-contain" alt={item.name} />
+                      <div className="max-w-[140px] p-4 rounded-md">
+                        <img src={item.image} className="w-full object-contain rounded-md" alt={item.name} />
                       </div>
 
                       <div className="w-full">

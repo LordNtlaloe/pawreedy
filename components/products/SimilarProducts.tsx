@@ -6,51 +6,72 @@ import React, { useEffect, useState } from "react";
 import LoadingSpinner from "../general/LoadingSpinner";
 import Link from "next/link";
 
-const SimilarProducts = (category: any) => {
+const SimilarProducts = ({
+  category,
+  currentProductId,
+}: {
+  category: string;
+  currentProductId: string;
+}) => {
   const [products, setProducts] = useState<any>([]);
-  
+
   useEffect(() => {
-    getSimilarProducts();
+    if (category) {
+      getSimilarProducts();
+    }
   }, [category]);
 
   const getSimilarProducts = async () => {
-    const products = await getAllProductsByCategory(
-      category.categoryName
-    );
+    const products = await getAllProductsByCategory(category);
     setProducts(products);
   };
 
+  const truncateDescription = (description: string, maxLength: number) => {
+    if (description.length > maxLength) {
+      return description.substring(0, maxLength) + "...";
+    }
+    return description;
+  };
+
   return (
-    <div className="grid grid-cols-2 gap-2 md:flex md:flex-col ">
+    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
       {products.length > 0 ? (
-        products?.map((product: any) => {
+        products
+          .filter((product: any) => product._id !== currentProductId) // Filter out the current product
+          .map((product: any) => {
             let imageURL = "/placeholder-image.jpg";
             if (product?.image !== "undefined") {
               imageURL = product.image;
             }
-          <Link href={"/product/" + product._id} key={product._id}>
-            <div className=" p-2 hover:border hover:shadow-md hover:shadow-sky-400 cursor-pointer hover:scale-105 transition-all">
-              <div className="md:flex  gap-2">
-                <Image
-                  src={imageURL}
-                  height={80}
-                  width={80}
-                  alt="Image"
-                  className="rounded-[5px] object-cover"
-                />
-                <div>
-                  <h2 className="font-bold">{product.name}</h2>
-                  <h2 className="text-sm text-gray-400">
-                    {product.productAddress}
-                  </h2>
-                  <h2 className="text-xs text-gray-400 font-bold">
-                    {product.contactPerson}
-                  </h2>
+            return (
+              <Link
+                href={"/products/" + product._id}
+                key={product._id}
+                className="p-2 border-1 rounded-md shadow-sm shadow-violet-800"
+              >
+                <div className="p-2 cursor-pointer hover:scale-105 transition-all">
+                  <div className="flex flex-col gap-2">
+                    <Image
+                      src={imageURL}
+                      height={80}
+                      width={80}
+                      alt="Image"
+                      className="rounded-[5px] object-cover"
+                    />
+                    <div>
+                      <h2 className="font-bold">{product.name}</h2>
+                      <h2 className="text-sm text-gray-400">
+                        {truncateDescription(product.description, 100)}
+                      </h2>
+                      <h2 className="text-xs text-gray-400 font-bold">
+                        {product.contactPerson}
+                      </h2>
+                    </div>
+                  </div>
                 </div>
-              </div>
-            </div>
-          </Link>
-        })
+              </Link>
+            );
+          })
       ) : (
         <div>
           <LoadingSpinner />

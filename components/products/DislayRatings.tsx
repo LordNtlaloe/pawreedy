@@ -9,10 +9,10 @@ interface Rating {
   userId: string;
   rating: number;
   comment: string;
-  title: string; // Assuming each rating has a title
-  createdAt: string; // Assuming there's a createdAt field for the rating date
+  title: string;
+  createdAt: string;
   user: {
-    profilePicture: string; // Assuming there's a profile picture for the user
+    profilePicture: string;
   };
 }
 
@@ -25,10 +25,14 @@ const DisplayRatings = ({ productId }: { productId: string }) => {
       try {
         const data = await getAllRatingsByProductId(productId);
         console.log("Fetched Ratings Data:", data); // Debugging line
-        if (data.error) {
+        
+        // Check if the data is an array
+        if (Array.isArray(data)) {
+          setRatings(data);
+        } else if (data.error) {
           setError(data.error);
         } else {
-          setRatings(data);
+          setError("Unexpected response format");
         }
       } catch (err) {
         setError("Failed to fetch ratings");

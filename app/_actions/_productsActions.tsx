@@ -83,7 +83,7 @@ export const getAllProductsByCategory = async (categoryName: string) => {
             return;
         }
 
-        const products = await collection.find({ "category ": categoryName})
+        const products = await collection.find({ "category": categoryName})
             .map((products: any) => ({ ...products, id: products._id.toString() }))
             .toArray();
         return products;
@@ -192,6 +192,7 @@ export const saveNewProductRating = async (formData: FormData) => {
         const productId = formData.get("productId") as string;
         const userID = formData.get("userId") as string;
         const rating = Number(formData.get("rating"));
+        const title = formData.get("title");
         const comment = formData.get("comment");
 
         if (!database || !productsCollection) {
@@ -252,6 +253,7 @@ export const saveNewProductRating = async (formData: FormData) => {
             productId: productObjectId,
             userId: userID,
             rating,
+            title,
             comment,
             createdAt: new Date(),
             updatedAt: new Date()
