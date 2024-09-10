@@ -3,17 +3,37 @@
 import { Dialog, DialogBackdrop, DialogPanel, DialogTitle } from '@headlessui/react';
 import { XMarkIcon } from '@heroicons/react/24/outline';
 import Image from 'next/image';
-import Link from 'next/link';
 import { useCart } from '@/apis/CartContext';
+import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 
 const CartModal = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) => {
-  const { cart, removeFromCart } = useCart();
+  const { cart, removeFromCart, updateCartQuantity } = useCart();
+  
+  // Initialize quantities to 1 if the cart item's quantity is not defined
+  const [quantities, setQuantities] = useState(cart.map(item => item.quantity || 1));
+  const router = useRouter();
 
   if (!isOpen) return null;
 
-  // Convert price string to number when calculating total
+  // Calculate total price
   const getTotal = () => {
-    return cart.reduce((total, item) => total + item.price * item.quantity, 0);
+    return cart.reduce((total, item, index) => total + item.price * quantities[index], 0);
+  };
+
+  // Handle quantity change with validation
+  const handleQuantityChange = (index: number, newQuantity: number) => {
+    if (newQuantity < 1) return; // Prevent quantity from going below 1
+    const updatedQuantities = [...quantities];
+    updatedQuantities[index] = newQuantity;
+    setQuantities(updatedQuantities);
+    updateCartQuantity(cart[index].id, newQuantity);
+  };
+
+  // Handle Checkout with modal close
+  const handleCheckout = () => {
+    onClose(); // Close modal
+    router.push('/checkout'); // Redirect to checkout
   };
 
   return (
@@ -45,7 +65,7 @@ const CartModal = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }
                       <p>Your cart is empty.</p>
                     ) : (
                       <ul role="list" className="-my-6 divide-y divide-gray-200">
-                        {cart.map(item => (
+                        {cart.map((item, index) => (
                           <li key={item.id} className="flex py-6">
                             <div className="h-24 w-24 flex-shrink-0 overflow-hidden rounded-md border border-gray-200">
                               <Image
@@ -63,7 +83,19 @@ const CartModal = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }
                                   <h3>{item.name}</h3>
                                   <p className="ml-4">M{item.price}</p>
                                 </div>
-                                <p className="mt-1 text-sm text-gray-500">Qty {item.quantity}</p>
+                                <div className="mt-1 text-sm text-gray-500 flex items-center">
+                                  <label htmlFor={`quantity-${index}`} className="mr-2">
+                                    Qty:
+                                  </label>
+                                  <input
+                                    id={`quantity-${index}`}
+                                    type="number"
+                                    value={quantities[index]}
+                                    onChange={e => handleQuantityChange(index, Number(e.target.value))}
+                                    className="w-16 border rounded-md px-2"
+                                    min={1} // Enforce minimum quantity of 1
+                                  />
+                                </div>
                               </div>
                               <div className="flex flex-1 items-end justify-between text-sm">
                                 <button
@@ -89,12 +121,12 @@ const CartModal = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }
                   </div>
                   <p className="mt-0.5 text-sm text-gray-500">Shipping and taxes calculated at checkout.</p>
                   <div className="mt-6">
-                    <Link
-                      href="/checkout"
+                    <button
+                      onClick={handleCheckout}
                       className="flex items-center justify-center rounded-md border border-transparent bg-[#51358C] hover:bg-[#6845b4] px-6 py-3 text-base font-medium shadow-sm text-white"
                     >
                       Checkout
-                    </Link>
+                    </button>
                   </div>
                   <div className="mt-6 flex justify-center text-center text-sm text-gray-500">
                     <button

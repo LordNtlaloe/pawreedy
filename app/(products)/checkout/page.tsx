@@ -1,34 +1,188 @@
-'use client'
+'use client';
+
 import { useCart } from '@/apis/CartContext';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
+import { useUser } from '@clerk/nextjs'; // Clerk for authentication
+import Swal from 'sweetalert2'; // Import SweetAlert2
+import { useRouter } from 'next/navigation'; // Import useRouter for navigation
+import { sendMail } from '@/app/_email/mail';
+import { saveOrder } from '@/app/_actions/_orderActions'; // Adjust the path to your _orderActions file
+
+interface ShippingAddress {
+  name: string;
+  email: string;
+  address: string;
+  city: string;
+  country: string;
+  postalCode: string;
+}
 
 const CheckoutPage = () => {
+  const [isLoading, setIsLoading] = useState(false);
   const { cart, clearCart } = useCart();
-  const [shippingAddress, setShippingAddress] = useState({
+  const { user, isLoaded, isSignedIn } = useUser(); // Clerk user
+  const [shippingAddress, setShippingAddress] = useState<ShippingAddress>({
     name: '',
+    email: '',
     address: '',
     city: '',
     country: '',
     postalCode: '',
   });
+  const [cardDetails, setCardDetails] = useState({
+    cardName: '',
+    cardNumber: '',
+    expDate: '',
+    cvv: '',
+  });
+  const router = useRouter(); // Initialize router for redirecting
+
+  // Pre-fill the form if the user is authenticated
+  useEffect(() => {
+    if (isSignedIn && user) {
+      setShippingAddress({
+        name: user.fullName || '',
+        email: user.primaryEmailAddress?.emailAddress || '',
+        address: '',
+        city: '',
+        country: '',
+        postalCode: '',
+      });
+    }
+  }, [isLoaded, isSignedIn, user]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setShippingAddress((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleCheckout = () => {
+  const handleCardInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setCardDetails((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const validateCardDetails = () => {
+    const cardNumberRegex = /^[0-9]{16}$/;
+    const expDateRegex = /^(0[1-9]|1[0-2])\/?([0-9]{2})$/;
+    const cvvRegex = /^[0-9]{3}$/;
+
+    const { cardName, cardNumber, expDate, cvv } = cardDetails;
+
+    if (!cardName || !cardNumberRegex.test(cardNumber) || !expDateRegex.test(expDate) || !cvvRegex.test(cvv)) {
+      return false;
+    }
+    return true;
+  };
+
+  const handleCheckout = async () => {
     if (cart.length === 0) {
-      alert('Your cart is empty.');
+      await Swal.fire({
+        title: 'Cart is empty',
+        text: 'Your cart is empty.',
+        icon: 'warning',
+        confirmButtonText: 'OK',
+      });
       return;
     }
 
-    // Proceed with checkout logic
-    console.log('Checkout details:', shippingAddress, cart);
-    clearCart();
-    alert('Checkout successful! Thank you for your purchase.');
+    const isFormValid = Object.values(shippingAddress).every(field => field.trim() !== '');
+    if (!isFormValid) {
+      await Swal.fire({
+        title: 'Incomplete Form',
+        text: 'Please fill out all shipping address fields.',
+        icon: 'warning',
+        confirmButtonText: 'OK',
+      });
+      return;
+    }
+
+    if (!validateCardDetails()) {
+      await Swal.fire({
+        title: 'Invalid Payment Details',
+        text: 'Please provide valid card details.',
+        icon: 'warning',
+        confirmButtonText: 'OK',
+      });
+      return;
+    }
+
+    setIsLoading(true);
+    try {
+      // Clear form fields
+      setShippingAddress({
+        name: '',
+        email: '',
+        address: '',
+        city: '',
+        country: '',
+        postalCode: '',
+      });
+      setCardDetails({
+        cardName: '',
+        cardNumber: '',
+        expDate: '',
+        cvv: '',
+      });
+
+      // Create the order data object
+      const orderData = {
+        shippingDetails: shippingAddress,
+        cartSummary: {
+          totalAmount: cart.reduce((total, item) => total + item.price * item.quantity, 0),
+          items: cart.map(item => ({
+            name: item.name,
+            price: item.price,
+            quantity: item.quantity,
+            image: item.image,
+          })),
+        },
+        userEmail: shippingAddress.email
+      };
+
+      const savedOrder = await saveOrder(orderData);
+
+      if (savedOrder.success) {
+        await sendMail({
+          to: shippingAddress.email,
+          name: shippingAddress.name,
+          subject: 'Order Confirmation',
+          body: `<p>Dear ${shippingAddress.name},</p>
+                 <p>Thank you for your purchase! Your order has been successfully processed.</p>
+                 <p>Order Summary:</p>
+                 <ul>
+                   ${cart.map(item => `<li>${item.name} - M${item.price} (Quantity: ${item.quantity})</li>`).join('')}
+                 </ul>
+                 <p>Total: M${cart.reduce((total, item) => total + item.price * item.quantity, 0)}</p>
+                 <p>We hope you enjoy your purchase!</p>`
+        });
+        await Swal.fire({
+          title: 'Checkout Successful!',
+          text: 'Thank you for your purchase.',
+          icon: 'success',
+          confirmButtonText: 'OK',
+        });  
+        setIsLoading(false);
+        clearCart();
+        router.push('/');
+      } else {
+        await Swal.fire({
+          title: 'Order Error',
+          text: 'There was an issue saving the order.',
+          icon: 'error',
+          confirmButtonText: 'OK',
+        });
+      }
+    } catch (error) {
+      console.error('Error during checkout:', error);
+      await Swal.fire({
+        title: 'Checkout Error',
+        text: 'An unexpected error occurred.',
+        icon: 'error',
+        confirmButtonText: 'OK',
+      });
+    }
   };
 
   return (
@@ -44,7 +198,7 @@ const CheckoutPage = () => {
             <form className="lg:mt-16">
               {/* Shipping Information */}
               <div>
-                <h2 className="text-xl font-bold text-gray-800">Shipping info</h2>
+                <h2 className="text-xl font-bold text-gray-800">Shipping Info</h2>
 
                 <div className="grid sm:grid-cols-2 gap-8 mt-8">
                   <div>
@@ -53,6 +207,16 @@ const CheckoutPage = () => {
                       name="name"
                       placeholder="Name"
                       value={shippingAddress.name}
+                      onChange={handleInputChange}
+                      className="px-2 pb-2 bg-white text-gray-800 w-full text-sm border-b focus:border-blue-600 outline-none"
+                    />
+                  </div>
+                  <div>
+                    <input
+                      type="text"
+                      name="email"
+                      placeholder="Email"
+                      value={shippingAddress.email}
                       onChange={handleInputChange}
                       className="px-2 pb-2 bg-white text-gray-800 w-full text-sm border-b focus:border-blue-600 outline-none"
                     />
@@ -107,15 +271,15 @@ const CheckoutPage = () => {
                   <div className="flex items-center">
                     <input type="radio" className="w-5 h-5 cursor-pointer" id="card" defaultChecked />
                     <label htmlFor="card" className="ml-4 flex gap-2 cursor-pointer">
-                      <Image src="https://readymadeui.com/images/visa.webp" className="w-12" alt="visa" />
-                      <Image src="https://readymadeui.com/images/master.webp" className="w-12" alt="master" />
+                      <Image src="https://readymadeui.com/images/visa.webp" className="w-12" alt="visa" width={48} height={48} />
+                      <Image src="https://readymadeui.com/images/master.webp" className="w-12" alt="master" width={48} height={48} />
                     </label>
                   </div>
 
                   <div className="flex items-center">
                     <input type="radio" className="w-5 h-5 cursor-pointer" id="paypal" />
                     <label htmlFor="paypal" className="ml-4 flex gap-2 cursor-pointer">
-                      <Image src="https://readymadeui.com/images/paypal.webp" className="w-20" alt="paypal" />
+                      <Image src="https://readymadeui.com/images/paypal.webp" className="w-20" alt="paypal" width={48} height={48} />
                     </label>
                   </div>
                 </div>
@@ -124,82 +288,75 @@ const CheckoutPage = () => {
                   <div>
                     <input
                       type="text"
+                      name="cardName"
                       placeholder="Cardholder's Name"
+                      value={cardDetails.cardName}
+                      onChange={handleCardInputChange}
                       className="px-2 pb-2 bg-white text-gray-800 w-full text-sm border-b focus:border-blue-600 outline-none"
                     />
                   </div>
                   <div className="flex bg-white border-b focus-within:border-blue-600 overflow-hidden">
                     <input
-                      type="number"
+                      type="text"
+                      name="cardNumber"
                       placeholder="Card Number"
+                      value={cardDetails.cardNumber}
+                      onChange={handleCardInputChange}
                       className="px-2 pb-2 bg-white text-gray-800 w-full text-sm outline-none"
                     />
                   </div>
                   <div className="grid grid-cols-2 gap-6">
                     <div>
                       <input
-                        type="number"
-                        placeholder="EXP."
+                        type="text"
+                        name="expDate"
+                        placeholder="EXP. MM/YY"
+                        value={cardDetails.expDate}
+                        onChange={handleCardInputChange}
                         className="px-2 pb-2 bg-white text-gray-800 w-full text-sm border-b focus:border-blue-600 outline-none"
                       />
                     </div>
                     <div>
                       <input
-                        type="number"
+                        type="text"
+                        name="cvv"
                         placeholder="CVV"
+                        value={cardDetails.cvv}
+                        onChange={handleCardInputChange}
                         className="px-2 pb-2 bg-white text-gray-800 w-full text-sm border-b focus:border-blue-600 outline-none"
                       />
                     </div>
                   </div>
                 </div>
               </div>
-
-              <div className="flex flex-wrap gap-4 mt-8">
-                <Link href="/" className="min-w-[150px] text-center px-6 py-3.5 text-sm bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300">
-                  Back
-                </Link>
-                <button
-                  type="button"
-                  onClick={handleCheckout}
-                  className="min-w-[150px] text-center px-6 py-3.5 text-sm bg-violet-800 text-white rounded-lg hover:bg-violet-700"
-                >
-                  Confirm Payment
-                </button>
-              </div>
             </form>
           </div>
 
           {/* Order Summary */}
-          <div className="bg-violet-100 lg:h-screen lg:sticky lg:top-0">
-            <div className="relative h-full">
-              <div className="p-6 overflow-auto max-lg:max-h-[400px] lg:h-[calc(100vh-60px)] max-lg:mb-8">
-                <h2 className="text-xl font-bold text-gray-800">Order Summary</h2>
-
-                <div className="space-y-8 mt-8">
-                  {cart.map((item) => (
-                    <div key={item.id} className="flex flex-col gap-4">
-                      <div className="max-w-[140px] p-4 rounded-md">
-                        <Image src={item.image} className="w-full object-contain rounded-md" alt={item.name} />
-                      </div>
-
-                      <div className="w-full">
-                        <h3 className="text-base text-gray-800 font-bold">{item.name}</h3>
-                        <ul className="text-sm text-gray-800 space-y-2 mt-2">
-                          <li className="flex flex-wrap gap-4">
-                            Quantity <span className="ml-auto">{item.quantity}</span>
-                          </li>
-                          <li className="flex flex-wrap gap-4">
-                            Total Price <span className="ml-auto">M{(item.price * item.quantity).toFixed(2)}</span>
-                          </li>
-                        </ul>
-                      </div>
-                    </div>
-                  ))}
-                  <p className="font-bold text-xl mt-4">
-                    Total: M{cart.reduce((total, item) => total + item.price * item.quantity, 0).toFixed(2)}
-                  </p>
+          <div className="lg:col-span-1 max-lg:order-2">
+            <div className="bg-gray-100 p-8 rounded-lg">
+              <h2 className="text-2xl font-bold mb-4">Order Summary</h2>
+              <ul>
+                {cart.map((item, index) => (
+                  <li key={index} className="flex justify-between items-center mb-4">
+                    <Image src={item.image} width={100} height={100} alt={item.name} />
+                    <span>{item.name} * {item.quantity}</span>
+                    <span>M{item.price}</span>
+                  </li>
+                ))}
+              </ul>
+              <div className="border-t pt-4">
+                <div className="flex justify-between font-bold text-lg">
+                  <span>Total</span>
+                  <span>M{cart.reduce((total, item) => total + item.price * item.quantity, 0)}</span>
                 </div>
               </div>
+              <button
+                onClick={handleCheckout}
+                className="mt-6 w-full py-3 bg-violet-800 text-white font-bold rounded-lg hover:bg-violet-600 transition-colors"
+              >
+                Complete Checkout
+              </button>
             </div>
           </div>
         </div>
