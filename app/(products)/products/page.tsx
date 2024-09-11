@@ -1,7 +1,7 @@
 
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import {
     Dialog,
     DialogBackdrop,
@@ -73,15 +73,28 @@ const filters = [
 function classNames(...classes: string[]) {
     return classes.filter(Boolean).join(' ')
 }
+
+interface Product {
+    _id: string;
+    name: string;
+    price: number;
+    image: string;
+    category: string;
+    createdAt: string;
+    // Add any other necessary fields
+}
+
 const MySwal = withReactContent(Swal);
 
 export default function Example() {
     const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
     const [categories, setCategories] = useState<string[]>([]);
     const [selectedCategory, setSelectedCategory] = useState<string>('All');
-    const [products, setProducts] = useState<any[]>([]);
-    const [sortedProducts, setSortedProducts] = useState<any[]>([]);
+    const [products, setProducts] = useState<Product[]>([]);
+    const [sortedProducts, setSortedProducts] = useState<Product[]>([]);
     const [sortOption, setSortOption] = useState<string>('latest');
+    const [loading, setLoading] = useState(true);
+
 
     const fetchProducts = async () => {
         const products = await getAllProducts();
@@ -93,26 +106,23 @@ export default function Example() {
         setCategories(categoryData || []); // Fallback to an empty array if no categories
     };
 
-    const fetchProductsByCategory = async (category: string) => {
-        let fetchedProducts;
-        if (category === 'All') {
-            fetchedProducts = await fetchProducts(); // Ensure the products are returned
-        } else {
-            fetchedProducts = await getAllProductsByCategory(category);
+    const fetchProductsByCategory = useCallback(async (category: string) => {
+        setLoading(true);
+        try {
+            let fetchedProducts = category === 'All' ? await fetchProducts() : await getAllProductsByCategory(category);
+            setProducts(fetchedProducts || []);
+        } finally {
+            setLoading(false);
         }
-        setProducts(fetchedProducts || []); // Ensure fetchedProducts is always an array
-    };
+    }, []);
+    
 
     useEffect(() => {
         fetchCategories();
         fetchProductsByCategory(selectedCategory);
-    }, [selectedCategory]);
-
-    useEffect(() => {
-        handleSort();
-    }, [sortOption, products]);
-
-    const handleSort = () => {
+    }, [selectedCategory, fetchProductsByCategory]);
+        
+    const handleSort = useCallback(() => {
         let sorted = [...products];
         if (sortOption === 'latest') {
             sorted.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
@@ -122,7 +132,12 @@ export default function Example() {
             sorted.sort((a, b) => b.price - a.price);
         }
         setSortedProducts(sorted);
-    };
+    }, [sortOption, products]);
+    
+    useEffect(() => {
+        handleSort();
+    }, [handleSort]);
+
 
     const { addToCart } = useCart();
 
@@ -185,7 +200,7 @@ export default function Example() {
                                 <h3 className="sr-only">Categories</h3>
                                 <ul role="list" className="px-2 py-3 font-medium text-violet-900">
                                     {categories.map((category:any) => (
-                                        <a className="block px-2 py-3" onClick={() => setSelectedCategory(category.name)}>
+                                        <a key={category._id} className="block px-2 py-3" onClick={() => setSelectedCategory(category.name)}>
                                             {category.name}
                                         </a>
                                     ))}
@@ -294,7 +309,7 @@ export default function Example() {
                                 <h3 className="sr-only">Categories</h3>
                                 <ul role="list" className="cursor-pointer space-y-4 border-b border-violet-200 pb-6 text-sm font-medium text-violet-900">
                                     {categories.map((category: any) => (
-                                        <a className="block px-2 py-3 cursor-pointer" onClick={() => setSelectedCategory(category.name)}>
+                                        <a key={category._id} className="block px-2 py-3 cursor-pointer" onClick={() => setSelectedCategory(category.name)}>
                                             {category.name}
                                         </a>
                                     ))}
