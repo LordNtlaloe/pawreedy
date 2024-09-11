@@ -5,21 +5,15 @@ import ActionsField from "./ActionsField";
 
 export type Product = {
     _id: string
-    productName: string
+    name: string
     category: string
-    contactPerson: string
-    productEmail: string
-    productPhoneNumber: string
-    productAlternativeNumber: string
-    productAddress: string
-    aboutProduct: string
-    productDetails: string
+    description: string
     status: string
 };
 
 export const productTableColumns: ColumnDef<Product>[] = [
     {
-        accessorKey: "productName",
+        accessorKey: "name",
         header: "Product Name"
     },
     {
@@ -27,8 +21,8 @@ export const productTableColumns: ColumnDef<Product>[] = [
         header: "Category"
     },
     {
-        accessorKey: "aboutProduct",
-        header: "About"
+        accessorKey: "description",
+        header: "Description"
     },
     {
         accessorKey: "status",
@@ -36,7 +30,7 @@ export const productTableColumns: ColumnDef<Product>[] = [
         cell: ({ row }) => {
             const status = row.getValue("status") as string
             return (
-                <div className={status === 'pending' ? `bg-yellow-500 p-1` : status === 'active' ? "p-1 bg-green-700 text-white" : status === 'banned' ? "bg-red-700 text-white p-1" : "bg-white"}>
+                <div className={status === 'Low On Stock' ? `text-orange-500` : status === 'In Stock' ? "p-1 text-green-700 font-extrabold" : status === 'Out Of Stock' ? "text-red-700 p-1 font-extrabold" : "bg-white"}>
                     <p>{status}</p>
                 </div>
             )
@@ -44,7 +38,7 @@ export const productTableColumns: ColumnDef<Product>[] = [
     },
 
     {
-        header: "ACTIONS",
+        header: "Actions",
         cell: ({ row }) => {
             const product = row.original
             return <ActionsField id={product._id} />

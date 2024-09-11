@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from 'react';
-import { Save, StarsIcon } from 'lucide-react';
 import { saveNewProductRating, getProductById, getUserRatingCount } from '@/app/_actions/_productsActions';
 import { showConfirmationMessage, showToastMessage } from '@/lib/GeneralFunctions';
 import { Rate } from 'antd';
 import { useClerk } from '@clerk/nextjs';
 import { sendMail } from '@/app/_email/mail';
 import { Input } from '../ui/input';
+import { getOrdersByUserEmail } from '@/app/_actions/_orderActions';
+import { Save, StarsIcon } from 'lucide-react';
 
 const ProductRatings = ({ isReadOnly, isEnabled, product }: { isReadOnly: boolean, isEnabled: boolean, product?: any }) => {
   const [selectedValue, setSelectedValue] = useState(product?.overallRating ?? 4);
@@ -13,9 +14,9 @@ const ProductRatings = ({ isReadOnly, isEnabled, product }: { isReadOnly: boolea
   const [currentProduct, setCurrentProduct] = useState(product);
   const [userCanRate, setUserCanRate] = useState(false);
   const { user } = useClerk();
-  const userId = user?.id;
   const userEmail = user?.primaryEmailAddress?.emailAddress;
   const userName = user?.firstName;
+  const [userOrders, setUserOrders] = useState<any[]>([]);
 
   useEffect(() => {
     if (product) {
@@ -24,30 +25,36 @@ const ProductRatings = ({ isReadOnly, isEnabled, product }: { isReadOnly: boolea
     }
 
     const checkUserRatingEligibility = async () => {
-      if (userId && product?._id) {
-        if (product) {
-          const ratingCount = await getUserRatingCount(userId, product._id);
-          setUserCanRate(product.ratingsCount > ratingCount); // Fixed comparison
+      if (userEmail && product?._id) {
+        const ratingCount = await getUserRatingCount(userEmail, product._id);
+        const userHasPurchasedProduct = ratingCount > 0;
+
+        // Fetch user's orders if needed
+        const ordersResult = await getOrdersByUserEmail(userEmail);
+        if (ordersResult.success) {
+          setUserOrders(ordersResult.orders);
         }
+
+        setUserCanRate(userHasPurchasedProduct); // Update eligibility check
       }
     };
 
     checkUserRatingEligibility();
-  }, [product, userId]);
+  }, [product, userEmail]);
 
   const saveRating = async (formData: FormData) => {
     const comment = formData.get('comment');
     if (!comment) {
       showConfirmationMessage('error', 'Please Provide A Comment For Your Rating...');
-      return null;
+      return;
     }
     const title = formData.get('title');
-    if(!title){
+    if (!title) {
       showConfirmationMessage('error', 'Please Provide A Title For Your Rating...');
-      return null;
+      return;
     }
     formData.append('productId', currentProduct._id);
-    formData.append('userId', userId as string);
+    formData.append('userEmail', userEmail as string);
     formData.append('rating', selectedValue.toString());
     const result = await saveNewProductRating(formData);
     if (result && result.error) {
@@ -76,7 +83,7 @@ const ProductRatings = ({ isReadOnly, isEnabled, product }: { isReadOnly: boolea
           <Rate
             value={selectedValue}
             onChange={(value) => setSelectedValue(value)}
-            allowHalf={true}
+            allowHalf
             allowClear={false}
             style={{ color: 'orange' }}
             disabled={isReadOnly}
@@ -129,13 +136,13 @@ const ProductRatings = ({ isReadOnly, isEnabled, product }: { isReadOnly: boolea
           className="flex flex-col"
         >
           <h1>
-            Rate {currentProduct?.name} <span className="text-gray-600 font-bold px-1 rounded">: Your Rating: {selectedValue}</span>{' '}
+            Rate {currentProduct?.name} <span className="text-gray-600 font-bold px-1 rounded">: Your Rating: {selectedValue}</span>
           </h1>
-          <Input type="text" name='title' placeholder='A Catchy Title For Your Review...' required={true} className='my-4'/>
+          <Input type="text" name='title' placeholder='A Catchy Title For Your Review...' required className='my-4'/>
           <textarea name="comment" className="border rounded p-2" placeholder="Post Your Comment..." />
           <button className="text-white bg-violet-800 mx-2 my-1 rounded py-1 px-2 hover:bg-violet-600 transition-all place-self-end mt-2 flex items-center gap-1">
             <Save size={16} />
-            <span>Submit Rating</span>
+            <span>Submit</span>
           </button>
         </form>
       )}

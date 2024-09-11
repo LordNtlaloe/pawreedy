@@ -292,9 +292,9 @@ export default function Example() {
                             {/* Filters */}
                             <form className="hidden lg:block">
                                 <h3 className="sr-only">Categories</h3>
-                                <ul role="list" className="space-y-4 border-b border-violet-200 pb-6 text-sm font-medium text-violet-900">
+                                <ul role="list" className="cursor-pointer space-y-4 border-b border-violet-200 pb-6 text-sm font-medium text-violet-900">
                                     {categories.map((category: any) => (
-                                        <a className="block px-2 py-3" onClick={() => setSelectedCategory(category.name)}>
+                                        <a className="block px-2 py-3 cursor-pointer" onClick={() => setSelectedCategory(category.name)}>
                                             {category.name}
                                         </a>
                                     ))}

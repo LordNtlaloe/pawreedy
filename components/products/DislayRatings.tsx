@@ -64,7 +64,7 @@ const DisplayRatings = ({ productId }: { productId: string }) => {
                   height={40}
                 />
                 <div className="font-medium dark:text-white">
-                  <p>Joined on {new Date(rating.createdAt).toLocaleDateString()}</p>
+                  <p>Made On {new Date(rating.createdAt).toLocaleDateString()}</p>
                 </div>
               </div>
 
