@@ -20,31 +20,30 @@ const CategoriesMenu = ({ categories }: { categories: any }) => {
       <div>
         <Link
           href={"/category/all"}
-          className="font-bold text-center flex justify-center"
+          className="font-bold text-center flex justify-start"
         >
           <h1
             className={`category_sidebar_menu w-full flex items-center justify-center ${
               selectedItem === "all"
-                ? " md:bg-blue-100 bg-blue-900 shadow-md shadow-sky-300"
-                : ""
+                ? "text-violet-800"
+                : "text-slate-900"
             }`}
             onClick={() => setSelectedItem("all")}
           >
-            ALL
+            All
           </h1>
         </Link>
         {categories?.map((category: any) => (
           <Link
             href={"/category/" + category.name}
-            key={category.id}
+            key={category._id}
             className={`category_sidebar_menu ${
               selectedItem === category.name
-                ? " md:bg-blue-100 bg-blue-900 shadow-md shadow-sky-400"
-                : ""
+                ? " md:bg-blue-100 bg-violet-700 shadow-md"
+                : "flex flex-row text-slate-700"
             }`}
             onClick={() => setSelectedItem(category.name)}
           >
-            <Image src={category.icon} alt="icon" width={30} height={30} />
             {category.name}
           </Link>
         ))}

@@ -29,7 +29,7 @@ const CategoriesSidebar = () => {
         <LoadingSpinner />
       ) : (
         <div>
-          <h2 className="font-bold mb-3 text-lg">CATEGORIES</h2>
+          <h2 className="font-bold mb-3 text-lg">Categories</h2>
           <CategoriesMenu categories={listOfCategories} />
         </div>
       )}

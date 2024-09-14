@@ -6,12 +6,13 @@ import Image from 'next/image';
 import { useCart } from '@/apis/CartContext';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { Plus, Minus } from 'lucide-react';
 
 const CartModal = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) => {
   const { cart, removeFromCart, updateCartQuantity } = useCart();
-  
+
   // Initialize quantities to 1 if the cart item's quantity is not defined
-  const [quantities, setQuantities] = useState(cart.map(item => item.quantity || 1));
+  const [quantities, setQuantities] = useState(cart.map(item => item.quantity = 1));
   const router = useRouter();
 
   if (!isOpen) return null;
@@ -83,18 +84,20 @@ const CartModal = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }
                                   <h3>{item.name}</h3>
                                   <p className="ml-4">M{item.price}</p>
                                 </div>
-                                <div className="mt-1 text-sm text-gray-500 flex items-center">
-                                  <label htmlFor={`quantity-${index}`} className="mr-2">
-                                    Qty:
-                                  </label>
-                                  <input
-                                    id={`quantity-${index}`}
-                                    type="number"
-                                    value={quantities[index]}
-                                    onChange={e => handleQuantityChange(index, Number(e.target.value))}
-                                    className="w-16 border rounded-md px-2"
-                                    min={1} // Enforce minimum quantity of 1
-                                  />
+                                <div className="flex items-center mt-2">
+                                  <button
+                                    className="text-gray-500 focus:outline-none focus:text-gray-600"
+                                    onClick={() => handleQuantityChange(index, quantities[index] - 1)}
+                                  >
+                                    <Minus className="h-5 w-5" />
+                                  </button>
+                                  <span className="text-gray-700 mx-2">{quantities[index]}</span>
+                                  <button
+                                    className="text-gray-500 focus:outline-none focus:text-gray-600"
+                                    onClick={() => handleQuantityChange(index, quantities[index] + 1)}
+                                  >
+                                    <Plus className="h-5 w-5" />
+                                  </button>
                                 </div>
                               </div>
                               <div className="flex flex-1 items-end justify-between text-sm">

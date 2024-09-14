@@ -24,6 +24,7 @@ import Swal from "sweetalert2";
 import withReactContent from "sweetalert2-react-content";
 import Loading from '@/app/loading'
 import { Link } from 'lucide-react'
+import CategoriesMenu from '@/components/category/CategoriesMenu'
 
 const sortOptions = [
     { name: 'Most Popular', href: '#', current: true },
@@ -196,16 +197,9 @@ export default function Example() {
                             </div>
 
                             {/* Filters */}
-                            <form className="mt-4 border-t border-violet-200">
+                            <form className="mt-2 border-t border-violet-200">
                                 <h3 className="sr-only">Categories</h3>
-                                <ul role="list" className="px-2 py-3 font-medium text-violet-900">
-                                    {categories.map((category:any) => (
-                                        <a key={category._id} className="block px-2 py-3" onClick={() => setSelectedCategory(category.name)}>
-                                            {category.name}
-                                        </a>
-                                    ))}
-                                </ul>
-
+                                <CategoriesMenu categories={categories} />
                                 {filters.map((section) => (
                                     <Disclosure key={section.id} as="div" className="border-t border-violet-200 px-4 py-6">
                                         <h3 className="-mx-2 -my-3 flow-root">
@@ -307,14 +301,7 @@ export default function Example() {
                             {/* Filters */}
                             <form className="hidden lg:block">
                                 <h3 className="sr-only">Categories</h3>
-                                <ul role="list" className="cursor-pointer space-y-4 border-b border-violet-200 pb-6 text-sm font-medium text-violet-900">
-                                    {categories.map((category: any) => (
-                                        <a key={category._id} className="block px-2 py-3 cursor-pointer" onClick={() => setSelectedCategory(category.name)}>
-                                            {category.name}
-                                        </a>
-                                    ))}
-                                </ul>
-
+                                <CategoriesMenu categories={categories} />
                                 {filters.map((section) => (
                                     <Disclosure key={section.id} as="div" className="border-b border-violet-200 py-6">
                                         <h3 className="-my-3 flow-root">

@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { getAllProducts, getProductByName } from "@/app/_actions/_productsActions";
 import ProductList from "@/components/products/ProductList";
+import CategoryCarousel from "@/components/category/CategoryCarousel";
 
 export default function Home({ userInput }: any) {
   const [popularProducts, setPopularProducts] = useState([]);
@@ -16,7 +17,7 @@ export default function Home({ userInput }: any) {
       let results;
       if (!searchText) {
         results = await getAllProducts();
-        setTitle("Popular Products");
+        setTitle("Our Best Selling Results");
       } else {
         results = await getProductByName(_searchText);
         setTitle("Search Results");
@@ -28,9 +29,12 @@ export default function Home({ userInput }: any) {
   }, [searchText]);
 
   return (
-    <main className="bg-violet-100">
+    <main className="bg-violet-50">
       <Hero />
-      <div className="px-6 md:mt-6 mt-3 text-violet-700">
+      <div className="my-8">
+        <CategoryCarousel />
+      </div>
+      <div className="px-6 text-violet-700">
         <ProductList productList={popularProducts} title={title} />
       </div>
       <div className="flex items-center justify-center py-4">

@@ -53,7 +53,7 @@ const CategoriesPage = () => {
             <DropdownMenuTrigger>
               <Menu className="font-bold text-lg" size={30} />
             </DropdownMenuTrigger>
-            <DropdownMenuContent className="bg-blue-950 text-white mr-6">
+            <DropdownMenuContent className="bg-white text-violet-700 mr-6">
               <DropdownMenuSeparator />
               <DropdownMenuItem>
                 <CategoriesSidebar />
