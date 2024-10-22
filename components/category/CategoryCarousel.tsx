@@ -26,9 +26,9 @@ export default function CategoryCarousel() {
             <h1 className='my-6 py-8 text-2xl md:text-3xl lg:text-4xl text-center font-semibold'>Shop By Category</h1>
             <Swiper
                 modules={[Autoplay, Pagination, Navigation]}
-                slidesPerView={2} // Default to 2 items on small screens
+                slidesPerView={3} // Default to 2 items on small screens
                 spaceBetween={5} // Spacing between slides
-                slidesPerGroup={2} // Slide 2 items at a time on small screens
+                slidesPerGroup={4} // Slide 2 items at a time on small screens
                 loop={true} // Loop through the slides
                 autoplay={{
                     delay: 2500,
@@ -39,16 +39,20 @@ export default function CategoryCarousel() {
                 breakpoints={{
                     // Breakpoints for responsive design
                     640: {
-                        slidesPerView: 3, // 3 items on small screens
-                        slidesPerGroup: 3,
-                    },
-                    768: {
-                        slidesPerView: 4, // 4 items on medium screens
+                        slidesPerView: 4, // 3 items on small screens
                         slidesPerGroup: 4,
                     },
-                    1024: {
-                        slidesPerView: 5, // 5 items on large screens
+                    768: {
+                        slidesPerView: 5, // 4 items on medium screens
                         slidesPerGroup: 5,
+                    },
+                    980: {
+                        slidesPerView: 6, // 5 items on large screens
+                        slidesPerGroup: 6,
+                    },
+                    1024: {
+                        slidesPerView: 7, // 5 items on large screens
+                        slidesPerGroup: 7,
                     },
                 }}
                 className="mySwiper"

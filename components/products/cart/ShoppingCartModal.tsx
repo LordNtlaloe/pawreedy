@@ -12,7 +12,7 @@ const CartModal = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }
   const { cart, removeFromCart, updateCartQuantity } = useCart();
 
   // Initialize quantities to 1 if the cart item's quantity is not defined
-  const [quantities, setQuantities] = useState(cart.map(item => item.quantity = 1));
+  const [quantities, setQuantities] = useState(cart.map(item => item.quantity || 1));
   const router = useRouter();
 
   if (!isOpen) return null;

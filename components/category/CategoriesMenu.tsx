@@ -1,6 +1,5 @@
 "use client";
 
-import Image from "next/image";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import React, { useEffect, useState } from "react";
@@ -9,8 +8,14 @@ const CategoriesMenu = ({ categories }: { categories: any }) => {
   const [selectedItem, setSelectedItem] = useState("");
   const params = useParams();
 
+  // Ensure categories are unique
+  const uniqueCategories = categories.filter(
+    (category: any, index: number, self: any[]) =>
+      index === self.findIndex((c) => c.name === category.name)
+  );
+
   useEffect(() => {
-    if (params && params.name) { // Check if params and params.name exist
+    if (params && params.name) {
       setSelectedItem(params.name as string);
     }
   }, [params]);
@@ -19,23 +24,21 @@ const CategoriesMenu = ({ categories }: { categories: any }) => {
     <div>
       <div>
         <Link
-          href={"/category/all"}
+          href={"/products/category/all"}
           className="font-bold text-center flex justify-start"
         >
           <h1
             className={`category_sidebar_menu w-full flex items-center justify-center ${
-              selectedItem === "all"
-                ? "text-violet-800"
-                : "text-slate-900"
+              selectedItem === "all" ? "text-violet-800" : "text-slate-900"
             }`}
             onClick={() => setSelectedItem("all")}
           >
             All
           </h1>
         </Link>
-        {categories?.map((category: any) => (
+        {uniqueCategories?.map((category: any) => (
           <Link
-            href={"/category/" + category.name}
+            href={"/products/category/" + category.name}
             key={category._id}
             className={`category_sidebar_menu ${
               selectedItem === category.name
@@ -44,7 +47,7 @@ const CategoriesMenu = ({ categories }: { categories: any }) => {
             }`}
             onClick={() => setSelectedItem(category.name)}
           >
-            {category.name}
+            <p className="px-2 py-1">{category.name}</p>
           </Link>
         ))}
       </div>

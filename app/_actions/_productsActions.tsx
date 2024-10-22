@@ -335,3 +335,50 @@ export const getUserRatingCount = async (userEmail: string, productId: string) =
         return { "error ": error.message }
     }
 }
+
+export const getProductsByFilters = async (
+    size?: string[],
+    color?: string[],
+    category?: string,
+    priceRange?: { min: number; max: number }
+) => {
+    if (!dbConnection) await init();
+
+    try {
+        const collection = await database?.collection("products");
+
+        if (!database || !collection) {
+            console.log("Failed To Get Products");
+            return { error: "Failed To Get Products" };
+        }
+
+        // Build the query object
+        const query: any = {};
+
+        if (size && size.length > 0) {
+            query.size = { $in: size };
+        }
+
+        if (color && color.length > 0) {
+            query.color = { $in: color };
+        }
+
+        if (category) {
+            query.category = category;
+        }
+
+        if (priceRange) {
+            query.price = { $gte: priceRange.min, $lte: priceRange.max };
+        }
+
+        // Fetch the filtered products
+        const products = await collection.find(query)
+            .map((product: any) => ({ ...product, _id: product._id.toString() }))
+            .toArray();
+
+        return products;
+    } catch (error: any) {
+        console.log("An Error Occurred... ", error.message);
+        return { error: error.message };
+    }
+}
