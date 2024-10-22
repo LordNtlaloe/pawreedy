@@ -1,3 +1,4 @@
+
 'use client'
 
 import { useState, useEffect, useCallback } from 'react'
@@ -24,15 +25,50 @@ import withReactContent from "sweetalert2-react-content";
 import Loading from '@/app/loading'
 import { Link } from 'lucide-react'
 import CategoriesMenu from '@/components/category/CategoriesMenu'
-import { getAllColors } from '@/app/_actions/_colorActions'
-import { getAllSizes } from '@/app/_actions/_sizeActions'
 
 const sortOptions = [
-    { name: 'Most Popular', value: 'popular' },
-    { name: 'Best Rating', value: 'rating' },
-    { name: 'Newest', value: 'latest' },
-    { name: 'Price: Low to High', value: 'price-asc' },
-    { name: 'Price: High to Low', value: 'price-desc' },
+    { name: 'Most Popular', href: '#', current: true },
+    { name: 'Best Rating', href: '#', current: false },
+    { name: 'Newest', href: '#', current: false },
+    { name: 'Price: Low to High', href: '#', current: false },
+    { name: 'Price: High to Low', href: '#', current: false },
+]
+const filters = [
+    {
+        id: 'color',
+        name: 'Color',
+        options: [
+            { value: 'white', label: 'White', checked: false },
+            { value: 'beige', label: 'Beige', checked: false },
+            { value: 'blue', label: 'Blue', checked: true },
+            { value: 'brown', label: 'Brown', checked: false },
+            { value: 'green', label: 'Green', checked: false },
+            { value: 'purple', label: 'Purple', checked: false },
+        ],
+    },
+    {
+        id: 'category',
+        name: 'Category',
+        options: [
+            { value: 'new-arrivals', label: 'New Arrivals', checked: false },
+            { value: 'sale', label: 'Sale', checked: false },
+            { value: 'travel', label: 'Travel', checked: true },
+            { value: 'organization', label: 'Organization', checked: false },
+            { value: 'accessories', label: 'Accessories', checked: false },
+        ],
+    },
+    {
+        id: 'size',
+        name: 'Size',
+        options: [
+            { value: '2l', label: '2L', checked: false },
+            { value: '6l', label: '6L', checked: false },
+            { value: '12l', label: '12L', checked: false },
+            { value: '18l', label: '18L', checked: false },
+            { value: '20l', label: '20L', checked: false },
+            { value: '40l', label: '40L', checked: true },
+        ],
+    },
 ]
 
 function classNames(...classes: string[]) {
@@ -46,84 +82,44 @@ interface Product {
     image: string;
     category: string;
     createdAt: string;
+    // Add any other necessary fields
 }
-
-interface Category {
-    _id: string;
-    name: string;
-    icon: string;
-    subcategories: string[]; // Assuming subcategories is an array of strings
-}
-
 
 const MySwal = withReactContent(Swal);
 
 export default function Example() {
     const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
-    const [categories, setCategories] = useState<Category[]>([]);
+    const [categories, setCategories] = useState<string[]>([]);
     const [selectedCategory, setSelectedCategory] = useState<string>('All');
-    const [colors, setColors] = useState<string[]>([]);
-    const [selectedColor, setSelectedColor] = useState<string>('');
-    const [sizes, setSizes] = useState<string[]>([]);
-    const [selectedSize, setSelectedSize] = useState<string>('');
     const [products, setProducts] = useState<Product[]>([]);
     const [sortedProducts, setSortedProducts] = useState<Product[]>([]);
     const [sortOption, setSortOption] = useState<string>('latest');
     const [loading, setLoading] = useState(true);
 
-    const filters = [
-        {
-            id: 'color',
-            name: 'Color',
-            options: colors.map(color => ({ value: color, label: color, checked: selectedColor === color }))
-        },
-        {
-            id: 'size',
-            name: 'Size',
-            options: sizes.map(size => ({ value: size, label: size, checked: selectedSize === size }))
-        },
-        {
-            id: 'category',
-            name: 'Category',
-            options: categories.map(category => ({ value: category, label: category, checked: selectedCategory === category }))
-        }
-    ]
 
     const fetchProducts = async () => {
         const products = await getAllProducts();
-        return products || [];
+        return products || []; // Return the products to use them in fetchProductsByCategory
     };
 
     const fetchCategories = async () => {
-        const categoryData: Category[] = await getAllCategories();
-        setCategories(categoryData || []);
-    };
-    
-
-    const fetchColors = async () => {
-        const colorData = await getAllColors();
-        setColors(colorData || []);
-    };
-
-    const fetchSizes = async () => {
-        const sizeData = await getAllSizes();
-        setSizes(sizeData || []);
+        const categoryData = await getAllCategories();
+        setCategories(categoryData || []); // Fallback to an empty array if no categories
     };
 
     const fetchProductsByCategory = useCallback(async (category: string) => {
         setLoading(true);
         try {
-            const fetchedProducts = category === 'All' ? await fetchProducts() : await getAllProductsByCategory(category);
+            let fetchedProducts = category === 'All' ? await fetchProducts() : await getAllProductsByCategory(category);
             setProducts(fetchedProducts || []);
         } finally {
             setLoading(false);
         }
     }, []);
+    
 
     useEffect(() => {
         fetchCategories();
-        fetchColors();
-        fetchSizes();
         fetchProductsByCategory(selectedCategory);
     }, [selectedCategory, fetchProductsByCategory]);
         
@@ -143,9 +139,10 @@ export default function Example() {
         handleSort();
     }, [handleSort]);
 
+
     const { addToCart } = useCart();
 
-    const handleAddToCart = (product: Product) => {
+    const handleAddToCart = (product: any) => {
         try {
             addToCart({
                 id: product._id,
@@ -176,7 +173,7 @@ export default function Example() {
         <div className="bg-white">
             <div>
                 {/* Mobile filter dialog */}
-                <Dialog open={mobileFiltersOpen} onClose={() => setMobileFiltersOpen(false)} className="relative z-40 lg:hidden">
+                <Dialog open={mobileFiltersOpen} onClose={setMobileFiltersOpen} className="relative z-40 lg:hidden">
                     <DialogBackdrop
                         transition
                         className="fixed inset-0 bg-black bg-opacity-25 transition-opacity duration-300 ease-linear data-[closed]:opacity-0"
@@ -265,16 +262,15 @@ export default function Example() {
                                 >
                                     <div className="py-1">
                                         {sortOptions.map((option) => (
-                                            <MenuItem key={option.value}>
-                                                <button
-                                                    onClick={() => setSortOption(option.value)}
+                                            <MenuItem key={option.name}>
+                                                <p
                                                     className={classNames(
-                                                        option.value === sortOption ? 'font-medium text-slate-900' : 'text-slate-600',
+                                                        option.current ? 'font-medium text-slate-900' : 'text-slate-600',
                                                         'block px-4 py-2 text-sm data-[focus]:bg-slate-100',
                                                     )}
                                                 >
                                                     {option.name}
-                                                </button>
+                                                </p>
                                             </MenuItem>
                                         ))}
                                     </div>
@@ -343,9 +339,9 @@ export default function Example() {
                             {/* Product grid */}
                             <div className="mt-6 flex flex-row gap-x-6 gap-y-10 lg:col-span-2">
                                 {sortedProducts.length > 0 ? (
-                                    sortedProducts.map((product) => {
-                                        let imageURL = "/placeholder-image.jpg";
-                                        if (product?.image && product.image !== 'undefined') {
+                                    sortedProducts.map((product: any) => {
+                                        let imageURL = "./placeholder-image.jpg";
+                                        if (product?.image !== 'undefined') {
                                             imageURL = product.image;
                                         }
                                         return (

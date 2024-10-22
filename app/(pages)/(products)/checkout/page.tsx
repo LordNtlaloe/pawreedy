@@ -4,11 +4,11 @@ import { useCart } from '@/apis/CartContext';
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { useUser } from '@clerk/nextjs';
-import Swal from 'sweetalert2'; 
-import { useRouter } from 'next/navigation'; 
+import { useUser } from '@clerk/nextjs'; // Clerk for authentication
+import Swal from 'sweetalert2'; // Import SweetAlert2
+import { useRouter } from 'next/navigation'; // Import useRouter for navigation
 import { sendMail } from '@/app/_email/mail';
-import { saveOrder } from '@/app/_actions/_orderActions'; 
+import { saveOrder } from '@/app/_actions/_orderActions'; // Adjust the path to your _orderActions file
 
 interface ShippingAddress {
   name: string;
@@ -22,7 +22,7 @@ interface ShippingAddress {
 const CheckoutPage = () => {
   const [isLoading, setIsLoading] = useState(false);
   const { cart, clearCart } = useCart();
-  const { user, isLoaded, isSignedIn } = useUser();
+  const { user, isLoaded, isSignedIn } = useUser(); // Clerk user
   const [shippingAddress, setShippingAddress] = useState<ShippingAddress>({
     name: '',
     email: '',
@@ -37,9 +37,9 @@ const CheckoutPage = () => {
     expDate: '',
     cvv: '',
   });
-  const router = useRouter();
+  const router = useRouter(); // Initialize router for redirecting
 
-  
+  // Pre-fill the form if the user is authenticated
   useEffect(() => {
     if (isSignedIn && user) {
       setShippingAddress({
@@ -110,7 +110,7 @@ const CheckoutPage = () => {
 
     setIsLoading(true);
     try {
-    
+      // Clear form fields
       setShippingAddress({
         name: '',
         email: '',
@@ -126,6 +126,7 @@ const CheckoutPage = () => {
         cvv: '',
       });
 
+      // Create the order data object
       const orderData = {
         shippingDetails: shippingAddress,
         cartSummary: {
