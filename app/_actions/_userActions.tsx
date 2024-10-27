@@ -248,39 +248,26 @@ export const getUsersCount = async () => {
         return { error: error.message };
     }
 };
-const seedAdminUser = async () => {
-    const adminEmail = "ntlal0e182@gmail.com";  // Replace with your email
-    const adminPassword = "admin123"; // Use a secure password
 
-    const hashedPassword = await bcrypt.hash(adminPassword, 10);
-    
-    const adminData = {
-        email: adminEmail,
-        name: "Admin",
-        surname: "User",
-        othernames: "",
-        phoneNumber: "1234567890",  // Replace with your phone number if needed
-        password: hashedPassword,
-        role: "admin", // You can add an admin role
-    };
-
+export const getUserByRole = async (role: string) => {
     if (!dbConnection) await init();
 
     try {
-        const collection = await database.collection("users");
+        const collection = await database?.collection("users");
 
-        const existingAdmin = await collection.findOne({ email: adminEmail });
-
-        if (!existingAdmin) {
-            const newAdmin = await collection.insertOne(adminData);
-            console.log("Admin user created:", newAdmin.insertedId);
-        } else {
-            console.log("Admin user already exists");
+        if (!database || !collection) {
+            console.log("Failed to connect to collection..");
+            return;
         }
-    } catch (error: any) {
-        console.error("Error creating admin user:", error.message);
-    }
-}
 
-// Call this function to seed the admin user when needed
-seedAdminUser();
+        const user = await collection.findOne({ role });
+
+        if (user) {
+            return { ...user, _id: user._id.toString() };
+        }
+        return null; // Return null if no user found
+    } catch (error: any) {
+        console.log("An error occurred while fetching user by role:", error.message);
+        return { error: error.message };
+    }
+};

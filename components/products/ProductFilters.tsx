@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import { Disclosure, DisclosureButton, DisclosurePanel } from "@headlessui/react";
-import { PlusIcon, Filter } from "lucide-react"; // Importing the Filter icon
+import { PlusIcon, Filter } from "lucide-react";
 
 type FilterProps = {
   categories: string[];
@@ -19,7 +19,6 @@ export default function ProductFilters({ categories, colors, sizes, priceRange, 
   const [selectedColor, setSelectedColor] = useState("");
   const [selectedSize, setSelectedSize] = useState("");
   const [selectedPrice, setSelectedPrice] = useState([priceRange.min, priceRange.max]);
-
   const [isMobileFiltersOpen, setMobileFiltersOpen] = useState(false);
 
   const handleFilterChange = useCallback(() => {
@@ -35,9 +34,13 @@ export default function ProductFilters({ categories, colors, sizes, priceRange, 
     handleFilterChange();
   }, [selectedCategory, selectedColor, selectedSize, selectedPrice]);
 
+  useEffect(() => {
+    // Reset selected price range on priceRange change
+    setSelectedPrice([priceRange.min, priceRange.max]);
+  }, [priceRange]);
+
   return (
     <div className="lg:block">
-      {/* Mobile Filter Button */}
       <div className="block lg:hidden">
         <button
           onClick={() => setMobileFiltersOpen(!isMobileFiltersOpen)}
@@ -48,7 +51,6 @@ export default function ProductFilters({ categories, colors, sizes, priceRange, 
         </button>
       </div>
 
-      {/* Filter Panel */}
       <div className={classNames("lg:block", isMobileFiltersOpen ? "block" : "hidden")}>
         <div className="bg-white p-6 rounded-md">
           <h2 className="text-xl font-bold mb-4">Filter Products</h2>

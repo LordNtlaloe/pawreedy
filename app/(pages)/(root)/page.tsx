@@ -17,7 +17,7 @@ export default function Home({ userInput }: any) {
       let results;
       if (!searchText) {
         results = await getAllProducts();
-        setTitle("Our Best Selling Results");
+        setTitle("Our Best Products");
       } else {
         results = await getProductByName(_searchText);
         setTitle("Search Results");

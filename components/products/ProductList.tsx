@@ -1,6 +1,6 @@
 import { useState } from "react";
 import ProductFilters from "./ProductFilters";
-import Loading from "@/app/loading";
+import Loading from "@/app/loading"; // Import if needed
 import { useCart } from "@/apis/CartContext";
 import { addToWishlist } from "@/lib/wishlist";
 import Swal from "sweetalert2";
@@ -51,41 +51,28 @@ export default function ProductList({ productList, title }: ProductProps) {
     setFilters(newFilters);
   };
 
+  const minPrice = Math.min(...productList.map((product: any) => product.price));
+  const maxPrice = Math.max(...productList.map((product: any) => product.price));
+
   const filteredProducts = productList.filter((product: any) => {
     const matchesCategory = !filters.category || product.category === filters.category;
     const matchesColor = !filters.color || product.color === filters.color;
     const matchesSize = !filters.size || product.size === filters.size;
     const matchesPrice = (filters.price[0] === 0 && filters.price[1] === 0) ||
       (product.price >= filters.price[0] && product.price <= filters.price[1]);
-  
-    console.log({
-      product,
-      matchesCategory,
-      matchesColor,
-      matchesSize,
-      matchesPrice,
-    });
-  
+
     return matchesCategory && matchesColor && matchesSize && matchesPrice;
   });
-  
-  console.log("Filtered Products:", filteredProducts);
-  
 
-  const uniqueProducts = filteredProducts.filter(
+  const allProductsVisible =
+    !filters.category && !filters.color && !filters.size && filters.price[0] === minPrice && filters.price[1] === maxPrice;
+
+  const productsToDisplay = allProductsVisible ? productList : filteredProducts;
+
+  const uniqueProducts = productsToDisplay.filter(
     (product: any, index: number, self: any[]) =>
       index === self.findIndex((p: any) => p._id === product._id)
   );
-  console.log("Unique Products:", uniqueProducts);
-  
-
-  const categories = Array.from(new Set(productList.map((product: any) => product.category))) as string[];
-  const colors = Array.from(new Set(productList.map((product: any) => product.color))) as string[];
-  const sizes = Array.from(new Set(productList.map((product: any) => product.size))) as string[];
-  const prices = Array.from(new Set(productList.map((product: any) => product.price))) as number[];
-
-  const minPrice = Math.min(...prices);
-  const maxPrice = Math.max(...prices);
 
   return (
     <main className="py-8 bg-white rounded-lg">
@@ -96,10 +83,10 @@ export default function ProductList({ productList, title }: ProductProps) {
         <div className="flex flex-col lg:flex-row gap-4">
           <div className="w-full lg:w-1/4">
             <ProductFilters
-              categories={categories}
-              colors={colors}
+              categories={Array.from(new Set(productList.map((product: any) => product.category)))}
+              colors={Array.from(new Set(productList.map((product: any) => product.color)))}
               priceRange={{ min: minPrice, max: maxPrice }}
-              sizes={sizes}
+              sizes={Array.from(new Set(productList.map((product: any) => product.size)))}
               onFilterChange={handleFilterChange}
             />
           </div>
@@ -156,7 +143,9 @@ export default function ProductList({ productList, title }: ProductProps) {
                   );
                 })
               ) : (
-                <Loading />
+                <div className="col-span-3 text-center text-gray-600">
+                  <p>No products found for the selected filters.</p>
+                </div>
               )}
             </div>
           </div>
