@@ -1,45 +1,68 @@
+"use client";
+
 import { dashboardMenu } from "@/lib/constants";
-import { LayoutDashboardIcon, SettingsIcon, User2Icon, Users } from "lucide-react";
+import { LayoutDashboardIcon, Menu, SettingsIcon, User2Icon, Users } from "lucide-react";
 import Link from "next/link";
-import React from "react";
+import logo from '/public/logo01.png';
+import Image from "next/image";
+import { useState } from "react";
+import { AnimatePresence, motion } from "framer-motion";
 
 const DashboardSidebarMenu = () => {
+  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+
   return (
-    <main className="md:block w-72 md:w-16  bg-slate-800 text-white md:hover:w-72 transition-all duration-500">
-      <nav className="pt-3 py-2 flex flex-col justify-between h-full">
-        <div>
+    <motion.div
+      className={`relative z-10 transition-all duration-300 ease-in-out flex-shrink-0 ${isSidebarOpen ? "w-64" : "w-20"}`}
+      animate={{ width: isSidebarOpen ? 256 : 80 }}
+    >
+      <div className='h-full bg-white text-[#51358C] bg-opacity-50 backdrop-blur-md p-4 flex flex-col shadow-sm shadow-violet-950'>
+        <motion.button
+          whileHover={{ scale: 1.1 }}
+          whileTap={{ scale: 0.9 }}
+          onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+          className='p-2 max-w-fit'
+        >
+          <div className="flex items-center justify-between">
+            <Menu size={24} className="rounded-full hover:bg-gray-700 transition-colors"/>
+            {isSidebarOpen && (
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+              >
+                <Image src={logo} width={120} height={60} alt="Pawreedy Logo" className="ml-2" />
+              </motion.div>
+            )}
+          </div>
+        </motion.button>
+
+        <nav className='mt-0 flex-grow'>
           {dashboardMenu.map((item) => (
-            <Link
-              href={item.href}
-              key={item.id}
-              className="items-center md:pl-6 py-3 pl-3 "
-            >
-              <div className="flex pl-3 gap-6 hover:bg-slate-600 mx-2 py-2 rounded-[5px] transition-all duration-500">
-                <item.icon className={`shrink-0  text-${item.color}`} />
-                <span>{item.label}</span>
-              </div>
+            <Link key={item.href} href={item.href}>
+              <motion.div
+                className='flex items-center p-4 text-sm font-medium rounded-lg hover:bg-gray-700 transition-colors mb-2'
+              >
+                <item.icon size={20} style={{ color: item.color, minWidth: "20px" }} />
+                <AnimatePresence>
+                  {isSidebarOpen && (
+                    <motion.span
+                      className='ml-4 whitespace-nowrap'
+                      initial={{ opacity: 0, width: 0 }}
+                      animate={{ opacity: 1, width: "auto" }}
+                      exit={{ opacity: 0, width: 0 }}
+                      transition={{ duration: 0.2, delay: 0.3 }}
+                    >
+                      {item.label}
+                    </motion.span>
+                  )}
+                </AnimatePresence>
+              </motion.div>
             </Link>
           ))}
-        </div>
-        <div className="pt-10 border-t mb-3 justify-end flex flex-col border-white/20">
-
-          <Link href="/dashboard/settings">
-            <div className="flex pl-3 gap-6 hover:bg-slate-600 mx-2 py-2 rounded-[5px] transition-all duration-500">
-              <SettingsIcon className="shrink-0 text-yellow-400" />
-              Settings
-            </div>
-          </Link>
-          <Link href="/dashboard/profile">
-            <div className="flex pl-3 gap-6 hover:bg-slate-600 mx-2 py-2 rounded-[5px] transition-all duration-500">
-              <User2Icon className="shrink-0 text-pink-400" />
-              profile
-            </div>
-          </Link>
-
-        </div>
-
-      </nav>
-    </main>
+        </nav>
+      </div>
+    </motion.div>
   );
 };
 

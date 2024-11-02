@@ -13,7 +13,7 @@ const DeleteCategory = () => {
     const searchParams = useSearchParams();
 
     useEffect(() => {
-        if (searchParams) { // Check if searchParams exists
+        if (searchParams) {
             const id = searchParams.get('id') as string;
             const name = searchParams.get('name') as string;
             setCategoryID(id);
@@ -34,21 +34,33 @@ const DeleteCategory = () => {
     };
 
     return (
-        <form action={deleteCategory} className='border rounded p-4'>
-            <h1 className='text-center'>You are about to delete category: <span className='font-bold text-lg text-red-600'>{categoryName}</span></h1>
-            <p className='bg-red-600 text-white p-3 text-center mt-4'>Please note that this action will affect all business with this category!!!</p>
+        <form action={deleteCategory} className='bg-white shadow-md rounded-lg p-6 border border-gray-300'>
+            <h1 className='text-xl font-semibold text-center text-gray-800'>
+                You are about to delete category: 
+                <span className='font-bold text-lg text-red-600'> {categoryName}</span>
+            </h1>
+            <p className='bg-red-600 text-white p-3 text-center mt-4 rounded'>
+                Please note that this action will affect all businesses associated with this category!
+            </p>
 
-            <h1 className='my-6 text-red-600'>Are you sure? Press delete button to confirm!</h1>
+            <h2 className='my-6 text-lg text-red-600 text-center'>Are you sure? Press the delete button to confirm!</h2>
 
-            <div className="flex items-center justify-end gap-4 py-3 border-t">
-                <button type='button' className="bg-blue-600 px-6 text-white py-1" onClick={() => {
-                    setCategoryID("");
-                    setCategoryName("");
-                    setShowCategoryDeleteModal(false);
-                    router.push('/dashboard/categories');
-                }}>Cancel</button>
+            <div className="flex items-center justify-end gap-4 py-3 border-t border-gray-300">
+                <button 
+                    type='button' 
+                    className="bg-gray-300 hover:bg-gray-400 text-gray-800 font-semibold px-6 py-2 rounded transition duration-200"
+                    onClick={() => {
+                        setCategoryID("");
+                        setCategoryName("");
+                        setShowCategoryDeleteModal(false);
+                        router.push('/dashboard/categories');
+                    }}>
+                    Cancel
+                </button>
 
-                <button type='submit' className="bg-red-600 text-white px-6 rounded py-1">
+                <button 
+                    type='submit' 
+                    className="bg-red-600 hover:bg-red-700 text-white font-semibold px-6 py-2 rounded transition duration-200">
                     Delete
                 </button>
             </div>

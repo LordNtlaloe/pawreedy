@@ -1,34 +1,58 @@
-import { Search, User } from "lucide-react";
+import { Search, UserIcon } from "lucide-react";
 import React from "react";
-import SaveButton from "../general/SaveButton";
+import { SignedIn, UserButton, SignedOut, SignOutButton } from "@clerk/nextjs";
+import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem } from "@radix-ui/react-dropdown-menu";
 import DashboardMobileNav from "./DashboardMobileNav";
 
 const DashboardHeader = () => {
   return (
-    <div className="h-32 flex flex-col gap-2 ">
-      <div className="md:h-16 bg-white p-2  mt-2 rounded-[5px] grid md:grid-cols-3  items-center">
-        <div className="md:flex flex-col mr-2 hidden">
-          <h1 className="text-xs md:text-base">PRIMARY</h1>
-          <h1 className="font-bold text-xs md:text-base">DASHBOARD</h1>
-        </div>
-
-        <div className="bg-slate-200 flex py-2 items-center gap-1 px-2 border rounded-[10px] mr-4 w-full">
-          <Search className="" />
+    <div className="z-10 flex flex-col gap-2 w-full">
+      {/* Top bar for larger screens */}
+      <div className="hidden md:grid md:grid-cols-3 items-center bg-white p-4 rounded-md shadow-md">
+        {/* Search input */}
+        <div className="flex items-center bg-slate-100 rounded-full p-2 px-4 gap-2 w-full">
+          <Search className="text-gray-500" />
           <input
             type="text"
-            className="bg-slate-200 outline-none w-full"
+            className="bg-slate-100 outline-none w-full placeholder-gray-500"
             placeholder="Search Dashboard..."
           />
         </div>
-        <div className="hidden md:flex items-center justify-end">
-          <SaveButton
-            btnFunction="registerBusiness"
-            btnText="Register Business"
-            bgColor="bg-blue-600"
-          />
+
+        {/* Placeholder for center content if needed */}
+        <div className="hidden md:flex justify-center"></div>
+
+        {/* User profile dropdown */}
+        <div className="flex items-center justify-end">
+          <DropdownMenu>
+            <DropdownMenuTrigger className="flex items-center gap-2 px-10">
+              <SignedIn>
+                <div className="rounded-full overflow-hidden">
+                  <UserButton afterSignOutUrl="/" />
+                </div>
+              </SignedIn>
+              <SignedOut>
+                <UserIcon size={24} className="cursor-pointer text-gray-500" />
+              </SignedOut>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent className="bg-white shadow-lg rounded-lg p-2 mt-2">
+              <SignedIn>
+                <DropdownMenuItem>
+                  <button className="w-full text-left">Profile</button>
+                </DropdownMenuItem>
+                <DropdownMenuItem>
+                  <SignOutButton>
+                    <button className="w-full text-left">Logout</button>
+                  </SignOutButton>
+                </DropdownMenuItem>
+              </SignedIn>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
       </div>
-      <div className="h-20 bg-blue-950 text-white md:hidden flex items-center justify-between">
+
+      {/* Mobile Navigation for smaller screens */}
+      <div className="md:hidden h-20 bg-blue-950 text-white flex items-center justify-between px-4 shadow-lg rounded-md">
         <DashboardMobileNav />
       </div>
     </div>

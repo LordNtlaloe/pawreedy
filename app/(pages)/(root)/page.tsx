@@ -39,10 +39,10 @@ export default function Home({ userInput }: any) {
       </div>
       <div className="flex items-center justify-center py-4">
         <Link
-          href="/category/all"
+          href="/products"
           className="bg-[#51358C] text-white px-6 py-2 rounded-full hover:bg-[#633faf] transition-all hover:scale-105"
         >
-          More products...
+          More Products...
         </Link>
       </div>
     </main>

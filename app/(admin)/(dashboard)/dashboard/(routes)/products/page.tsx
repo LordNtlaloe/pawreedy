@@ -1,30 +1,29 @@
+import { getAllProducts } from "@/app/_actions/_productsActions";
+import { ProductsTable } from "@/components/products/ProductsTable/ProductsTable";
+import { productTableColumns } from "@/components/products/ProductsTable/ProductColumns";
 
-import { getAllProducts } from '@/app/_actions/_productsActions'
-import ChangeProductStatus from '@/components/products/ProductActions/ChangeProductStatus'
-import UpdateProduct from '@/components/products/ProductActions/UpdateProduct';
-import { productTableColumns } from '@/components/products/productsTable/ProductColumns';
-import { DataTable } from '@/components/general/datatable'
-import React from 'react'
 
-const getBusineses = async () => {
-    const productes = await getAllProducts()
-    return productes
-}
+const getProducts = async () => {
+  const data = await getAllProducts();
+  return data;
+};
 
-const ProductPages = async ({ searchParams }: { searchParams?: { [key: string]: string | string[] | undefined } }) => {
-    const columns = productTableColumns
-    const data = await getBusineses()
+const ProductsPage = async () => {
+  const products = await getProducts();
+  return (
+    <section className="mx-1">
+      <div className="">
+        <div className="flex item-center justify-between mb-2">
+          <h1 className="mb-3 md:text-3xl font-bold">Products</h1>
+        </div>
+        <div>
+          <ProductsTable columns={productTableColumns} data={products} />
+        </div>
 
-    const action = searchParams?.action
-    const id = searchParams?.id as string
+      </div>
 
-    return (
-        <main>
-            <DataTable data={data} columns={columns} />
-            {action === "update info" ? <UpdateProduct id={id} /> :
-                action === "change status" ? <ChangeProductStatus id={id} /> : null}
-        </main>
-    )
-}
+    </section>
+  );
+};
 
-export default ProductPages
+export default ProductsPage;

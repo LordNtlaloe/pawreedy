@@ -20,7 +20,7 @@ const UpdateProduct = ({ id }: { id: string }) => {
     useEffect(() => {
         getProduct();
     }, [getProduct]); // Dependency array includes `getProduct`
-
+    console.log(product)
     return (
         <div>
             {showProductUpdateModal &&

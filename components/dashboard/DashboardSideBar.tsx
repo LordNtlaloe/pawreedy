@@ -1,13 +1,10 @@
-
-import { dashboardMenu } from "@/lib/constants";
-import { LayoutDashboardIcon, SettingsIcon, User2Icon, Users } from "lucide-react";
-import Link from "next/link";
-import React from "react";
+import React , { useState } from "react";
+import { AnimatePresence, motion } from "framer-motion";
 import DashboardSidebarMenu from "./DashboardSidebarMenu";
 
 const DashboardSidebar = () => {
   return (
-    <main className="hidden md:flex">
+    <main className="hidden md:flex z-10">
       <DashboardSidebarMenu />
     </main>
   );

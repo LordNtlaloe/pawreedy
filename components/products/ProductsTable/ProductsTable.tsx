@@ -17,14 +17,14 @@ import {
 import { motion } from "framer-motion"; // Ensure you have framer-motion installed
 import { useEffect, useState } from "react";
 import { Search } from 'lucide-react'; // Adjust the import to your icon library
-import AddNewCategoryButton from "../AddNewCategoryButton";
+
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
 }
 
-export function CategoriesTable<TData, TValue>({
+export function ProductsTable<TData, TValue>({
   columns,
   data,
 }: DataTableProps<TData, TValue>) {
@@ -64,11 +64,10 @@ export function CategoriesTable<TData, TValue>({
       transition={{ delay: 0.2 }}
     >
       <div className="flex justify-between items-center mb-6">
-        <AddNewCategoryButton />
         <div className="relative">
           <input
             type="text"
-            placeholder="Search categories..."
+            placeholder="Search products..."
             className="bg-violet-50 text-violet-700 placeholder-gray-400 rounded-lg pl-10 pr-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
             onChange={handleSearch}
             value={searchTerm}
@@ -102,7 +101,7 @@ export function CategoriesTable<TData, TValue>({
               filteredRows.map((row) => (
                 <TableRow key={row.id} data-state={row.getIsSelected() ? "selected" : undefined}>
                   {row.getVisibleCells().map((cell) => (
-                    <TableCell key={cell.id} className="px-6 py-4 whitespace-nowrap text-sm text-violet-800">
+                    <TableCell key={cell.id} className="px-6 py-4 z text-sm text-violet-800">
                       {flexRender(cell.column.columnDef.cell, cell.getContext())}
                     </TableCell>
                   ))}
@@ -111,7 +110,7 @@ export function CategoriesTable<TData, TValue>({
             ) : (
               <TableRow>
                 <TableCell colSpan={columns.length} className="h-24 text-center text-gray-100">
-                  No categories found.
+                  No products found.
                 </TableCell>
               </TableRow>
             )}

@@ -5,29 +5,24 @@ import { ColumnDef } from "@tanstack/react-table";
 
 export type User = {
     _id: string
-    userEmail: string
-    userSurname: string
-    userOtherNames: string
-    userPhoneNumber: string
+    email: string
+    firstName: string
+    lastName: string
 
 };
 
 export const usersTableColumns: ColumnDef<User>[] = [
     {
-        accessorKey: "userSurname",
-        header: "Surname"
+        accessorKey: "firstName",
+        header: "First Name"
     },
 
     {
-        accessorKey: "userOtherNames",
-        header: "Other Names"
+        accessorKey: "lastName",
+        header: "Last Name"
     },
     {
-        accessorKey: "userEmail",
+        accessorKey: "email",
         header: "Email"
-    },
-    {
-        accessorKey: "userPhoneNumber",
-        header: "Phone Number"
     },
 ]
