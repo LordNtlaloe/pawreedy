@@ -1,7 +1,8 @@
+"use client"
 import { useState } from "react";
 import Loading from "@/app/loading"; // Import if needed
 import { useCart } from "@/apis/CartContext";
-import { addToWishlist } from "@/lib/wishlist";
+import { useWishlist } from "@/apis/WishlistContext";
 import Swal from "sweetalert2";
 import withReactContent from "sweetalert2-react-content";
 import { ShoppingCart, Star, Heart } from "lucide-react";
@@ -17,7 +18,8 @@ const MySwal = withReactContent(Swal);
 
 export default function ProductList({ productList = [], title }: ProductProps) {
   const { addToCart } = useCart();
-  const [filters, setFilters] = useState({ category: "", color: "", size: "", price: [0, 0] });
+  const { addToWishlist, removeFromWishlist, wishlist } = useWishlist(); // Get add/remove wishlist functions from context
+  const [wishlistIds, setWishlistIds] = useState<string[]>(wishlist.map(item => item.id)); // State to track wishlist items
 
   const handleAddToCart = (product: any) => {
     try {
@@ -46,6 +48,39 @@ export default function ProductList({ productList = [], title }: ProductProps) {
     }
   };
 
+  const handleToggleWishlist = (product: any) => {
+    const isWished = wishlistIds.includes(product._id);
+
+    if (isWished) {
+      // If the product is already in the wishlist, remove it
+      removeFromWishlist(product._id);
+      setWishlistIds((prev) => prev.filter(id => id !== product._id)); // Update the local state
+      MySwal.fire({
+        title: "Removed!",
+        text: `${product.name} has been removed from the wishlist`,
+        icon: "info",
+        confirmButtonText: "OK",
+        timer: 2000,
+      });
+    } else {
+      // If the product is not in the wishlist, add it
+      addToWishlist({
+        id: product._id,
+        name: product.name,
+        price: product.price,
+        quantity: 1,
+        image: product.image,
+      });
+      setWishlistIds((prev) => [...prev, product._id]); // Update the local state
+      MySwal.fire({
+        title: "Success!",
+        text: `${product.name} has been added to the wishlist`,
+        icon: "success",
+        confirmButtonText: "OK",
+        timer: 2000,
+      });
+    }
+  };
 
   const uniqueProducts = productList.filter(
     (product: any, index: number, self: any[]) =>
@@ -63,6 +98,8 @@ export default function ProductList({ productList = [], title }: ProductProps) {
             {uniqueProducts.length > 0 ? (
               uniqueProducts.map((product: any) => {
                 const imageURL = product?.image !== "undefined" ? product.image : "./placeholder-image.jpg";
+                const isWished = wishlistIds.includes(product._id); // Check if product is in wishlist
+
                 return (
                   <div key={product._id} className="rounded-xl bg-white p-4 shadow-lg hover:shadow-xl transition-shadow duration-300">
                     <div className="relative">
@@ -82,10 +119,10 @@ export default function ProductList({ productList = [], title }: ProductProps) {
                         </div>
                       </Link>
                       <button
-                        onClick={() => addToWishlist(product)}
+                        onClick={() => handleToggleWishlist(product)} // Toggle wishlist
                         className="absolute top-3 right-3 rounded-full bg-white p-2 shadow-md hover:bg-red-200 transition duration-300"
                       >
-                        <Heart className="h-6 w-6 text-red-500 hover:text-red-600" />
+                        <Heart className={`${isWished ? 'text-red-600' : 'text-red-500'} h-6 w-6`} fill={isWished ? "red" : "none"} />
                       </button>
                     </div>
 

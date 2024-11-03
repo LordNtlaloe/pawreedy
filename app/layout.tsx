@@ -5,6 +5,7 @@ import { cn } from "@/lib/utils";
 import { ClerkProvider, ClerkLoaded, ClerkLoading } from '@clerk/nextjs'
 import Loading from "./loading";
 import { CartProvider } from "@/apis/CartContext";
+import { WishlistProvider } from "@/apis/WishlistContext";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -20,6 +21,7 @@ export default function RootLayout({
 }>) {
   return (
     <ClerkProvider>
+      <WishlistProvider>
       <CartProvider>
       <html
         lang="en"
@@ -38,6 +40,7 @@ export default function RootLayout({
         </body>
       </html>
       </CartProvider>
+      </WishlistProvider>
     </ClerkProvider>
   );
 }

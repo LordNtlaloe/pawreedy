@@ -6,6 +6,7 @@ import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuIte
 import { useState } from "react";
 import ShoppingCartModal from "@/components/products/cart/ShoppingCartModal"; // Adjust the import path as needed
 import { useCart } from "@/apis/CartContext";
+import { useWishlist } from "@/apis/WishlistContext";
 
 const Menu = ({ userInput = () => { } }: any) => {
   const [searchText, setSearchText] = useState<string>("");
@@ -14,6 +15,7 @@ const Menu = ({ userInput = () => { } }: any) => {
   const openCart = () => setIsCartOpen(true);
   const closeCart = () => setIsCartOpen(false);
   const { cart } = useCart(); 
+  const { wishlist } = useWishlist();
 
   return (
     <div className="flex justify-between gap-4 px-4 py-2 w-[75%]">
@@ -23,7 +25,7 @@ const Menu = ({ userInput = () => { } }: any) => {
           <input
             type="text"
             placeholder="Search..."
-          className="px-4 py-2 border rounded-md w-full max-w-xs pr-10" // Add padding-right for the icon
+            className="px-4 py-2 border rounded-md w-full max-w-xs pr-10" // Add padding-right for the icon
             onChange={(e) => setSearchText(e.target.value)}
           />
           <Search
@@ -35,23 +37,25 @@ const Menu = ({ userInput = () => { } }: any) => {
       </div>
 
       {/* Icons on the right */}
-      <div className="flex items-center gap-4">
+      <div className="flex items-center gap-4 relative">
         {/* Cart Icon */}
-        <button onClick={openCart} className="transition-transform">
+        <button onClick={openCart} className="relative transition-transform">
           <ShoppingCart size={24} />
-          <div>
-            {/* Rest of your MobileMenu */}
-            {cart.length > 0 && (
-              <span className="absolute top-[30px] right-[110px] bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
-                {cart.length}
-              </span>
-            )}
-          </div>
+          {cart.length > 0 && (
+            <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+              {cart.length}
+            </span>
+          )}
         </button>
 
         {/* Wishlist Icon */}
-        <Link href="/wishlist" className="hover:scale-105 transition-transform">
+        <Link href="/wishlist" className="relative hover:scale-105 transition-transform">
           <Heart size={24} />
+          {wishlist.length > 0 && (
+            <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+              {wishlist.length}
+            </span>
+          )}
         </Link>
 
         {/* User Dropdown */}
