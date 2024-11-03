@@ -15,7 +15,7 @@ const UpdateCategoryForm = () => {
   const [isLoading, setIsLoading] = useState(false);
   const { showUpdateCategoryModal, setShowUpdateCategoryModal, categoryId, categoryName, setCategoryID, setCategoryName } = useCategoryStore()
   const router = useRouter()
-
+ 
   const saveCategoryUpdate = async (formData: FormData) => {
 
     const newName = formData.get("categoryName")

@@ -1,6 +1,6 @@
 import { getAllProducts } from "@/app/_actions/_productsActions";
 import { ProductsTable } from "@/components/products/ProductsTable/ProductsTable";
-import { productTableColumns } from "@/components/products/ProductsTable/ProductColumns";
+import { columns } from "@/components/products/ProductsTable/colums";
 
 
 const getProducts = async () => {
@@ -17,7 +17,7 @@ const ProductsPage = async () => {
           <h1 className="mb-3 md:text-3xl font-bold">Products</h1>
         </div>
         <div>
-          <ProductsTable columns={productTableColumns} data={products} />
+          <ProductsTable columns={columns} data={products} />
         </div>
 
       </div>

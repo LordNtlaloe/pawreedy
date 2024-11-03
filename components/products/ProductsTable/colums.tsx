@@ -6,23 +6,39 @@ import ActionsField from "./ActionsField";
 export type Product = {
     _id: string
     name: string
-    category: string
     description: string
+    price: string
+    image: string
+    category: string
+    quantity: string
+    rating: string
     status: string
 };
 
-export const productTableColumns: ColumnDef<Product>[] = [
+export const columns: ColumnDef<Product>[] = [
     {
         accessorKey: "name",
         header: "Product Name"
     },
     {
-        accessorKey: "category",
-        header: "Category"
-    },
-    {
         accessorKey: "description",
         header: "Description"
+    },
+    {
+        accessorKey: "price",
+        header: "Price"
+    },
+    {
+        accessorKey: "Image",
+        header: "image"
+    },
+    {
+        accessorKey: "Category",
+        header: "category"
+    },
+    {
+        accessorKey: "Rating",
+        header: "rating"
     },
     {
         accessorKey: "status",
@@ -30,7 +46,7 @@ export const productTableColumns: ColumnDef<Product>[] = [
         cell: ({ row }) => {
             const status = row.getValue("status") as string
             return (
-                <div className={status === 'Low On Stock' ? `text-orange-500` : status === 'In Stock' ? "p-1 text-green-700 font-extrabold" : status === 'Out Of Stock' ? "text-red-700 p-1 font-extrabold" : "bg-white"}>
+                <div className={status === 'Low Stock' ? `bg-yellow-500 p-1` : status === 'In Stock' ? "p-1 bg-green-700 text-white" : status === 'Out Of Stock' ? "bg-red-700 text-white p-1" : "bg-white"}>
                     <p>{status}</p>
                 </div>
             )
@@ -38,7 +54,7 @@ export const productTableColumns: ColumnDef<Product>[] = [
     },
 
     {
-        header: "Actions",
+        header: "ACTIONS",
         cell: ({ row }) => {
             const product = row.original
             return <ActionsField id={product._id} />

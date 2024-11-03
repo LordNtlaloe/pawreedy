@@ -17,8 +17,7 @@ import {
 import { motion } from "framer-motion"; // Ensure you have framer-motion installed
 import { useEffect, useState } from "react";
 import { Search } from 'lucide-react'; // Adjust the import to your icon library
-
-
+import AddNewProductButton from "../AddNewProductButton";
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
@@ -64,6 +63,7 @@ export function ProductsTable<TData, TValue>({
       transition={{ delay: 0.2 }}
     >
       <div className="flex justify-between items-center mb-6">
+        <AddNewProductButton />
         <div className="relative">
           <input
             type="text"
@@ -101,7 +101,7 @@ export function ProductsTable<TData, TValue>({
               filteredRows.map((row) => (
                 <TableRow key={row.id} data-state={row.getIsSelected() ? "selected" : undefined}>
                   {row.getVisibleCells().map((cell) => (
-                    <TableCell key={cell.id} className="px-6 py-4 z text-sm text-violet-800">
+                    <TableCell key={cell.id} className="px-6 py-4 whitespace-nowrap text-sm text-violet-800">
                       {flexRender(cell.column.columnDef.cell, cell.getContext())}
                     </TableCell>
                   ))}

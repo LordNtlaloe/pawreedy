@@ -1,34 +1,36 @@
 'use client'
 import UpdateProductForm from '@/components/products/UpdateProductForm'
-import Modal from '@/components/general/Modal'
-import { useProductStore } from '@/lib/stores/productStore'
-import { useSearchParams } from 'next/navigation'
-import React, { useEffect } from 'react'
+import { useParams } from 'next/navigation'
+import React, { useEffect, useState } from 'react'
+import { getProductById } from '@/app/_actions/_productsActions'
 
 const UpdateProductPage = () => {
-    const {setShowProductUpdateModal, showProductUpdateModal} = useProductStore()
-    const searchParams = useSearchParams()
-    const id = searchParams?.get('id') as string | null
-    const name = searchParams?.get('name') as string | null
+    const params = useParams();
+    const productId = params?.productId as string; // Assert productId as string
+
+    const [product, setProduct] = useState(null);
+
+    const getProduct = async () => {
+        if (productId) {
+            const result = await getProductById(productId);
+            if (result) setProduct(result);
+        }
+    };
 
     useEffect(() => {
-        if (id && name) {
-            setShowProductUpdateModal(true)
-        }
-    }, [setShowProductUpdateModal])
+        getProduct();
+    }, [productId]);
 
     return (
-        <main className='h-20 flex items-center justify-center'>
-            <h1 className='text-xl font-bold '>UPDATING CATEGORY...</h1>
-            {id &&
-                <div>
-                    <Modal isVisible={showProductUpdateModal} onClose={() => setShowProductUpdateModal(false)}>
-                        <UpdateProductForm />
-                    </Modal>
-                </div>
-            }
+        <main className="md:max-w-5xl mt-20 shadow-lg flex flex-col mx-auto rounded-md justify-center mb-6">
+            <div className="flex">
+                <section className="p-4 bg-white w-full">
+                    <h1 className="text-center font-semibold text-gray-900">Update Product</h1>
+                    <UpdateProductForm product={product} />
+                </section>
+            </div>
         </main>
-    )
-}
+    );
+};
 
-export default UpdateProductPage
+export default UpdateProductPage;

@@ -37,9 +37,8 @@ const ActionsField = ({ id }: { id: string }) => {
 
                     <DropdownMenuSeparator />
                     {productActions.map((action) => (
-                        <Link href={`/dashboard/products?action=${action.label.toLocaleLowerCase()}&id=${id}`} key={action.id} className="border-b px-8 border-white/20 py-2 cursor-pointer hover:bg-gray-700 rounded mx-3 flex flex-col" onClick={() => {
+                        <Link href={`/dashboard/products/update/${id}`} key={action.id} className="border-b px-8 border-white/20 py-2 cursor-pointer hover:bg-gray-700 rounded mx-3 flex flex-col" onClick={() => {
                             if (action.label === "Update Info") {
-                                setShowProductUpdateModal(true)
                             } else if (action.label === "Change Status") {
                                 setShowChangeProductStatusModal(true)
                             }

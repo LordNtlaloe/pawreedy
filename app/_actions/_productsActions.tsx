@@ -18,7 +18,6 @@ const init = async () => {
 }
 
 export const saveNewProduct = async(formData: FormData) => {
-    const userID = formData.get("userId") as string;
     const data = {
         name: formData.get("name"),
         description: formData.get("description"),

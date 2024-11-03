@@ -9,7 +9,7 @@ export default function AddProduct() {
       <div className="flex">
         {/* Form: right section */}
         <section className="p-4 bg-white w-full">
-          <h1 className="text-center font-semibold text-gray-900">Profile</h1>
+          <h1 className="text-center font-semibold text-gray-900">Add New Product</h1>
           <div>
             <AddNewProductForm />
           </div>
