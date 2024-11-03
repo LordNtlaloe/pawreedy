@@ -3,6 +3,7 @@ import { revalidatePath } from "next/cache";
 import { connectToDB } from "../_database/database";
 import { ObjectId } from "mongodb";
 import { redirect } from "next/navigation";
+import { subDays } from "date-fns"; 
 
 let dbConnection: any;
 let database: any;
@@ -381,3 +382,31 @@ export const getProductsByFilters = async (
         return { error: error.message };
     }
 }
+
+
+
+export const getLatestProducts = async () => {
+    if (!dbConnection) await init();
+
+    try {
+        const collection = await database?.collection("products");
+
+        if (!database || !collection) {
+            console.log("Failed To Get Products");
+            return { error: "Failed to get products from database" };
+        }
+
+        const oneMonthAgo = subDays(new Date(), 30); // Get the date 30 days ago
+
+        // Find products created within the last month
+        const latestProducts = await collection
+            .find({ createdAt: { $gte: oneMonthAgo } })
+            .map((product: any) => ({ ...product, _id: product._id.toString() }))
+            .toArray();
+
+        return latestProducts;
+    } catch (error: any) {
+        console.log("An Error Occurred... ", error.message);
+        return { error: error.message };
+    }
+};

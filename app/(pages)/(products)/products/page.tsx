@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import ProductFilters from "@/components/products/ProductFilters";
 import Loading from "@/app/loading"; // Import if needed
 import { useCart } from "@/apis/CartContext";
-import { addToWishlist } from "@/lib/wishlist";
+import { useWishlist } from "@/apis/WishlistContext";
 import Swal from "sweetalert2";
 import withReactContent from "sweetalert2-react-content";
 import { ShoppingCart, Star, Heart } from "lucide-react";
@@ -17,8 +17,10 @@ export default function ProductList() {
     const { addToCart } = useCart();
     const [filters, setFilters] = useState({ category: "", color: "", size: "", price: [0, 0] });
     const [products, setProducts] = useState([]);
-    const [title] = useState("Product List"); // Define title directly here or fetch it based on your logic
-    
+    const [title] = useState("Product List");
+    const { addToWishlist, removeFromWishlist, wishlist } = useWishlist();
+    const [wishlistIds, setWishlistIds] = useState<string[]>(wishlist.map(item => item.id));
+
     const getProducts = async () => {
         const products = await getAllProducts();
         setProducts(products);
@@ -55,12 +57,52 @@ export default function ProductList() {
         }
     };
 
+    const handleToggleWishlist = (product: any) => {
+        const isWished = wishlistIds.includes(product._id);
+
+        if (isWished) {
+            removeFromWishlist(product._id);
+            setWishlistIds((prev) => prev.filter(id => id !== product._id));
+            MySwal.fire({
+                title: "Removed!",
+                text: `${product.name} has been removed from the wishlist`,
+                icon: "info",
+                confirmButtonText: "OK",
+                timer: 2000,
+            });
+        } else {
+            addToWishlist({
+                id: product._id,
+                name: product.name,
+                price: product.price,
+                quantity: 1,
+                image: product.image,
+            });
+            setWishlistIds((prev) => [...prev, product._id]);
+            MySwal.fire({
+                title: "Success!",
+                text: `${product.name} has been added to the wishlist`,
+                icon: "success",
+                confirmButtonText: "OK",
+                timer: 2000,
+            });
+        }
+    };
+
     const handleFilterChange = (newFilters: { category: string; color: string; size: string; price: number[] }) => {
         setFilters(newFilters);
     };
 
     const minPrice = Math.min(...products.map((product: any) => product.price));
     const maxPrice = Math.max(...products.map((product: any) => product.price));
+
+    const isNewProduct = (createdAt: string) => {
+        const createdDate = new Date(createdAt);
+        const currentDate = new Date();
+        const differenceInTime = currentDate.getTime() - createdDate.getTime();
+        const differenceInDays = differenceInTime / (1000 * 3600 * 24);
+        return differenceInDays <= 30; // Product is new if created within the last 30 days
+    };
 
     const filteredProducts = products.filter((product: any) => {
         const matchesCategory = !filters.category || product.category === filters.category;
@@ -104,6 +146,8 @@ export default function ProductList() {
                             {uniqueProducts.length > 0 ? (
                                 uniqueProducts.map((product: any) => {
                                     const imageURL = product?.image !== "undefined" ? product.image : "./placeholder-image.jpg";
+                                    const isWished = wishlistIds.includes(product._id); // Define isWished here
+
                                     return (
                                         <div key={product._id} className="rounded-xl bg-white p-4 shadow-lg hover:shadow-xl transition-shadow duration-300">
                                             <div className="relative">
@@ -120,13 +164,18 @@ export default function ProductList() {
                                                             <Star className="h-5 w-5 text-yellow-400" />
                                                             <span className="text-slate-400 ml-1 text-sm">4.9</span>
                                                         </div>
+                                                        {isNewProduct(product.createdAt) && (
+                                                            <span className="absolute top-3 left-3 bg-green-500 text-white text-xs font-bold px-2 py-1 rounded">
+                                                                New
+                                                            </span>
+                                                        )}
                                                     </div>
                                                 </Link>
                                                 <button
-                                                    onClick={() => addToWishlist(product)}
+                                                    onClick={() => handleToggleWishlist(product)}
                                                     className="absolute top-3 right-3 rounded-full bg-white p-2 shadow-md hover:bg-red-200 transition duration-300"
                                                 >
-                                                    <Heart className="h-6 w-6 text-red-500 hover:text-red-600" />
+                                                    <Heart className={`${isWished ? 'text-red-600' : 'text-red-500'} h-6 w-6`} fill={isWished ? "red" : "none"} />
                                                 </button>
                                             </div>
 
@@ -155,6 +204,7 @@ export default function ProductList() {
                                     <p>No products found for the selected filters.</p>
                                 </div>
                             )}
+
                         </div>
                     </div>
                 </div>

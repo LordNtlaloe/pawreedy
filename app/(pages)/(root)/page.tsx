@@ -3,14 +3,16 @@
 import Hero from "@/components/root/Hero";
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { getAllProducts, getProductByName } from "@/app/_actions/_productsActions";
+import { getAllProducts, getProductByName, getLatestProducts } from "@/app/_actions/_productsActions";
 import ProductList from "@/components/products/ProductList";
 import CategoryCarousel from "@/components/category/CategoryCarousel";
+import LatestProducts from "@/components/products/LatestProducts";
 
 export default function Home({ userInput }: any) {
   const [popularProducts, setPopularProducts] = useState([]);
   const [searchText, setSearchText] = useState<string>("");
   const [title, setTitle] = useState("Popular Products");
+  const [latestProducts, setLatestProducts] = useState([]);
 
   useEffect(() => {
     const getProducts = async (_searchText: string) => {
@@ -24,10 +26,17 @@ export default function Home({ userInput }: any) {
       }
       setPopularProducts(results);
     };
-
     getProducts(searchText);
   }, [searchText]);
 
+  useEffect(() => {
+
+    const latestProduct = async () => {
+      const product = await getLatestProducts();
+      setLatestProducts(product)
+    }
+    latestProduct();
+  }, [])
   return (
     <main className="bg-violet-50">
       <Hero />
@@ -36,6 +45,9 @@ export default function Home({ userInput }: any) {
       </div>
       <div className="px-6 text-violet-700">
         <ProductList productList={popularProducts} title={title} />
+      </div>
+      <div className="px-6 text-violet-700">
+        <LatestProducts latestProductsList={latestProducts} title="Latest Products" />
       </div>
       <div className="flex items-center justify-center py-4">
         <Link

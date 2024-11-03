@@ -2,8 +2,15 @@ import { useState } from "react";
 import SettingSection from "./SettingSection";
 import { HelpCircle, Plus } from "lucide-react";
 
-const ConnectedAccounts = () => {
-	const [connectedAccounts, setConnectedAccounts] = useState([
+interface ConnectedAccount {
+	id: number;
+	name: string;
+	connected: boolean;
+	icon: string;
+}
+
+const ConnectedAccounts: React.FC = () => {
+	const [connectedAccounts, setConnectedAccounts] = useState<ConnectedAccount[]>([
 		{
 			id: 1,
 			name: "Google",
@@ -23,12 +30,13 @@ const ConnectedAccounts = () => {
 			icon: "/x.png",
 		},
 	]);
+
 	return (
 		<SettingSection icon={HelpCircle} title={"Connected Accounts"}>
 			{connectedAccounts.map((account) => (
 				<div key={account.id} className='flex items-center justify-between py-3'>
 					<div className='flex gap-1'>
-						<img src={account.icon} alt='Social img' className='size-6 object-cover rounded-full mr-2' />
+						<img src={account.icon} alt={`${account.name} icon`} className='size-6 object-cover rounded-full mr-2' />
 						<span className='text-gray-300'>{account.name}</span>
 					</div>
 					<button
@@ -59,4 +67,5 @@ const ConnectedAccounts = () => {
 		</SettingSection>
 	);
 };
+
 export default ConnectedAccounts;

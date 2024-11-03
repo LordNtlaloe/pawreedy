@@ -1,4 +1,12 @@
-const ToggleSwitch = ({ label, isOn, onToggle }) => {
+import React from "react";
+
+interface ToggleSwitchProps {
+	label: string;
+	isOn: boolean;
+	onToggle: () => void;
+}
+
+const ToggleSwitch: React.FC<ToggleSwitchProps> = ({ label, isOn, onToggle }) => {
 	return (
 		<div className='flex items-center justify-between py-3'>
 			<span className='text-gray-300'>{label}</span>
@@ -18,4 +26,5 @@ const ToggleSwitch = ({ label, isOn, onToggle }) => {
 		</div>
 	);
 };
+
 export default ToggleSwitch;

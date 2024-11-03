@@ -3,6 +3,7 @@
 import React from 'react';
 import Image from 'next/image';
 import { useWishlist } from '@/apis/WishlistContext';
+import { FaTrashAlt } from 'react-icons/fa'; // Import the delete icon from react-icons
 
 export default function Wishlist() {
     const { wishlist, removeFromWishlist } = useWishlist();
@@ -37,7 +38,7 @@ export default function Wishlist() {
                                     className="text-gray-600 hover:text-red-600 cursor-pointer" 
                                     onClick={() => removeFromWishlist(item.id)}
                                 >
-                                    <i className="fas fa-trash"></i>
+                                    <FaTrashAlt className="h-5 w-5" />
                                 </button>
                             </div>
                         ))}

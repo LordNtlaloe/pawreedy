@@ -3,8 +3,14 @@ import SettingSection from "./SettingSection";
 import { Bell } from "lucide-react";
 import ToggleSwitch from "./ToggleSwitch";
 
-const Notifications = () => {
-	const [notifications, setNotifications] = useState({
+interface NotificationsState {
+	push: boolean;
+	email: boolean;
+	sms: boolean;
+}
+
+const Notifications: React.FC = () => {
+	const [notifications, setNotifications] = useState<NotificationsState>({
 		push: true,
 		email: false,
 		sms: true,
@@ -30,4 +36,5 @@ const Notifications = () => {
 		</SettingSection>
 	);
 };
+
 export default Notifications;

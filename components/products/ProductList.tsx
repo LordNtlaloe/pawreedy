@@ -18,8 +18,8 @@ const MySwal = withReactContent(Swal);
 
 export default function ProductList({ productList = [], title }: ProductProps) {
   const { addToCart } = useCart();
-  const { addToWishlist, removeFromWishlist, wishlist } = useWishlist(); // Get add/remove wishlist functions from context
-  const [wishlistIds, setWishlistIds] = useState<string[]>(wishlist.map(item => item.id)); // State to track wishlist items
+  const { addToWishlist, removeFromWishlist, wishlist } = useWishlist();
+  const [wishlistIds, setWishlistIds] = useState<string[]>(wishlist.map(item => item.id)); 
 
   const handleAddToCart = (product: any) => {
     try {
@@ -52,9 +52,8 @@ export default function ProductList({ productList = [], title }: ProductProps) {
     const isWished = wishlistIds.includes(product._id);
 
     if (isWished) {
-      // If the product is already in the wishlist, remove it
       removeFromWishlist(product._id);
-      setWishlistIds((prev) => prev.filter(id => id !== product._id)); // Update the local state
+      setWishlistIds((prev) => prev.filter(id => id !== product._id));
       MySwal.fire({
         title: "Removed!",
         text: `${product.name} has been removed from the wishlist`,
@@ -63,7 +62,6 @@ export default function ProductList({ productList = [], title }: ProductProps) {
         timer: 2000,
       });
     } else {
-      // If the product is not in the wishlist, add it
       addToWishlist({
         id: product._id,
         name: product.name,
@@ -71,7 +69,7 @@ export default function ProductList({ productList = [], title }: ProductProps) {
         quantity: 1,
         image: product.image,
       });
-      setWishlistIds((prev) => [...prev, product._id]); // Update the local state
+      setWishlistIds((prev) => [...prev, product._id]);
       MySwal.fire({
         title: "Success!",
         text: `${product.name} has been added to the wishlist`,
@@ -98,11 +96,19 @@ export default function ProductList({ productList = [], title }: ProductProps) {
             {uniqueProducts.length > 0 ? (
               uniqueProducts.map((product: any) => {
                 const imageURL = product?.image !== "undefined" ? product.image : "./placeholder-image.jpg";
-                const isWished = wishlistIds.includes(product._id); // Check if product is in wishlist
+                const isWished = wishlistIds.includes(product._id);
+                
+                // Calculate if the product is new (created within the last 30 days)
+                const isNew = new Date().getTime() - new Date(product.createdAt as string).getTime() < 30 * 24 * 60 * 60 * 1000;
 
                 return (
                   <div key={product._id} className="rounded-xl bg-white p-4 shadow-lg hover:shadow-xl transition-shadow duration-300">
                     <div className="relative">
+                      {isNew && (
+                        <span className="absolute z-10 top-2 left-2 bg-green-500 text-white text-xs font-bold px-2 py-1 rounded">
+                          New
+                        </span>
+                      )}
                       <Link href={`/products/${product._id}`}>
                         <div className="relative flex items-end overflow-hidden rounded-xl border-violet-200 border">
                           <Image
@@ -114,12 +120,12 @@ export default function ProductList({ productList = [], title }: ProductProps) {
                           />
                           <div className="absolute bottom-3 left-3 inline-flex items-center rounded-lg bg-white p-2 shadow-md">
                             <Star className="h-5 w-5 text-yellow-400" />
-                            <span className="text-slate-400 ml-1 text-sm">4.9</span>
+                            <span className="text-slate-400 ml-1 text-sm">{product.ratings}</span>
                           </div>
                         </div>
                       </Link>
                       <button
-                        onClick={() => handleToggleWishlist(product)} // Toggle wishlist
+                        onClick={() => handleToggleWishlist(product)}
                         className="absolute top-3 right-3 rounded-full bg-white p-2 shadow-md hover:bg-red-200 transition duration-300"
                       >
                         <Heart className={`${isWished ? 'text-red-600' : 'text-red-500'} h-6 w-6`} fill={isWished ? "red" : "none"} />
