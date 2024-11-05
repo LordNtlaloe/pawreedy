@@ -7,7 +7,7 @@ import "../globals.css"
 
 
 export const metadata: Metadata = {
-    title: "Pawreedy",
+    title: "Pawreedy - Online Store",
     description: "Your One Stop Online Petshop",
 };
 

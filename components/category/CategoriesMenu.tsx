@@ -2,52 +2,52 @@
 
 import Link from "next/link";
 import { useParams } from "next/navigation";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useMemo } from "react";
 
-const CategoriesMenu = ({ categories }: { categories: any }) => {
-  const [selectedItem, setSelectedItem] = useState("");
+interface Category {
+  _id: string;
+  name: string;
+}
+
+interface CategoriesMenuProps {
+  categories: Category[];
+}
+
+const CategoriesMenu: React.FC<CategoriesMenuProps> = ({ categories }) => {
+  const [selectedItem, setSelectedItem] = useState<string>("all");
   const params = useParams();
 
   // Ensure categories are unique
-  const uniqueCategories = categories.filter(
-    (category: any, index: number, self: any[]) =>
-      index === self.findIndex((c) => c.name === category.name)
-  );
+  const uniqueCategories = useMemo(() => {
+    return categories.filter(
+      (category, index, self) =>
+        index === self.findIndex((c) => c.name === category.name)
+    );
+  }, [categories]);
 
   useEffect(() => {
-    if (params && params.name) {
+    if (params?.name) {
       setSelectedItem(params.name as string);
+    } else {
+      setSelectedItem("all"); // Reset to "all" if no specific category is selected
     }
   }, [params]);
 
+
+
   return (
-    <div>
-      <div>
-        <Link
-          href={"/products/category/all"}
-          className="font-bold text-center flex justify-start"
-        >
-          <h1
-            className={`category_sidebar_menu w-full flex items-center justify-center ${
-              selectedItem === "all" ? "text-violet-800" : "text-slate-900"
-            }`}
-            onClick={() => setSelectedItem("all")}
-          >
-            All
-          </h1>
-        </Link>
-        {uniqueCategories?.map((category: any) => (
+    <div className="bg-white shadow rounded-lg p-4 max-w-md mx-auto">
+      <h2 className="text-2xl font-bold text-center mb-4">Categories</h2>
+      <div className="flex flex-col">
+        {uniqueCategories.map((category) => (
           <Link
-            href={"/products/category/" + category.name}
+            href={`/products/category/${category.name}`}
             key={category._id}
-            className={`category_sidebar_menu ${
-              selectedItem === category.name
-                ? " md:bg-blue-100 bg-violet-700 shadow-md"
-                : "flex flex-row text-slate-700"
-            }`}
+            className={`rounded-lg p-2 transition-all duration-200`}
             onClick={() => setSelectedItem(category.name)}
+            aria-current={selectedItem === category.name ? "page" : undefined}
           >
-            <p className="px-2 py-1">{category.name}</p>
+            {category.name}
           </Link>
         ))}
       </div>

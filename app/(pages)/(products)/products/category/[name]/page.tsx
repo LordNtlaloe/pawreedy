@@ -23,37 +23,37 @@ const CategoriesPage = () => {
   const [productList, setProductList] = useState([]);
 
   useEffect(() => {
-    const getProductList = async () => {
+    const fetchProducts = async () => {
       let productsByCategory;
-
       const category = Array.isArray(params?.name) ? params?.name[0] : params?.name;
 
       if (category === "all") {
         productsByCategory = await getAllProducts();
       } else if (category) {
-        productsByCategory = await getAllProductsByCategory(category as string);
+        productsByCategory = await getAllProductsByCategory(category);
       }
+
       setProductList(productsByCategory);
     };
 
     if (params?.name) {
-      getProductList();
+      fetchProducts();
     }
   }, [params?.name]);
 
-  // Decode the category name to fix the appearance
+  // Decode the category name for better presentation
   const categoryName = params?.name
     ? decodeURIComponent(Array.isArray(params?.name) ? params?.name[0] : params?.name)
     : "";
 
   return (
-    <div className="mr-2 mt-2 md:mt-6">
-      <div className="md:hidden">
+    <div className="container mx-auto p-4 md:p-6">
+      <div className="md:hidden mb-4">
         <DropdownMenu>
           <DropdownMenuTrigger>
-            <Menu className="font-bold text-lg" size={30} />
+            <Menu className="text-violet-700" size={30} />
           </DropdownMenuTrigger>
-          <DropdownMenuContent className="bg-white text-violet-700 mr-6">
+          <DropdownMenuContent className="bg-white text-violet-700 shadow-lg rounded-lg">
             <DropdownMenuSeparator />
             <DropdownMenuItem>
               <CategoriesSidebar />
@@ -61,7 +61,8 @@ const CategoriesPage = () => {
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
-      <ProductList productList={productList} title={categoryName} />
+      <h1 className="text-2xl font-bold text-gray-800 mb-4">{categoryName}</h1>
+      <ProductList productList={productList} title={`${categoryName} Products`} />
     </div>
   );
 };

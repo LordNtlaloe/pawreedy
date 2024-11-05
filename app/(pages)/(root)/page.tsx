@@ -7,6 +7,7 @@ import { getAllProducts, getProductByName, getLatestProducts } from "@/app/_acti
 import ProductList from "@/components/products/ProductList";
 import CategoryCarousel from "@/components/category/CategoryCarousel";
 import LatestProducts from "@/components/products/LatestProducts";
+import CTA from "@/components/general/CTA";
 
 export default function Home({ userInput }: any) {
   const [popularProducts, setPopularProducts] = useState([]);
@@ -43,10 +44,13 @@ export default function Home({ userInput }: any) {
       <div className="my-8">
         <CategoryCarousel />
       </div>
-      <div className="px-6 text-violet-700">
+      <div className="px-6 text-violet-700 my-2">
         <ProductList productList={popularProducts} title={title} />
       </div>
-      <div className="px-6 text-violet-700">
+      <div className="">
+        <CTA />
+      </div>
+      <div className="px-6 text-violet-700 my-2">
         <LatestProducts latestProductsList={latestProducts} title="Latest Products" />
       </div>
       <div className="flex items-center justify-center py-4">

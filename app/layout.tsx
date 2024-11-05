@@ -6,6 +6,8 @@ import { ClerkProvider, ClerkLoaded, ClerkLoading } from '@clerk/nextjs'
 import Loading from "./loading";
 import { CartProvider } from "@/apis/CartContext";
 import { WishlistProvider } from "@/apis/WishlistContext";
+import "slick-carousel/slick/slick.css";
+import "slick-carousel/slick/slick-theme.css";
 
 const inter = Inter({ subsets: ["latin"] });
 

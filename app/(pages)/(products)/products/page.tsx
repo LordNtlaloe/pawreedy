@@ -162,7 +162,7 @@ export default function ProductList() {
                                                         />
                                                         <div className="absolute bottom-3 left-3 inline-flex items-center rounded-lg bg-white p-2 shadow-md">
                                                             <Star className="h-5 w-5 text-yellow-400" />
-                                                            <span className="text-slate-400 ml-1 text-sm">4.9</span>
+                                                            <span className="text-slate-400 ml-1 text-sm">{product.ratings}</span>
                                                         </div>
                                                         {isNewProduct(product.createdAt) && (
                                                             <span className="absolute top-3 left-3 bg-green-500 text-white text-xs font-bold px-2 py-1 rounded">

@@ -34,7 +34,11 @@ const CartModal = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }
   // Handle Checkout with modal close
   const handleCheckout = () => {
     onClose(); // Close modal
-    router.push('/checkout'); // Redirect to checkout
+  
+    // Use setTimeout to ensure modal closes before redirecting
+    setTimeout(() => {
+      router.push('/checkout'); // Redirect to checkout
+    }, 300); // Adjust timeout duration if necessary
   };
 
   return (
