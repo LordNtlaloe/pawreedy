@@ -1,4 +1,5 @@
 "use server"
+import { ObjectId } from "mongodb";
 import { connectToDB } from "../_database/database";
 
 let dbConnection: any;
@@ -91,6 +92,89 @@ export const getUserEmailsByProductId = async (productId: string) => {
         return userEmails;
     } catch (error: any) {
         console.error("Error fetching user emails by product ID:", error.message);
+        return { error: error.message };
+    }
+};
+
+// Function to get all orders
+export const getAllOrders = async () => {
+    if (!dbConnection) await init();
+
+    try {
+        const ordersCollection = database?.collection("orders");
+
+        if (!ordersCollection) {
+            throw new Error("Failed to get orders collection");
+        }
+
+        // Fetch all orders
+        const orders = await ordersCollection.find().toArray();
+
+        return { success: true, orders };
+    } catch (error: any) {
+        console.error("Error fetching all orders:", error.message);
+        return { error: error.message };
+    }
+};
+
+// Function to update the status of an order
+export const updateOrderStatus = async (orderId: string, newStatus: string) => {
+    if (!dbConnection) await init();
+
+    try {
+        const ordersCollection = database?.collection("orders");
+
+        if (!ordersCollection) {
+            throw new Error("Failed to get orders collection");
+        }
+
+        // Update the order status
+        const result = await ordersCollection.updateOne(
+            { _id: new ObjectId(orderId) }, // Filter by order ID
+            {
+                $set: {
+                    status: newStatus,
+                    updatedAt: new Date(),
+                },
+            }
+        );
+
+        if (result.matchedCount === 0) {
+            throw new Error("Order not found");
+        }
+
+        if (result.modifiedCount === 0) {
+            throw new Error("Failed to update order status");
+        }
+
+        return { success: true, message: "Order status updated successfully" };
+    } catch (error: any) {
+        console.error("Error updating order status:", error.message);
+        return { error: error.message };
+    }
+};
+
+
+export const getOrderDetails = async (orderId: string) => {
+    if (!dbConnection) await init();
+
+    try {
+        const ordersCollection = database?.collection("orders");
+
+        if (!ordersCollection) {
+            throw new Error("Failed to get orders collection");
+        }
+
+        // Fetch the order details by ID
+        const order = await ordersCollection.findOne({ _id: new ObjectId(orderId) });
+
+        if (!order) {
+            throw new Error("Order not found");
+        }
+
+        return { success: true, order };
+    } catch (error: any) {
+        console.error("Error fetching order details:", error.message);
         return { error: error.message };
     }
 };
