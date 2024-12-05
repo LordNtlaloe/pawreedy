@@ -2,7 +2,7 @@
 
 import React from 'react';
 import Image from 'next/image';
-import { useWishlist } from '@/apis/WishlistContext';
+import { useWishlist } from '@/contexts/WishlistContext';
 import { FaTrashAlt } from 'react-icons/fa'; // Import the delete icon from react-icons
 
 export default function Wishlist() {

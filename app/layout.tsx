@@ -4,8 +4,8 @@ import "./globals.css";
 import { cn } from "@/lib/utils";
 import { ClerkProvider, ClerkLoaded, ClerkLoading } from '@clerk/nextjs'
 import Loading from "./loading";
-import { CartProvider } from "@/apis/CartContext";
-import { WishlistProvider } from "@/apis/WishlistContext";
+import { CartProvider } from "@/contexts/CartContext";
+import { WishlistProvider } from "@/contexts/WishlistContext";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 

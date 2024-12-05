@@ -58,7 +58,7 @@ export function OrdersTable<TData, TValue>({
 
   return (
     <motion.div
-      className="bg-white bg-opacity-50 text-violet-700 backdrop-blur-md shadow-sm shadow-violet-800 rounded-xl p-6 mb-8"
+      className="bg-white bg-opacity-50 backdrop-blur-md border rounded-xl p-6 mb-8"
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: 0.2 }}
@@ -67,7 +67,7 @@ export function OrdersTable<TData, TValue>({
         <div className="relative">
           <input
             type="text"
-            placeholder="Search categories..."
+            placeholder="Search Orders..."
             className="bg-violet-50 text-violet-700 placeholder-gray-400 rounded-lg pl-10 pr-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
             onChange={handleSearch}
             value={searchTerm}
@@ -77,7 +77,7 @@ export function OrdersTable<TData, TValue>({
       </div>
 
       <div className="overflow-x-auto">
-        <Table className="min-w-full divide-y divide-gray-700">
+        <Table className="min-w-full divide-y divide-gray-700 border rounded-xl">
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id}>
@@ -85,7 +85,7 @@ export function OrdersTable<TData, TValue>({
                   return (
                     <TableHead
                       key={header.id}
-                      className="px-6 py-3 text-left text-xs font-bold text-violet-700 uppercase tracking-wider"
+                      className="px-6 py-3 text-left text-xs font-bold text-slate-900 uppercase tracking-wider bg-gray-100"
                     >
                       {header.isPlaceholder
                         ? null
@@ -99,14 +99,14 @@ export function OrdersTable<TData, TValue>({
               </TableRow>
             ))}
           </TableHeader>
-          <TableBody className="divide-y divide-gray-700">
+          <TableBody className="divide-y text-slate-800">
             {filteredRows.length ? (
               filteredRows.map((row) => (
                 <TableRow key={row.id} data-state={row.getIsSelected() ? "selected" : undefined}>
                   {row.getVisibleCells().map((cell) => (
                     <TableCell
                       key={cell.id}
-                      className="px-6 py-4 whitespace-nowrap text-sm text-violet-800"
+                      className="px-6 py-4 whitespace-nowrap text-sm tex-slate-800"
                     >
                       {flexRender(cell.column.columnDef.cell, cell.getContext())}
                     </TableCell>

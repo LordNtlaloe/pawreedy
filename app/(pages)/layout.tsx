@@ -17,13 +17,16 @@ export default function PagesLayout({
     children: React.ReactNode;
 }>) {
     return (
-        <body className={cn("flex min-h-full flex-col")}>
-            <div>
-                <Navbar />
-                <SecondaryNav />
-            </div>
-            <main className="grow">{children}</main>
+        <div className="">
+            <main className={cn("flex min-h-full flex-col")}>
+                <div>
+                    <Navbar />
+                    <SecondaryNav />
+                </div>
+                <main className="grow">{children}</main>
+            </main>
             <Footer />
-        </body>
+        </div>
+        
     );
 }

@@ -2,8 +2,8 @@
 import { useEffect, useState } from "react";
 import ProductFilters from "@/components/products/ProductFilters";
 import Loading from "@/app/loading"; // Import if needed
-import { useCart } from "@/apis/CartContext";
-import { useWishlist } from "@/apis/WishlistContext";
+import { useCart } from "@/contexts/CartContext";
+import { useWishlist } from "@/contexts/WishlistContext";
 import Swal from "sweetalert2";
 import withReactContent from "sweetalert2-react-content";
 import { ShoppingCart, Star, Heart } from "lucide-react";

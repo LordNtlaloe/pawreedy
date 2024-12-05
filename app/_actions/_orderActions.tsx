@@ -128,16 +128,20 @@ export const updateOrderStatus = async (orderId: string, newStatus: string) => {
             throw new Error("Failed to get orders collection");
         }
 
-        // Update the order status
+        console.log("Updating order with ID:", new ObjectId(orderId));
+
         const result = await ordersCollection.updateOne(
             { _id: new ObjectId(orderId) }, // Filter by order ID
             {
                 $set: {
-                    status: newStatus,
+                    orderStatus: newStatus,
                     updatedAt: new Date(),
                 },
             }
         );
+
+        console.log("Matched count:", result.matchedCount);
+        console.log("Modified count:", result.modifiedCount);
 
         if (result.matchedCount === 0) {
             throw new Error("Order not found");

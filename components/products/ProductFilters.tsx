@@ -44,7 +44,7 @@ export default function ProductFilters({ categories, colors, sizes, priceRange, 
       <div className="block lg:hidden">
         <button
           onClick={() => setMobileFiltersOpen(!isMobileFiltersOpen)}
-          className="w-full text-white bg-violet-500 p-2 rounded-md flex items-center justify-center space-x-2"
+          className="w-full text-white bg-[#F20707] p-2 rounded-md flex items-center justify-center space-x-2"
         >
           <Filter className="h-5 w-5" />
           <span>{isMobileFiltersOpen ? "Close Filters" : "Filters"}</span>

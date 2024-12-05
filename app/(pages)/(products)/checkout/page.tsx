@@ -1,6 +1,6 @@
 'use client';
 
-import { useCart } from '@/apis/CartContext';
+import { useCart } from '@/contexts/CartContext';
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';

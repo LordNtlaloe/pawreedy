@@ -8,6 +8,7 @@ import { useRouter } from "next/navigation";
 import ChangeStatusPopup from "../ChangeStatus/ChangeOrderStatus";
 import OrderDetailsPopup from "../OrderDetailsPopup";
 import React, { useState } from "react"
+import { TableCell } from "@/components/ui/table";
 
 export type Order = {
   _id: string;
@@ -18,23 +19,51 @@ export type Order = {
 };
 
 export const columns: ColumnDef<Order>[] = [
-  
+  { accessorKey: "_id", header: "Order ID" },
   { accessorKey: "name", header: "Name" },
   { accessorKey: "email", header: "Email" },
-  { accessorKey: "orderStatus", header: "Status" },
+  { accessorKey: "orderStatus", header: "Status", cell: ({ row }) => {
+      const orderStatus = row.original.orderStatus;
+      
+      // Helper function to return status-specific class
+      const getStatusClass = (status: string) => {
+        switch (status) {
+          case "Pending":
+            return "bg-yellow-200 text-yellow-700"; // Light Yellow for Pending
+          case "Processing":
+            return "bg-blue-200 text-blue-700";  // Light Blue for Processing
+          case "Shipped":
+            return "bg-green-200 text-green-700"; // Light Green for Shipped
+          case "Delivered":
+            return "bg-purple-200 text-purple-700"; // Light Purple for Delivered
+          case "Cancelled":
+            return "bg-red-200 text-red-700"; // Light Red for Cancelled
+          default:
+            return "bg-gray-200 text-gray-700"; // Default gray
+        }
+      };
+
+      return (
+        <TableCell
+          className={`px-4 py-2 rounded-md whitespace-nowrap text-sm font-semibold ${getStatusClass(orderStatus)}`}
+        >
+          {orderStatus}
+        </TableCell>
+      );
+    }
+  },
   { accessorKey: "totalAmount", header: "Total Amount" },
   {
     accessorKey: "options",
     header: "Options",
     cell: ({ row }) => {
       const order = row.original;
-      
+
       const [isPopupOpen, setIsPopupOpen] = useState(false);
 
       const handleClose = () => setIsPopupOpen(false);
 
       const handleSave = (newStatus: string) => {
-        // Update the order status in the UI or state here as needed
         order.orderStatus = newStatus;
         setIsPopupOpen(false);
       };
@@ -48,7 +77,7 @@ export const columns: ColumnDef<Order>[] = [
             <DialogContent>
               <ChangeStatusPopup
                 orderId={order._id}
-                currentStatus={order.orderStatus}
+                initialStatus={order.orderStatus} // Change currentStatus to initialStatus
                 onClose={handleClose}
                 onSave={handleSave}
               />
@@ -70,4 +99,5 @@ export const columns: ColumnDef<Order>[] = [
     },
   },
 ];
+
 

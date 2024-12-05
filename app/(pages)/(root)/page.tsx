@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { getAllProducts, getProductByName, getLatestProducts } from "@/app/_actions/_productsActions";
 import ProductList from "@/components/products/ProductList";
-import CategoryCarousel from "@/components/category/CategoryCarousel";
+// import CategoryCarousel from "@/components/category/CategoryCarousel";
 import LatestProducts from "@/components/products/LatestProducts";
 import CTA from "@/components/general/CTA";
 
@@ -39,16 +39,13 @@ export default function Home({ userInput }: any) {
     latestProduct();
   }, [])
   return (
-    <main className="bg-violet-50">
+    <main className="bg-white">
       <Hero />
       <div className="my-8">
-        <CategoryCarousel />
+        {/* <CategoryCarousel /> */}
       </div>
       <div className="px-6 text-violet-700 my-2">
         <ProductList productList={popularProducts} title={title} />
-      </div>
-      <div className="">
-        <CTA />
       </div>
       <div className="px-6 text-violet-700 my-2">
         <LatestProducts latestProductsList={latestProducts} title="Latest Products" />
@@ -56,10 +53,13 @@ export default function Home({ userInput }: any) {
       <div className="flex items-center justify-center py-4">
         <Link
           href="/products"
-          className="bg-[#51358C] text-white px-6 py-2 rounded-full hover:bg-[#633faf] transition-all hover:scale-105"
+          className="bg-violet-700 text-white px-6 py-2 rounded-full hover:bg-[#633faf] transition-all hover:scale-105"
         >
-          More Products...
+          More
         </Link>
+      </div>
+      <div className="">
+        <CTA />
       </div>
     </main>
   );

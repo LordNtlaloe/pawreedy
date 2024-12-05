@@ -1,12 +1,14 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Image from "next/image"; // Assuming you're using next/image for images
+import Image from "next/image";
 import { getAllRatingsByProductId } from "@/app/_actions/_productsActions";
+import { FaStar } from "react-icons/fa";
+import { useUser } from '@clerk/nextjs';
 
 interface Rating {
   _id: string;
-  userId: string;
+  userEmail: string;
   rating: number;
   comment: string;
   title: string;
@@ -17,16 +19,17 @@ interface Rating {
 }
 
 const DisplayRatings = ({ productId }: { productId: string }) => {
+  const { user } = useUser();
   const [ratings, setRatings] = useState<Rating[]>([]);
   const [error, setError] = useState<string | null>(null);
+  const [users, setUsers] = useState<Map<string, string>>(new Map());
 
   useEffect(() => {
     const fetchRatings = async () => {
       try {
         const data = await getAllRatingsByProductId(productId);
-        console.log("Fetched Ratings Data:", data); // Debugging line
-        
-        // Check if the data is an array
+        console.log("Fetched Ratings Data:", data);
+
         if (Array.isArray(data)) {
           setRatings(data);
         } else if (data.error) {
@@ -41,6 +44,26 @@ const DisplayRatings = ({ productId }: { productId: string }) => {
 
     fetchRatings();
   }, [productId]);
+
+  useEffect(() => {
+    const fetchUserProfilePictures = async () => {
+      const userProfiles = new Map();
+      for (const rating of ratings) {
+        if (!userProfiles.has(rating.userEmail)) {
+          try {
+            userProfiles.set(rating.userEmail, user?.imageUrl || ""); // Store profile picture URL
+          } catch (err) {
+            console.error(`Error fetching user data for ${rating.userEmail}:`, err);
+          }
+        }
+      }
+      setUsers(userProfiles);
+    };
+
+    if (ratings.length > 0) {
+      fetchUserProfilePictures();
+    }
+  }, [ratings, user]);
 
   if (error) {
     return <div>Error: {error}</div>;
@@ -58,36 +81,44 @@ const DisplayRatings = ({ productId }: { productId: string }) => {
               <div className="flex items-center mb-4">
                 <Image
                   className="w-10 h-10 me-4 rounded-full"
-                  src={rating.user.profilePicture}
+                  src={users.get(rating.userEmail) || "/default-profile.jpg"}
                   alt="User profile picture"
                   width={40}
                   height={40}
                 />
                 <div className="font-medium dark:text-white">
-                  <p>Made On {new Date(rating.createdAt).toLocaleDateString()}</p>
+                  <p>{user?.firstName} {user?.lastName}</p>
+                  <time
+                    dateTime={rating.createdAt}
+                    className="block text-sm text-gray-500 dark:text-gray-400"
+                  >
+                    Made On {new Date(rating.createdAt).toLocaleDateString()}
+                  </time>
                 </div>
               </div>
 
               {/* Rating Stars */}
               <div className="flex items-center mb-1 space-x-1 rtl:space-x-reverse">
                 {[...Array(rating.rating)].map((_, index) => (
-                  <svg
-                    key={index}
-                    className="w-4 h-4 text-yellow-300"
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="currentColor"
-                    viewBox="0 0 22 20"
-                  >
-                    <path d="M20.924 7.625a1.523 1.523 0 0 0-1.238-1.044l-5.051-.734-2.259-4.577a1.534 1.534 0 0 0-2.752 0L7.365 5.847l-5.051.734A1.535 1.535 0 0 0 1.463 9.2l3.656 3.563-.863 5.031a1.532 1.532 0 0 0 2.226 1.616L11 17.033l4.518 2.375a1.534 1.534 0 0 0 2.226-1.617l-.863-5.03L20.537 9.2a1.523 1.523 0 0 0 .387-1.575Z" />
-                  </svg>
+                  <FaStar key={index} className="w-4 h-4 text-yellow-300" />
                 ))}
-                <h3 className="ms-2 text-sm font-semibold text-gray-900 dark:text-white">
+                <h3 className="ml-4 pl-4 ms-2 text-sm font-semibold text-gray-900 dark:text-white">
                   {rating.title}
                 </h3>
               </div>
 
               {/* Comment */}
               <p className="mb-2 text-gray-500 dark:text-gray-400">{rating.comment}</p>
+              <footer className="mb-5 text-sm text-gray-500 dark:text-gray-400">
+                <p>Reviewed on {new Date(rating.createdAt).toLocaleDateString()}</p>
+              </footer>
+
+              <a
+                href="#"
+                className="block mb-5 text-sm font-medium text-blue-600 hover:underline dark:text-blue-500"
+              >
+                Read more
+              </a>
             </div>
           ))
         )}

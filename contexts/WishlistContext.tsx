@@ -11,9 +11,10 @@ type WishlistItem = {
 
 type WishlistContextType = {
   wishlist: WishlistItem[];
+  // wishlistCounts: Record<string, number>;
   addToWishlist: (item: WishlistItem) => void;
   removeFromWishlist: (id: string) => void;
-  updateWishlistQuantity: (id: string, quantity: number) => void; // Add this
+  updateWishlistQuantity: (id: string, quantity: number) => void;
   clearWishlist: () => void;
 };
 
@@ -29,23 +30,27 @@ export const useWishlist = () => {
 
 export const WishlistProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [wishlist, setWishlist] = useState<WishlistItem[]>([]);
+  const [wishlistCounts, setWishlistCounts] = useState<Record<string, number>>({});
 
-  // Load wishlist from localStorage when the component is mounted
   useEffect(() => {
-    const savedWishlist = localStorage.getItem("wishlist");
-    if (savedWishlist) {
-      setWishlist(JSON.parse(savedWishlist));
+    try {
+      const savedWishlist = JSON.parse(localStorage.getItem("wishlist") || "[]");
+      const savedCounts = JSON.parse(localStorage.getItem("wishlistCounts") || "{}");
+      setWishlist(savedWishlist);
+      setWishlistCounts(savedCounts);
+    } catch (error) {
+      console.error("Error loading wishlist from localStorage", error);
     }
   }, []);
 
-  // Save wishlist to localStorage whenever it changes
   useEffect(() => {
-    if (wishlist.length > 0) {
-      localStorage.setItem("wishlist", JSON.stringify(wishlist));
+    localStorage.setItem("wishlist", JSON.stringify(wishlist));
+    if (Object.keys(wishlistCounts).length > 0) {
+      localStorage.setItem("wishlistCounts", JSON.stringify(wishlistCounts));
     } else {
-      localStorage.removeItem("wishlist");
+      localStorage.removeItem("wishlistCounts");
     }
-  }, [wishlist]);
+  }, [wishlist, wishlistCounts]);
 
   const addToWishlist = (item: WishlistItem) => {
     setWishlist((prevWishlist) => {
@@ -57,10 +62,20 @@ export const WishlistProvider: React.FC<{ children: ReactNode }> = ({ children }
       }
       return [...prevWishlist, item];
     });
+
+    setWishlistCounts((prevCounts) => ({
+      ...prevCounts,
+      [item.id]: (prevCounts[item.id] || 0) + 1,
+    }));
   };
 
   const removeFromWishlist = (id: string) => {
     setWishlist((prevWishlist) => prevWishlist.filter((item) => item.id !== id));
+    setWishlistCounts((prevCounts) => {
+      const newCounts = { ...prevCounts };
+      delete newCounts[id];
+      return newCounts;
+    });
   };
 
   const updateWishlistQuantity = (id: string, quantity: number) => {
@@ -76,10 +91,13 @@ export const WishlistProvider: React.FC<{ children: ReactNode }> = ({ children }
 
   const clearWishlist = () => {
     setWishlist([]);
+    setWishlistCounts({});
   };
 
   return (
-    <WishlistContext.Provider value={{ wishlist, addToWishlist, removeFromWishlist, updateWishlistQuantity, clearWishlist }}>
+    <WishlistContext.Provider
+      value={{ wishlist, addToWishlist, removeFromWishlist, updateWishlistQuantity, clearWishlist }}
+    >
       {children}
     </WishlistContext.Provider>
   );

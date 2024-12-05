@@ -10,6 +10,10 @@ import { AnimatePresence, motion } from "framer-motion";
 
 const DashboardSidebarMenu = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+  const [isHovered, setIsHovered] = useState(false);
+
+  const handleMouseEnter = () => setIsHovered(true);
+  const handleMouseLeave = () => setIsHovered(false);
 
   return (
     <motion.div
@@ -24,7 +28,7 @@ const DashboardSidebarMenu = () => {
           className='p-2 max-w-fit'
         >
           <div className="flex items-center justify-between">
-            <Menu size={24} className="rounded-full hover:bg-gray-700 transition-colors"/>
+            <Menu size={24} className="rounded-full hover:bg-violet-900 hover:text-white transition-colors"/>
             {isSidebarOpen && (
               <motion.div
                 initial={{ opacity: 0 }}
@@ -39,12 +43,22 @@ const DashboardSidebarMenu = () => {
 
         <nav className='mt-0 flex-grow'>
           {dashboardMenu.map((item) => (
-            <Link key={item.href} href={item.href}>
+            <Link key={item.href} href={item.href} className="hover:text-white">
               <motion.div
-                className='flex items-center p-4 text-sm font-medium rounded-lg hover:bg-gray-700 transition-colors mb-2'
+                className='flex items-center p-4 text-sm font-medium rounded-lg hover:bg-violet-900 hover-text-white transition-colors mb-2'
               >
-                <item.icon size={20} style={{ color: item.color, minWidth: "20px" }} />
-                <AnimatePresence>
+              <item.icon
+                    size={20}
+                    style={{
+                      color: isHovered ? "white" : item.color,
+                      minWidth: "20px",
+                      transition: "color 0.2s", // Optional for smooth hover effect
+                    }}
+                    className="hover:text-white"
+                    onMouseEnter={handleMouseEnter}
+                    onMouseLeave={handleMouseLeave}
+                  />                
+                  <AnimatePresence>
                   {isSidebarOpen && (
                     <motion.span
                       className='ml-4 whitespace-nowrap'

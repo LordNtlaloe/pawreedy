@@ -189,7 +189,7 @@ export const saveNewProductRating = async (formData: FormData) => {
         const ratingsCollection = database?.collection("ratings");
         const ordersCollection = database?.collection("orders");
 
-        const productId = formData.get("productId") as string;
+        const productName = formData.get("productName") as string;
         const userEmail = formData.get("userEmail") as string;
         const rating = Number(formData.get("rating"));
         const title = formData.get("title");
@@ -199,29 +199,44 @@ export const saveNewProductRating = async (formData: FormData) => {
             throw new Error("Failed to get necessary collections");
         }
 
-        const productObjectId = new ObjectId(productId);
-        const product = await productsCollection.findOne({ "_id": productObjectId });
+        
+        const product = await productsCollection.findOne({ "name": productName });
 
         if (!product) {
             throw new Error("Product not found");
         }
 
-        // Check if user has purchased the product
+        // Log the values for debugging
+        console.log("Checking if the user has purchased the product...");
+        console.log("Product Name:", productName);
+        console.log("User Email:", userEmail);
+
+        // Refined query to check if the user has purchased the product
         const userOrder = await ordersCollection.findOne({
-            "items.productId": productObjectId,
-            userEmail: userEmail
+            userEmail: userEmail,
+            "cartSummary.items": {
+                $elemMatch: { name: productName }, // Ensure this matches the structure
+            },
         });
 
+        // Debug logging
+        console.log("Found user order:", userOrder);
+
         if (!userOrder) {
+            console.error("Debug: No order found for the user with productId", {
+                productName: productName,
+                userEmail,
+            });
             throw new Error("You must purchase the product before rating it");
         }
 
+        // Update product ratings
         const newRatingsCount = (product.ratingsCount ?? 0) + 1;
         const previousOverallRating = isNaN(product.ratings) ? 0 : product.ratings;
         const newOverallRating = ((previousOverallRating * (product.ratingsCount ?? 0)) + rating) / newRatingsCount;
 
         const updateResult = await productsCollection.updateOne(
-            { "_id": productObjectId },
+            { "name": productName },
             {
                 $set: {
                     ratings: newOverallRating,
@@ -234,8 +249,9 @@ export const saveNewProductRating = async (formData: FormData) => {
             throw new Error("Failed to update product ratings");
         }
 
+        // Insert the rating into the ratings collection
         await ratingsCollection.insertOne({
-            productId: productObjectId,
+            productId: productName,
             userEmail: userEmail,
             rating,
             title,
@@ -246,7 +262,7 @@ export const saveNewProductRating = async (formData: FormData) => {
 
         return { success: true };
     } catch (error: any) {
-        console.error("An Error Occurred... ", error.message);
+        console.error("An Error Occurred: ", error.message);
         return { error: error.message };
     }
 };
@@ -281,7 +297,7 @@ export const getAllRatingsByProductId = async ( productId: string ) =>{
             return { error: "Failed To Get Product Ratings"};
         }
 
-        const ratings = await collection.find({ productId: new ObjectId(productId)})
+        const ratings = await collection.find({ productId: productId })
             .map((rating: any) => ({...rating, _id: rating._id.toString()})).toArray();
         
         return ratings;

@@ -5,8 +5,8 @@ import { ShoppingCart, Heart, User as UserIcon, Search } from "lucide-react";
 import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem } from "@/components/ui/dropdown-menu";
 import { useState } from "react";
 import ShoppingCartModal from "@/components/products/cart/ShoppingCartModal"; // Adjust the import path as needed
-import { useCart } from "@/apis/CartContext";
-import { useWishlist } from "@/apis/WishlistContext";
+import { useCart } from "@/contexts/CartContext";
+import { useWishlist } from "@/contexts/WishlistContext";
 
 const Menu = ({ userInput = () => { } }: any) => {
   const [searchText, setSearchText] = useState<string>("");

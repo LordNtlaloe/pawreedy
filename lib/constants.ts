@@ -69,8 +69,8 @@ export const dashboardMenu = [
   },
   {
     id: 4,
-    label: "Bookings",
-    href: "/dashboard/bookings",
+    label: "Orders",
+    href: "/dashboard/orders",
     icon: Calendar,
     current: false,
     color: "#191C24"

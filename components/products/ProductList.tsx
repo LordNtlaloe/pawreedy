@@ -1,10 +1,11 @@
 "use client";
 import { useState } from "react";
-import { useCart } from "@/apis/CartContext";
-import { useWishlist } from "@/apis/WishlistContext";
+import { useCart } from "@/contexts/CartContext";
+import { useWishlist } from "@/contexts/WishlistContext";
 import Swal from "sweetalert2";
 import withReactContent from "sweetalert2-react-content";
-import { ShoppingCart, Star, Heart } from "lucide-react";
+import { ShoppingCart, Heart } from "lucide-react";
+import { FaStar } from "react-icons/fa";
 import Link from "next/link";
 import Image from "next/image";
 import { Swiper, SwiperSlide } from "swiper/react";
@@ -93,19 +94,20 @@ export default function ProductList({ productList = [], title }: ProductProps) {
     <main className="py-8 bg-white rounded-lg">
       <div className="mx-auto max-w-full px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-8">
-          <h2 className="font-manrope font-bold text-2xl sm:text-4xl text-violet-900">
+          <h2 className="font-manrope font-bold text-2xl sm:text-4xl text-slate-950">
             {title}
           </h2>
         </div>
         <Swiper
           modules={[Autoplay, Pagination, Navigation]}
-          slidesPerView={4}
+          slidesPerView={1}
           spaceBetween={20}
           slidesPerGroup={1}
           loop={true}
           autoplay={true}
           navigation={{ nextEl: ".swiper-button-prev", prevEl: ".swiper-button-next" }}
           breakpoints={{
+            480: { slidesPerView: 1, slidesPerGroup: 1 },
             640: { slidesPerView: 2, slidesPerGroup: 2 },
             768: { slidesPerView: 3, slidesPerGroup: 3 },
             1024: { slidesPerView: 4, slidesPerGroup: 4 },
@@ -119,7 +121,7 @@ export default function ProductList({ productList = [], title }: ProductProps) {
             const isNew = new Date().getTime() - new Date(product.createdAt as string).getTime() < 30 * 24 * 60 * 60 * 1000;
 
             return (
-              <SwiperSlide key={product._id} className="rounded-xl bg-white p-4 shadow-lg hover:shadow-xl transition-shadow duration-300">
+              <SwiperSlide key={product._id} className="rounded-xl bg-white p-4 shadow[#0D0D0D] shadow-lg hover:shadow-xl transition-shadow duration-300">
                 <div className="relative">
                   {isNew && (
                     <span className="absolute z-10 top-2 left-2 bg-green-500 text-white text-xs font-bold px-2 py-1 rounded">
@@ -136,7 +138,7 @@ export default function ProductList({ productList = [], title }: ProductProps) {
                         height={250}
                       />
                       <div className="absolute bottom-3 left-3 inline-flex items-center rounded-lg bg-white p-2 shadow-md">
-                        <Star className="h-5 w-5 text-yellow-400" />
+                        <FaStar className="h-5 w-5 text-yellow-400" />
                         <span className="text-slate-400 ml-1 text-sm">{product.ratings}</span>
                       </div>
                     </div>
@@ -150,19 +152,19 @@ export default function ProductList({ productList = [], title }: ProductProps) {
                 </div>
 
                 <div className="mt-3 px-2">
-                  <h2 className="text-slate-700 font-medium">{product.name}</h2>
-                  <p className="text-slate-400 mt-1 text-sm">{product.category}</p>
+                  <h2 className="text-[#0D0D0D] font-medium">{product.name}</h2>
+                  <p className="text-slate-700 mt-1 text-sm">{product.category}</p>
                   <div className="mt-3 flex items-end justify-between">
                     <p>
-                      <span className="text-lg font-bold text-violet-500">
+                      <span className="text-lg font-bold text-slate-800">
                         M{product.price}
                       </span>
                     </p>
                     <button
                       onClick={() => handleAddToCart(product)}
-                      className="group inline-flex rounded-xl bg-blue-100 p-2 hover:bg-blue-200 transition-colors duration-300"
+                      className="group inline-flex rounded-md bg-violet-700 p-2 hover:bg-violet-900 transition-colors duration-300"
                     >
-                      <ShoppingCart className="group-hover:text-violet-700 h-4 w-4 text-violet-800" />
+                      <ShoppingCart className="group-hover:text-gray-100 h-4 w-4 text-white" />
                     </button>
                   </div>
                 </div>

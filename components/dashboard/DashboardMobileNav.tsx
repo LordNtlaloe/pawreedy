@@ -21,8 +21,8 @@ const DashboardMobileNav = () => {
                 <DropdownMenuTrigger>
                     <MenuIcon />
                 </DropdownMenuTrigger>
-                <DropdownMenuContent className='bg-blue-950 ml-6 text-white md: mt-2'>
-                    <DropdownMenuLabel className='border-b pb-2'>DASHBOARD MENU</DropdownMenuLabel>
+                <DropdownMenuContent className='bg-violet-950 ml-6 text-white md: mt-2'>
+                    <DropdownMenuLabel className=' pb-2'>DASHBOARD MENU</DropdownMenuLabel>
                     <DropdownMenuSeparator />
                     <div>
                         {dashboardMenu.map((item) => (
@@ -40,7 +40,7 @@ const DashboardMobileNav = () => {
                         ))}
                     </div>
 
-                    <div className="pt-10 border-t mb-3 justify-end flex flex-col border-white/20">
+                    <div className="pt-10  mb-3 justify-end flex flex-col">
 
                         <Link href="/dashboard/settings">
                             <DropdownMenuItem className="flex pl-3 gap-6 hover:bg-slate-600 mx-2 py-2 rounded-[5px] transition-all duration-500">
@@ -59,12 +59,6 @@ const DashboardMobileNav = () => {
 
                 </DropdownMenuContent>
             </DropdownMenu>
-
-            <SaveButton
-                btnFunction="registerBusiness"
-                btnText="Register Business"
-                bgColor="bg-secondary"
-            />
 
         </main>
     )

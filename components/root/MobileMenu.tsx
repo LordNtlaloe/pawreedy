@@ -14,7 +14,7 @@ import { SignInButton, SignUpButton, SignedIn, SignedOut, UserButton } from "@cl
 import { MenuIcon } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { useCart } from "@/apis/CartContext"; 
+import { useCart } from "@/contexts/CartContext"; 
 import { useState } from "react";
 import ShoppingCartModal from "@/components/products/cart/ShoppingCartModal";
 
