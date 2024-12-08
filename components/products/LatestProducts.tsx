@@ -90,7 +90,7 @@ export default function LatestProducts({ latestProductsList = [], title }: Produ
     return (
         <main className="py-8 bg-white rounded-lg">
             <div className="mx-auto max-w-full px-4 sm:px-6 lg:px-8">
-                <h2 className="font-manrope font-bold text-2xl sm:text-4xl text-violet-700 mb-8 text-center">
+                <h2 className="font-manrope font-bold text-2xl sm:text-4xl text-slate-800 mb-8 text-center">
                     {title}
                 </h2>
                 <div className="flex flex-col gap-4">
@@ -156,7 +156,7 @@ export default function LatestProducts({ latestProductsList = [], title }: Produ
             })
         ) : (
             <div className="col-span-3 text-center text-gray-600">
-                <p>Coming Soon</p> {/* Updated message */}
+                <h1 className="text-2xl text-center font-bold">Coming Soon</h1>
             </div>
         )}
     </div>

@@ -20,22 +20,20 @@ const DashboardSidebarMenu = () => {
       className={`relative z-10 transition-all duration-300 ease-in-out flex-shrink-0 ${isSidebarOpen ? "w-64" : "w-20"}`}
       animate={{ width: isSidebarOpen ? 256 : 80 }}
     >
-      <div className='h-full bg-white text-[#51358C] bg-opacity-50 backdrop-blur-md p-4 flex flex-col shadow-sm shadow-violet-950'>
+      <div className='h-full bg-[#51358C] text-white backdrop-blur-md px-4 flex flex-col shadow-sm shadow-violet-950'>
         <motion.button
-          whileHover={{ scale: 1.1 }}
-          whileTap={{ scale: 0.9 }}
           onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-          className='p-2 max-w-fit'
+          className='p-2'
         >
-          <div className="flex items-center justify-between">
-            <Menu size={24} className="rounded-full hover:bg-violet-900 hover:text-white transition-colors"/>
+          <div className="flex items-center justify-start -space-y-6 space-x-2">
+            <Menu size={24} className="rounded-full hover:text-white transition-colors"/>
             {isSidebarOpen && (
               <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
               >
-                <Image src={logo} width={120} height={60} alt="Pawreedy Logo" className="ml-2" />
+                <Image src={logo} width={120} height={60} alt="Pawreedy Logo" className="" />
               </motion.div>
             )}
           </div>
@@ -50,7 +48,7 @@ const DashboardSidebarMenu = () => {
               <item.icon
                     size={20}
                     style={{
-                      color: isHovered ? "white" : item.color,
+                      color: "white",
                       minWidth: "20px",
                       transition: "color 0.2s", // Optional for smooth hover effect
                     }}

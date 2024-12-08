@@ -97,28 +97,31 @@ export const getAllProductsByCategory = async (categoryName: string) => {
 }
 
 export const getProductById = async (_id: string) => {
-    if(!dbConnection) await init();
+    if (!dbConnection) await init();
 
-    try{
+    try {
         const collection = await database?.collection("products");
 
-        if(!database || !collection){
-            console.log("Failed To Get Products");
+        if (!collection) {
+            console.error("Failed To Get Products");
             return;
         }
 
-        let product = await collection.findOne({ "_id": new ObjectId(_id) });
+        const product = await collection.findOne({ _id: new ObjectId(_id) });
 
-        if(product){
-            product = { ...product, _id: product._id.toString() }
+        if (product) {
+            return {
+                ...product,
+            };
         }
-        return product;
+
+        return null;
+    } catch (error: any) {
+        console.error("An Error Occurred: ", error.message);
+        return { error: error.message };
     }
-    catch(error: any){
-        console.log("An Error Occured... ", error.message);
-        return { "error ": error.message }
-    }
-}
+};
+
 
 export const updateProduct = async (_id: string, formData: FormData) => {
     const data = {
@@ -398,8 +401,6 @@ export const getProductsByFilters = async (
         return { error: error.message };
     }
 }
-
-
 
 export const getLatestProducts = async () => {
     if (!dbConnection) await init();

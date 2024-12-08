@@ -94,7 +94,7 @@ export default function ProductList({ productList = [], title }: ProductProps) {
     <main className="py-8 bg-white rounded-lg">
       <div className="mx-auto max-w-full px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-8">
-          <h2 className="font-manrope font-bold text-2xl sm:text-4xl text-slate-950">
+          <h2 className="font-manrope font-bold text-2xl sm:text-4xl text-violet-950">
             {title}
           </h2>
         </div>
@@ -107,9 +107,8 @@ export default function ProductList({ productList = [], title }: ProductProps) {
           autoplay={true}
           navigation={{ nextEl: ".swiper-button-prev", prevEl: ".swiper-button-next" }}
           breakpoints={{
-            480: { slidesPerView: 1, slidesPerGroup: 1 },
             640: { slidesPerView: 2, slidesPerGroup: 2 },
-            768: { slidesPerView: 3, slidesPerGroup: 3 },
+            768: { slidesPerView: 2, slidesPerGroup: 2 },
             1024: { slidesPerView: 4, slidesPerGroup: 4 },
           }}
           className="mySwiper p-5"

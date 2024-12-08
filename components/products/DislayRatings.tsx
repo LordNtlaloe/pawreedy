@@ -53,7 +53,7 @@ const DisplayRatings = ({ productId }: { productId: string }) => {
           try {
             userProfiles.set(rating.userEmail, user?.imageUrl || ""); // Store profile picture URL
           } catch (err) {
-            console.error(`Error fetching user data for ${rating.userEmail}:`, err);
+            console.log(`Error fetching user data for ${rating.userEmail}:`, err);
           }
         }
       }

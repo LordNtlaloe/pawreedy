@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import ProductFilters from "@/components/products/ProductFilters";
-import Loading from "@/app/loading"; // Import if needed
+import Loading from "@/app/loading"; 
 import { useCart } from "@/contexts/CartContext";
 import { useWishlist } from "@/contexts/WishlistContext";
 import Swal from "sweetalert2";

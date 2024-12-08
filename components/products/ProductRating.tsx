@@ -59,8 +59,8 @@ const ProductRatings = ({
           setUserCanRate(false);
         }
       } else {
-        if (!userEmail) console.error("User email is missing.");
-        if (!product?._id) console.error("Product ID is missing.");
+        if (!userEmail) console.log("User email is missing.");
+        if (!product?._id) console.log("Product ID is missing.");
         setUserCanRate(false);
       }
     };

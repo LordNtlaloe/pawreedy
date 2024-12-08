@@ -52,7 +52,7 @@ const DashboardHeader = () => {
       </div>
 
       {/* Mobile Navigation for smaller screens */}
-      <div className="md:hidden h-20 bg-blue-950 text-white flex items-center justify-between px-4 shadow-lg rounded-md">
+      <div className="md:hidden h-20 bg-violet-950 text-white flex items-center justify-between px-4 shadow-lg rounded-md">
         <DashboardMobileNav />
       </div>
     </div>

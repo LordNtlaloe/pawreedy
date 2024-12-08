@@ -30,15 +30,24 @@ export default function ProductFilters({ categories, colors, sizes, priceRange, 
     });
   }, [selectedCategory, selectedColor, selectedSize, selectedPrice, onFilterChange]);
 
-  useEffect(() => {
-    handleFilterChange();
-  }, [selectedCategory, selectedColor, selectedSize, selectedPrice]);
 
   useEffect(() => {
-    // Reset selected price range on priceRange change
+    // Reset selected price range when priceRange changes
     setSelectedPrice([priceRange.min, priceRange.max]);
   }, [priceRange]);
-
+  
+  const handleCategoryChange = (value: string) => {
+    setSelectedCategory(value);
+    onFilterChange({
+      category: value,
+      color: selectedColor,
+      size: selectedSize,
+      price: selectedPrice,
+    });
+  };
+  
+  // Similarly, update other filter handlers
+  
   return (
     <div className="lg:block">
       <div className="block lg:hidden">
@@ -65,19 +74,20 @@ export default function ProductFilters({ categories, colors, sizes, priceRange, 
                 </span>
               </DisclosureButton>
               <DisclosurePanel className="pt-4">
-                <select
-                  id="category"
-                  value={selectedCategory}
-                  onChange={(e) => setSelectedCategory(e.target.value)}
-                  className="block w-full mt-1 p-2 border border-gray-300 rounded-md"
-                >
-                  <option value="">All Categories</option>
-                  {categories.map((category, index) => (
-                    <option key={index} value={category}>
-                      {category}
-                    </option>
-                  ))}
-                </select>
+              <select
+  id="category"
+  value={selectedCategory}
+  onChange={(e) => handleCategoryChange(e.target.value)}
+  className="block w-full mt-1 p-2 border border-gray-300 rounded-md"
+>
+  <option value="">All Categories</option>
+  {categories.map((category, index) => (
+    <option key={index} value={category}>
+      {category}
+    </option>
+  ))}
+</select>
+
               </DisclosurePanel>
             </Disclosure>
 

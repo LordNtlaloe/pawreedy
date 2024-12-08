@@ -6,7 +6,7 @@ const CTA = () => {
       <div className="container mx-auto px-4">
 
         <Image
-          src="/images/service-image.png"
+          src="/banner-image.png"
           width={122}
           height={136}
           loading="lazy"
@@ -14,36 +14,36 @@ const CTA = () => {
           className="mx-auto mb-8"
         />
 
-        <h2 className="text-center text-4xl text-eerie-black mb-14">
+        <h2 className="text-center text-4xl text-slate-800 mb-14 font-bold">
           <span className="text-violet-900">What your pet needs,</span> when they need it.
         </h2>
 
         <ul className="grid gap-8 md:grid-cols-2 lg:grid-cols-4">
           {[
             {
-              icon: '/images/service-icon-1.png',
+              icon: '/delivery-truck.svg',
               title: 'Free Same-Day Delivery',
               text: 'Order by 2pm local time to get free delivery on orders R35+ today.'
             },
             {
-              icon: '/images/service-icon-2.png',
+              icon: '/package-return.svg',
               title: '30 Day Return',
               text: '35% off your first order plus 5% off all future orders.'
             },
             {
-              icon: '/images/service-icon-3.png',
+              icon: '/secure-payment.svg',
               title: 'Security payment',
               text: '25% off your online order of R50+. Available at most locations.'
             },
             {
-              icon: '/images/service-icon-4.png',
+              icon: '/support.svg',
               title: '24/7 Support',
               text: 'Shop online to get orders over R35 shipped fast and free.'
             }
           ].map((service, index) => (
             <li key={index}>
-              <div className="text-center p-4 shadow-lg rounded-lg">
-                <figure className="mx-auto mb-4">
+              <div className="text-center p-4 shadow-lg rounded-lg h-60">
+                <figure className="mx-auto mb-4 flex items-center justify-center">
                   <Image
                     src={service.icon}
                     width={70}
@@ -52,8 +52,8 @@ const CTA = () => {
                     alt="service icon"
                   />
                 </figure>
-                <h3 className="text-xl text-eerie-black mb-2">{service.title}</h3>
-                <p className="text-spanish-gray">{service.text}</p>
+                <h3 className="text-xl text-violet-800 font-bold mb-2">{service.title}</h3>
+                <p className="text-slate-700">{service.text}</p>
               </div>
             </li>
           ))}
