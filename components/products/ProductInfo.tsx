@@ -19,18 +19,20 @@ const ProductInfo = ({ id }: { id: string }) => {
   const [wishlistIds, setWishlistIds] = useState<string[]>(wishlist.map(item => item.id))
   const { addToCart } = useCart();
   let imageURL = "/placeholder-image.jpg";
-  if (product?.image && product.image !== "undefined") {
+  if (product.image && product.image !== "undefined") {
     imageURL = product.image;
   }
 
   // Define getProduct inside useCallback to avoid unnecessary re-renders
   const getProduct = useCallback(async () => {
     if (id) {
-      const productById = await getProductById(id);
-      setProduct(productById);
-      setIsLoaded(true);
+        const productById = await getProductById(id);
+        console.log("Fetched Product:", productById); // Log the fetched product
+        setProduct(productById);
+        setIsLoaded(true);
     }
-  }, [id]);
+}, [id]);
+
 
   useEffect(() => {
     getProduct();
@@ -104,10 +106,10 @@ const ProductInfo = ({ id }: { id: string }) => {
       <div className="absolute inset-0">
         <Image
           src={product.image}
-          alt={product?.name || "Product Image"}
+          alt={product.name || "Product Image"}
           layout="fill"
           objectFit="contain"
-          className="rounded-md shadow-sm border border-slate-600"
+          className="rounded-md shadow-sm border bg-gray-50"
         />
       </div>
     </div>
@@ -126,7 +128,7 @@ const ProductInfo = ({ id }: { id: string }) => {
 
         <div className="flex flex-col lg:flex-row gap-4">
           <div>
-            <p className="text-gray-800 text-3xl font-bold">M{product?.price}</p>
+            <p className="text-gray-800 text-3xl font-bold">M{product.price}</p>
           </div>
 
           <div className="flex flex-wrap gap-4 lg:ml-auto">
@@ -135,14 +137,14 @@ const ProductInfo = ({ id }: { id: string }) => {
               className="px-2.5 py-1.5 bg-pink-100 text-xs text-pink-600 rounded-md flex items-center"
             >
               <Heart className="w-4 h-4 mr-1" />
-              {product?.wishlistCount || 0}
+              {product.wishlistCount || 0}
             </button>
             <button
               type="button"
               className="px-2.5 py-1.5 bg-gray-100 text-xs text-gray-800 rounded-md flex items-center"
             >
               <Star className="w-4 h-4 mr-1" />
-              {product?.ratings || 0} stars ({product?.ratingsCount || 0} reviews)
+              {product.ratings || 0} stars ({product.ratingsCount || 0} reviews)
             </button>
           </div>
         </div>
@@ -226,7 +228,7 @@ const ProductInfo = ({ id }: { id: string }) => {
   <div className="flex flex-col gap-4 w-full">
   <div className="w-full">
     <p className="text-gray-800 text-sm py-3 cursor-pointer transition-all">
-      {product?.description}
+      {product.description}
     </p>
     <hr className="my-6" />
   </div>
@@ -238,11 +240,13 @@ const ProductInfo = ({ id }: { id: string }) => {
       <TabsTrigger value="ratings">Ratings</TabsTrigger>
     </TabsList>
     <TabsContent value="similar-products" className="w-full mt-4">
-      <SimilarProducts category={product?.category} currentProductId={product._id} />
+      <p className="py-4 text-center font-bold text-slate-800">You May Also Like</p>
+      <SimilarProducts category={product.category} currentProductId={product._id} />
     </TabsContent>
     <TabsContent value="ratings" className="w-full mt-4">
       <div className="grid grid-col-1 lg:grid-col-3 border-b">
-        <DisplayRatings productId={product?.name} />
+      <p className="py-4 text-center font-bold text-slate-800">What Our Clients Have To Say</p>
+        <DisplayRatings productId={product.name} />
       </div>
       <ProductRatings isReadOnly={false} isEnabled={true} product={product}/>
     </TabsContent>

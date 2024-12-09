@@ -85,26 +85,24 @@ export const getUserByEmail = async (email: string) => {
     if (!dbConnection) await init();
 
     try {
-
         const collection = await database?.collection("users");
 
         if (!database || !collection) {
             console.log("Failed to connect to collection...");
-            return;
+            return { error: "Failed to connect to users collection" };
         }
 
-        let user = await collection
-            .findOne({ "email": email })
+        const user = await collection.findOne({ email });
 
         if (user) {
-            user = { ...user, _id: user._id.toString() }
+            return { firstName: user.firstName, lastName: user.lastName, photo: user.photo || "/default-profile.jpg" };
         }
 
+        return { error: "User not found" };
     } catch (error: any) {
-        console.log("An error occured...", error.message);
-        return { "error": error.message };
+        console.log("An error occurred...", error.message);
+        return { error: error.message };
     }
-
 };
 
 

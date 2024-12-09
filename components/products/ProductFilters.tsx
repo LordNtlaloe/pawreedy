@@ -62,7 +62,7 @@ export default function ProductFilters({ categories, colors, sizes, priceRange, 
 
       <div className={classNames("lg:block", isMobileFiltersOpen ? "block" : "hidden")}>
         <div className="bg-white p-6 rounded-md">
-          <h2 className="text-xl font-bold mb-4">Filter Products</h2>
+          <h2 className="text-xl font-bold mb-4 text-[#51358C]">Filter Products</h2>
 
           <form className="space-y-6">
             {/* Category Filter */}
@@ -70,24 +70,23 @@ export default function ProductFilters({ categories, colors, sizes, priceRange, 
               <DisclosureButton className="flex justify-between w-full text-gray-900 font-medium">
                 Category
                 <span className="ml-6 flex items-center">
-                  <PlusIcon className="h-5 w-5" aria-hidden="true" />
+                  <PlusIcon className="h-5 w-5 text-[#51358C]" aria-hidden="true" />
                 </span>
               </DisclosureButton>
               <DisclosurePanel className="pt-4">
-              <select
-  id="category"
-  value={selectedCategory}
-  onChange={(e) => handleCategoryChange(e.target.value)}
-  className="block w-full mt-1 p-2 border border-gray-300 rounded-md"
->
-  <option value="">All Categories</option>
-  {categories.map((category, index) => (
-    <option key={index} value={category}>
-      {category}
-    </option>
-  ))}
-</select>
-
+                <select
+                  id="category"
+                  value={selectedCategory}
+                  onChange={(e) => handleCategoryChange(e.target.value)}
+                  className="block w-full mt-1 p-2 rounded-md"
+                >
+                  <option value="">All Categories</option>
+                  {categories.map((category, index) => (
+                    <option key={index} value={category}>
+                      {category}
+                    </option>
+                  ))}
+                </select>
               </DisclosurePanel>
             </Disclosure>
 
@@ -96,7 +95,7 @@ export default function ProductFilters({ categories, colors, sizes, priceRange, 
               <DisclosureButton className="flex justify-between w-full text-gray-900 font-medium">
                 Color
                 <span className="ml-6 flex items-center">
-                  <PlusIcon className="h-5 w-5" aria-hidden="true" />
+                  <PlusIcon className="h-5 w-5 text-[#51358C]" aria-hidden="true" />
                 </span>
               </DisclosureButton>
               <DisclosurePanel className="pt-4">
@@ -121,7 +120,7 @@ export default function ProductFilters({ categories, colors, sizes, priceRange, 
               <DisclosureButton className="flex justify-between w-full text-gray-900 font-medium">
                 Size
                 <span className="ml-6 flex items-center">
-                  <PlusIcon className="h-5 w-5" aria-hidden="true" />
+                  <PlusIcon className="h-5 w-5 text-[#51358C]" aria-hidden="true" />
                 </span>
               </DisclosureButton>
               <DisclosurePanel className="pt-4">
@@ -146,7 +145,7 @@ export default function ProductFilters({ categories, colors, sizes, priceRange, 
               <DisclosureButton className="flex justify-between w-full text-gray-900 font-medium">
                 Price Range
                 <span className="ml-6 flex items-center">
-                  <PlusIcon className="h-5 w-5" aria-hidden="true" />
+                  <PlusIcon className="h-5 w-5 text-[#51358C]" aria-hidden="true" />
                 </span>
               </DisclosureButton>
               <DisclosurePanel className="pt-4">

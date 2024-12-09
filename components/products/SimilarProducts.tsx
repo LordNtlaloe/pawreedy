@@ -47,24 +47,24 @@ const SimilarProducts = ({
               <Link
                 href={"/products/" + product._id}
                 key={product._id}
-                className="p-2 border-1 rounded-md shadow-sm shadow-violet-800"
+                className="p-2 border-1 rounded-md bg-gray-50"
               >
                 <div className="p-2 cursor-pointer hover:scale-105 transition-all">
-                  <div className="flex flex-col gap-2">
+                  <div className="flex flex=col gap-6">
                     <Image
                       src={imageURL}
-                      height={80}
-                      width={80}
+                      height={120}
+                      width={120}
                       alt="Image"
                       className="rounded-[5px] object-cover"
                     />
-                    <div>
-                      <h2 className="font-bold">{product.name}</h2>
+                    <div className="w-full">
+                      <h2 className="font-bold flex-grow-0">{product.name}</h2>
                       <h2 className="text-sm text-gray-400">
-                        {truncateDescription(product.description, 100)}
+                        {truncateDescription(product.category, 100)}
                       </h2>
-                      <h2 className="text-xs text-gray-400 font-bold">
-                        {product.contactPerson}
+                      <h2 className="text-lg text-gray-400 font-bold">
+                        M{product.price}.00
                       </h2>
                     </div>
                   </div>

@@ -125,9 +125,9 @@ export default function ProductList() {
     );
 
     return (
-        <main className="py-8 bg-white rounded-lg">
+        <main className="py-8">
             <div className="mx-auto max-w-full px-4 sm:px-6 lg:px-8">
-                <h2 className="font-manrope font-bold text-2xl sm:text-4xl text-violet-900 mb-8 text-center">
+                <h2 className="font-manrope font-bold text-2xl sm:text-4xl text-[#51358C] mb-8 text-center">
                     {title}
                 </h2>
                 <div className="flex flex-col lg:flex-row gap-4">
@@ -149,7 +149,7 @@ export default function ProductList() {
                                     const isWished = wishlistIds.includes(product._id); // Define isWished here
 
                                     return (
-                                        <div key={product._id} className="rounded-xl bg-white p-4 shadow-lg hover:shadow-xl transition-shadow duration-300">
+                                        <div key={product._id} className="rounded-xl bg-slate-50 p-4 hover:shadow-xl transition-shadow duration-300">
                                             <div className="relative">
                                                 <Link href={`/products/${product._id}`}>
                                                     <div className="relative flex items-end overflow-hidden rounded-xl border-violet-200 border">
@@ -184,7 +184,7 @@ export default function ProductList() {
                                                 <p className="text-slate-400 mt-1 text-sm">{product.category}</p>
                                                 <div className="mt-3 flex items-end justify-between">
                                                     <p>
-                                                        <span className="text-lg font-bold text-violet-500">
+                                                        <span className="text-lg font-bold text-[#51358C]">
                                                             M{product.price}
                                                         </span>
                                                     </p>

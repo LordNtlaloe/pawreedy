@@ -1,6 +1,6 @@
 "use client";
 import Link from "next/link";
-import { SignedIn, SignedOut, SignInButton, SignUpButton, UserButton, SignOutButton } from "@clerk/nextjs";
+import { SignedIn, SignedOut, SignInButton, SignUpButton, UserButton, SignOutButton, useUser } from "@clerk/nextjs";
 import { ShoppingCart, Heart, User as UserIcon, Search } from "lucide-react";
 import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem } from "@/components/ui/dropdown-menu";
 import { useState } from "react";
@@ -8,14 +8,16 @@ import ShoppingCartModal from "@/components/products/cart/ShoppingCartModal"; //
 import { useCart } from "@/contexts/CartContext";
 import { useWishlist } from "@/contexts/WishlistContext";
 
-const Menu = ({ userInput = () => { } }: any) => {
+const Menu = ({ userInput = () => {} }: any) => {
   const [searchText, setSearchText] = useState<string>("");
   const [isCartOpen, setIsCartOpen] = useState<boolean>(false);
+  const { cart } = useCart();
+  const { wishlist } = useWishlist();
+  const { user } = useUser();  // Get the user information
+  const userRole = user?.publicMetadata?.role; // Assuming the role is stored in publicMetadata
 
   const openCart = () => setIsCartOpen(true);
   const closeCart = () => setIsCartOpen(false);
-  const { cart } = useCart(); 
-  const { wishlist } = useWishlist();
 
   return (
     <div className="flex justify-between gap-4 px-4 py-2 w-[75%]">
@@ -72,11 +74,20 @@ const Menu = ({ userInput = () => { } }: any) => {
           </DropdownMenuTrigger>
           <DropdownMenuContent className="bg-white shadow-md rounded p-2">
             <SignedIn>
-              <DropdownMenuItem>
-                <Link href="/dashboard">
-                  <button className="w-full text-left">Dashboard</button>
-                </Link>
-              </DropdownMenuItem>
+              {/* Role-based Navigation */}
+              {userRole === "admin" ? (
+                <DropdownMenuItem>
+                  <Link href="/dashboard">
+                    <button className="w-full text-left">Dashboard</button>
+                  </Link>
+                </DropdownMenuItem>
+              ) : (
+                <DropdownMenuItem>
+                  <Link href="/profile">
+                    <button className="w-full text-left">Profile</button>
+                  </Link>
+                </DropdownMenuItem>
+              )}
               <DropdownMenuItem>
                 <SignOutButton>
                   <button className="w-full text-left">Logout</button>

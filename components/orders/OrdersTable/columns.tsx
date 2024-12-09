@@ -11,13 +11,28 @@ import React, { useState } from "react"
 import { TableCell } from "@/components/ui/table";
 
 export type Order = {
+  createdAt: string;
   _id: string;
-  shippingDetails: { name: string; email: string };
+  shippingDetails: { 
+    name: string; 
+    email: string;
+    address: string;
+    city: string;
+    country: string;
+    postalCode: string;
+  };
   orderStatus: string;
-  cartSummary: { totalAmount: number };
-  options: "update" | "delete";
+  cartSummary: { 
+    totalAmount: number;
+    items: {
+      [x: string]: any;
+      name: string;
+      price: string;
+      quantity: number;
+      image: string;
+    }[];
+  };
 };
-
 export const columns: ColumnDef<Order>[] = [
   { accessorKey: "_id", header: "Order ID" },
   { accessorKey: "name", header: "Name" },

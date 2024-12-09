@@ -96,6 +96,7 @@ export const getAllProductsByCategory = async (categoryName: string) => {
     }
 }
 
+
 export const getProductById = async (_id: string) => {
     if (!dbConnection) await init();
 
@@ -103,15 +104,24 @@ export const getProductById = async (_id: string) => {
         const collection = await database?.collection("products");
 
         if (!collection) {
-            console.error("Failed To Get Products");
-            return;
+            console.error("Failed to get the product");
+            return null;
         }
 
         const product = await collection.findOne({ _id: new ObjectId(_id) });
 
         if (product) {
+            // Serialize deeply and return a plain object
             return {
                 ...product,
+                _id: product._id.toString(),
+                createdAt: product.createdAt ? new Date(product.createdAt).toISOString() : null,
+                updatedAt: product.updatedAt ? new Date(product.updatedAt).toISOString() : null,
+                price: Number(product.price), // Convert to number
+                quantity: Number(product.quantity), // Convert to number
+                ratings: Number(product.ratings), // Convert to number
+                ratingsCount: Number(product.ratingsCount), // Convert to number
+                // Convert any nested objects to plain structures if needed
             };
         }
 
@@ -121,6 +131,7 @@ export const getProductById = async (_id: string) => {
         return { error: error.message };
     }
 };
+
 
 
 export const updateProduct = async (_id: string, formData: FormData) => {

@@ -68,12 +68,23 @@ export const getOrdersByUserEmail = async (userEmail: string) => {
 
         const orders = await ordersCollection.find({ userEmail }).toArray();
 
-        return { success: true, orders };
+        // Convert MongoDB special objects to plain objects
+        const plainOrders = orders.map((order: { _id: { toString: () => any; }; createdAt: string | number | Date; updatedAt: string | number | Date; }) => {
+            return {
+                ...order,
+                _id: order._id.toString(), // Convert ObjectId to string
+                createdAt: new Date(order.createdAt).toISOString(), // Convert Date to string
+                updatedAt: new Date(order.updatedAt).toISOString(), // Convert Date to string
+            };
+        });
+
+        return plainOrders;
     } catch (error: any) {
         console.error("Error fetching orders by user email:", error.message);
         return { error: error.message };
     }
 };
+
 
 export const getUserEmailsByProductId = async (productId: string) => {
     if (!dbConnection) await init();
