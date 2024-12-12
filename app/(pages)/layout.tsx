@@ -4,12 +4,14 @@ import SecondaryNav from "@/components/root/SecondaryNav";
 import { cn } from "@/lib/utils";
 import Footer from "@/components/root/Footer";
 import "../globals.css"
+import dynamic from "next/dynamic";
 
 
 export const metadata: Metadata = {
     title: "Pawreedy - Online Store",
     description: "Your One Stop Online Petshop",
 };
+
 
 export default function PagesLayout({
     children

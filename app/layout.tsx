@@ -24,24 +24,23 @@ export default function RootLayout({
   return (
     <ClerkProvider>
       <WishlistProvider>
-      <CartProvider>
-      <html
-        lang="en"
-        className={cn("h-full scroll-smooth antialiased", inter.className)}
-      >
-        <body>
-          {/* Navbar */}
-          <ClerkLoading>
-            <Loading />
-          </ClerkLoading>
-          <ClerkLoaded>
-            <div>
-            </div>
-            <main className="grow">{children}</main>
-          </ClerkLoaded>
-        </body>
-      </html>
-      </CartProvider>
+        <CartProvider>
+          <html lang="en" className={cn("h-full scroll-smooth antialiased", inter.className)}>
+            <body>
+              {/* Navbar */}
+              <ClerkLoading>
+                <Loading />
+              </ClerkLoading>
+              <ClerkLoaded>
+                <div>
+                  {/* Main content */}
+                </div>
+                <main className="grow">{children}</main>
+              </ClerkLoaded>
+              {/* Render the Cookie Consent banner */}
+            </body>
+          </html>
+        </CartProvider>
       </WishlistProvider>
     </ClerkProvider>
   );

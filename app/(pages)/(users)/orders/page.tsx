@@ -1,13 +1,14 @@
-"use client"
+"use client";
 import React from "react";
 import Image from "next/image";
+import { Button } from "@/components/ui/button"; // Ensure Button component is imported
+import { Textarea } from "@/components/ui/textarea";
 
-// Define the Order type structure
 export type Order = {
   createdAt: string;
   _id: string;
-  shippingDetails: { 
-    name: string; 
+  shippingDetails: {
+    name: string;
     email: string;
     address: string;
     city: string;
@@ -15,121 +16,112 @@ export type Order = {
     postalCode: string;
   };
   orderStatus: string;
-  cartSummary: { 
+  cartSummary: {
     totalAmount: number;
     items: {
-      [x: string]: any;
       name: string;
       price: string;
       quantity: number;
       image: string;
+      size?: string;
+      status?: string;
+      expectedDelivery?: string;
     }[];
   };
 };
 
 interface OrdersProps {
-  orders?: Order[]; // Make orders optional (nullable)
+  orders?: Order[];
 }
 
 const Orders: React.FC<OrdersProps> = ({ orders = [] }) => {
-  // If orders is undefined, default to an empty array
   return (
-    <section className="py-6 relative">
-      <div className="w-[100%] px-4 md:px-5 lg-6 mx-auto">
-        {orders.length === 0 ? (
-          <p>No orders found.</p>
-        ) : (
-          orders.map((order) => (
-            <div className="main-box border border-gray-200 rounded-xl pt-6 max-w-xl lg:max-w-full" key={order._id}>
-              <div className="flex flex-col lg:flex-row lg:items-center justify-between px-6 pb-6 border-b border-gray-200">
-                <div className="data">
-                  <p className="font-semibold text-base leading-7 text-black">
-                    Order Id: <span className="text-indigo-600 font-medium">#{order._id}</span>
-                  </p>
-                  <p className="font-semibold text-base leading-7 text-black mt-4">
-                    Order Payment: <span className="text-gray-400 font-medium">{order.createdAt}</span>
-                  </p>
-                </div>
-                <button className="rounded-full py-3 px-7 font-semibold text-sm leading-7 text-white bg-indigo-600 shadow-sm transition-all duration-500 hover:bg-indigo-700 hover:shadow-indigo-400">
-                  Track Your Order
-                </button>
-              </div>
-              <div className="w-full px-3 min-[400px]:px-6">
-                {order.cartSummary.items.map((product, index) => (
-                  <div key={index} className="flex flex-col lg:flex-row items-center py-6 border-b border-gray-200 gap-6 w-full">
-                    <div className="img-box max-lg:w-full">
-                      <Image
-                        src={product.image || '/path/to/default-image.jpg'} // Use a default image if product.image is undefined
-                        alt={'Product Image'} // Ensure a fallback alt text
-                        width={80}
-                        height={80}
-                        className="aspect-square w-full lg:max-w-[140px] rounded-xl object-cover"
-                      />
-                    </div>
-                    <div className="flex flex-row items-center w-full">
-                      <div className="grid grid-cols-1 lg:grid-cols-2 w-full">
-                        <div className="flex items-center">
-                          <div>
-                            <h2 className="font-semibold text-xl leading-8 text-black mb-3">{product.name}</h2>
-                            <p className="font-normal text-lg leading-8 text-gray-500 mb-3">By: {product.name}</p>
-                            <div className="flex items-center">
-                              <p className="font-medium text-base leading-7 text-black pr-4 mr-4 border-r border-gray-200">
-                                Size: <span className="text-gray-500">{product.size}</span>
-                              </p>
-                              <p className="font-medium text-base leading-7 text-black">
-                                Qty: <span className="text-gray-500">{product.quantity}</span>
-                              </p>
-                            </div>
-                          </div>
-                        </div>
-                        <div className="grid grid-cols-5">
-                          <div className="col-span-5 lg:col-span-1 flex items-center max-lg:mt-3">
-                            <div className="flex gap-3 lg:block">
-                              <p className="font-medium text-sm leading-7 text-black">Price</p>
-                              <p className="lg:mt-4 font-medium text-sm leading-7 text-indigo-600">${product.price}</p>
-                            </div>
-                          </div>
-                          <div className="col-span-5 lg:col-span-2 flex items-center max-lg:mt-3">
-                            <div className="flex gap-3 lg:block">
-                              <p className="font-medium text-sm leading-7 text-black">Status</p>
-                              <p className="font-medium text-sm leading-6 whitespace-nowrap py-0.5 px-3 rounded-full lg:mt-3 bg-emerald-50 text-emerald-600">
-                                {product.status}
-                              </p>
-                            </div>
-                          </div>
-                          <div className="col-span-5 lg:col-span-2 flex items-center max-lg:mt-3">
-                            <div className="flex gap-3 lg:block">
-                              <p className="font-medium text-sm whitespace-nowrap leading-6 text-black">Expected Delivery</p>
-                              <p className="font-medium text-base whitespace-nowrap leading-7 lg:mt-3 text-emerald-500">
-                                {product.expectedDelivery}
-                              </p>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
+    <section className="flex h-full w-full flex-col items-start mobile:gap-0 bg-gray-100">
+      <div className="mx-auto max-w-screen-xl px-4 2xl:px-0 flex w-full flex-col items-start gap-6 mobile:w-full mobile:flex-col bg-white rounded-lg shadow-lg mt-8">
+        <div className="flex w-full flex-col items-start gap-4 sm:flex-row sm:justify-between sm:gap-4 mb-6 p-4">
+          <span className="text-2xl font-semibold text-gray-800">My Orders</span>
+          
+          <div className="flex w-full sm:w-auto gap-4">
+            <select
+              id="order-type"
+              className="block w-full rounded-lg border bg-gray-50 p-2.5 text-sm text-gray-700 dark:border-gray-600 dark:bg-gray-700 dark:text-white sm:w-[10rem] hover:bg-gray-200"
+            >
+              <option>All orders</option>
+              <option value="pre-order">Pre-order</option>
+              <option value="transit">In transit</option>
+              <option value="confirmed">Confirmed</option>
+              <option value="cancelled">Cancelled</option>
+            </select>
+            
+            <select
+              id="duration"
+              className="block w-full rounded-lg border bg-gray-50 p-2.5 text-sm text-gray-700 dark:border-gray-600 dark:bg-gray-700 dark:text-white sm:w-[10rem] hover:bg-gray-200"
+            >
+              <option>this week</option>
+              <option value="this month">this month</option>
+              <option value="last 3 months">last 3 months</option>
+              <option value="last 6 months">last 6 months</option>
+              <option value="this year">this year</option>
+            </select>
+          </div>
+        </div>
+
+        <div className="mt-6 w-full flow-root sm:mt-8">
+          {orders.length === 0 ? (
+            <p className="text-lg font-medium text-gray-500">No orders found.</p>
+          ) : (
+            <div className="w-full divide-y divide-gray-300 dark:divide-gray-700">
+              {orders.map((order) => (
+                <div key={order._id} className="w-full flex flex-col gap-6 sm:mt-8 bg-white shadow-lg rounded-lg p-4 mb-4">
+                  <div className="flex w-full flex-col sm:flex-row sm:items-center sm:justify-between gap-4 py-4">
+                    <dl className="flex flex-col w-full sm:w-1/4">
+                      <dt className="text-sm font-medium text-gray-600">Order ID:</dt>
+                      <dd className="mt-1.5 text-lg font-semibold text-gray-900">
+                        <a href="#" className="hover:underline">{`#${order._id}`}</a>
+                      </dd>
+                    </dl>
+
+                    <dl className="flex w-full flex-col sm:w-1/4">
+                      <dt className="text-sm font-medium text-gray-600">Date:</dt>
+                      <dd className="mt-1.5 text-lg font-semibold text-gray-900">
+                        {order.createdAt}
+                      </dd>
+                    </dl>
+
+                    <dl className="flex w-full sm:w-1/4">
+                      <dt className="text-sm font-medium text-gray-600">Price:</dt>
+                      <dd className="mt-1.5 text-lg font-semibold text-gray-900">
+                        ${order.cartSummary.totalAmount}
+                      </dd>
+                    </dl>
+
+                    <dl className="flex w-full sm:w-1/4">
+                      <dt className="text-sm font-medium text-gray-600">Status:</dt>
+                      <dd className="mt-1.5 inline-flex items-center rounded bg-yellow-100 px-2.5 py-0.5 text-xs font-medium text-yellow-800">
+                        {order.orderStatus}
+                      </dd>
+                    </dl>
                   </div>
-                ))}
-              </div>
-              <div className="w-full border-t border-gray-200 px-6 flex flex-col lg:flex-row items-center justify-between">
-                <div className="flex flex-col sm:flex-row items-center max-lg:border-b border-gray-200">
-                  <button className="flex outline-0 py-6 sm:pr-6 sm:border-r border-gray-200 whitespace-nowrap gap-2 items-center justify-center font-semibold group text-lg text-black bg-white transition-all duration-500 hover:text-indigo-600">
-                    <svg className="stroke-black transition-all duration-500 group-hover:stroke-indigo-600" xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 22 22" fill="none">
-                      <path d="M5.5 5.5L16.5 16.5M16.5 5.5L5.5 16.5" stroke="" strokeWidth="1.6" strokeLinecap="round" />
-                    </svg>
-                    Cancel Order
-                  </button>
-                  <p className="font-medium text-lg text-gray-900 pl-6 py-3 max-lg:text-center">
-                    Paid using Credit Card <span className="text-gray-500">ending with 8822</span>
-                  </p>
+
+                  <div className="flex w-full gap-4 sm:justify-end">
+                    <Button variant="destructive" className="w-full sm:w-auto bg-red-500 hover:bg-red-600 text-white">
+                      Cancel order
+                    </Button>
+                    <Button variant="secondary" className="w-full sm:w-auto bg-gray-600 hover:bg-gray-700 text-white">
+                      View details
+                    </Button>
+                  </div>
                 </div>
-                <p className="font-semibold text-lg text-black py-6">
-                  Total Price: <span className="text-indigo-600">${order.cartSummary.totalAmount}</span>
-                </p>
-              </div>
+              ))}
             </div>
-          ))
-        )}
+          )}
+        </div>
+
+        <nav className="mt-6 flex items-center justify-center sm:mt-8" aria-label="Page navigation example">
+          <ul className="flex h-8 items-center -space-x-px text-sm">
+            {/* Pagination links here */}
+          </ul>
+        </nav>
       </div>
     </section>
   );

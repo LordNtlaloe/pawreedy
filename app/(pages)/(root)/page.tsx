@@ -8,6 +8,7 @@ import ProductList from "@/components/products/ProductList";
 // import CategoryCarousel from "@/components/category/CategoryCarousel";
 import LatestProducts from "@/components/products/LatestProducts";
 import CTA from "@/components/general/CTA";
+import CookieConsentBanner from "@/components/general/Cookies";
 
 export default function Home({ userInput }: any) {
   const [popularProducts, setPopularProducts] = useState([]);
@@ -61,6 +62,7 @@ export default function Home({ userInput }: any) {
       <div className="">
         <CTA />
       </div>
+      <CookieConsentBanner />
     </main>
   );
 }
