@@ -136,10 +136,7 @@ export default function ProductList({ productList = [], title }: ProductProps) {
                         width={250}
                         height={250}
                       />
-                      <div className="absolute bottom-3 left-3 inline-flex items-center rounded-lg bg-white p-2 shadow-md">
-                        <FaStar className="h-5 w-5 text-yellow-400" />
-                        <span className="text-slate-400 ml-1 text-sm">{product.ratings}</span>
-                      </div>
+
                     </div>
                   </Link>
                   <button
@@ -151,8 +148,24 @@ export default function ProductList({ productList = [], title }: ProductProps) {
                 </div>
 
                 <div className="mt-3 px-2">
-                  <h2 className="text-[#0D0D0D] font-medium">{product.name}</h2>
+                  <div className="flex flex-col justify-between">
+                    <h2 className="text-[#0D0D0D] font-medium">{product.name}</h2>
+                    <div className="left-3 inline-flex items-center">
+                      {product.ratings === 0 ? (
+                        <div className="flex">
+                          <FaStar className="h-5 w-5 text-yellow-400" />
+                          <span className="text-slate-400 ml-1 text-sm">{product.ratings}</span>
+                        </div>
+                      ) : (
+                        Array.from({ length: Math.round(product.ratings) }).map((_, index) => (
+                          <FaStar key={index} className="h-5 w-5 text-yellow-400" />
+                        ))
+                      )}
+                    </div>
+                  </div>
+
                   <p className="text-slate-700 mt-1 text-sm">{product.category}</p>
+
                   <div className="mt-3 flex items-end justify-between">
                     <p>
                       <span className="text-lg font-bold text-slate-800">
@@ -167,6 +180,7 @@ export default function ProductList({ productList = [], title }: ProductProps) {
                     </button>
                   </div>
                 </div>
+
               </SwiperSlide>
             );
           })}

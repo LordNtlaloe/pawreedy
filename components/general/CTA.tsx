@@ -6,7 +6,7 @@ const CTA = () => {
       <div className="container mx-auto px-4">
 
         <Image
-          src="/banner-image.png"
+          src="/images/banner-image.png"
           width={122}
           height={136}
           loading="lazy"
@@ -21,22 +21,22 @@ const CTA = () => {
         <ul className="grid gap-8 md:grid-cols-2 lg:grid-cols-4">
           {[
             {
-              icon: '/delivery-truck.svg',
+              icon: '/images/delivery-truck.svg',
               title: 'Free Same-Day Delivery',
               text: 'Order by 2pm local time to get free delivery on orders R35+ today.'
             },
             {
-              icon: '/package-return.svg',
+              icon: '/images/package-return.svg',
               title: '30 Day Return',
               text: '35% off your first order plus 5% off all future orders.'
             },
             {
-              icon: '/secure-payment.svg',
+              icon: '/images/secure-payment.svg',
               title: 'Security payment',
               text: '25% off your online order of R50+. Available at most locations.'
             },
             {
-              icon: '/support.svg',
+              icon: '/images/support.svg',
               title: '24/7 Support',
               text: 'Shop online to get orders over R35 shipped fast and free.'
             }

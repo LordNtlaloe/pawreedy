@@ -46,7 +46,7 @@ const MobileMenu = ({ userInput = () => { } }: any) => {
                         <SheetHeader>
                             <SheetTitle className="font-bold border-b border-white mt-3 flex justify-start relative -top-10 -left-15">
                                 <Link href='/'>
-                                    <Image src="/logo01.png" width={100} height={80} alt="Pawreedy Logo" className="rounded-[5px]" />
+                                    <Image src="/images/logo01.png" width={100} height={80} alt="Pawreedy Logo" className="rounded-[5px]" />
                                 </Link>
                             </SheetTitle>
                         </SheetHeader>

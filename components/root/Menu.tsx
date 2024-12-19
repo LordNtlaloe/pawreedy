@@ -8,7 +8,7 @@ import ShoppingCartModal from "@/components/products/cart/ShoppingCartModal"; //
 import { useCart } from "@/contexts/CartContext";
 import { useWishlist } from "@/contexts/WishlistContext";
 
-const Menu = ({ userInput = () => {} }: any) => {
+const Menu = ({ userInput = () => { } }: any) => {
   const [searchText, setSearchText] = useState<string>("");
   const [isCartOpen, setIsCartOpen] = useState<boolean>(false);
   const { cart } = useCart();
@@ -22,21 +22,23 @@ const Menu = ({ userInput = () => {} }: any) => {
   return (
     <div className="flex justify-between gap-4 px-4 py-2 w-[75%]">
       {/* Search Bar on the left */}
-      <div className="flex-1">
-        <div className="relative">
-          <input
-            type="text"
-            placeholder="Search..."
-            className="px-4 py-2 border rounded-md w-full max-w-xs pr-10" // Add padding-right for the icon
-            onChange={(e) => setSearchText(e.target.value)}
-          />
-          <Search
-            onClick={() => userInput(searchText)}
-            className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500"
-            size={16}
-          />
-        </div>
+      {/* <div className="flex-1"> */}
+      <div className="relative flex">
+        <input
+          type="text"
+          placeholder="Search..."
+          className="px-4 py-2 rounded-full w-[800px] max-w-xs pr-10 bg-violet-100 text-slate-900 border-2 border-transparent focus:border-[#51358C] focus:outline-none"
+          onChange={(e) => setSearchText(e.target.value)}
+        />
+
+        <Search
+          onClick={() => userInput(searchText)}
+          className="absolute right-0 top-1/2 transform -translate-y-1/2 text-white bg-[#51358C] p-2 rounded-full cursor-pointer"
+          size={40}
+        />
       </div>
+
+      {/* </div> */}
 
       {/* Icons on the right */}
       <div className="flex items-center gap-4 relative">

@@ -9,6 +9,9 @@ import ProductList from "@/components/products/ProductList";
 import LatestProducts from "@/components/products/LatestProducts";
 import CTA from "@/components/general/CTA";
 import CookieConsentBanner from "@/components/general/Cookies";
+import CategoryCarousel from "@/components/category/CategoryCarousel";
+import ThreeItemGrid from "@/components/decorative/ThreeItemGrid";
+import Banner from "@/components/decorative/Banner";
 
 export default function Home({ userInput }: any) {
   const [popularProducts, setPopularProducts] = useState([]);
@@ -42,11 +45,14 @@ export default function Home({ userInput }: any) {
   return (
     <main className="bg-white">
       <Hero />
-      <div className="my-8">
-        {/* <CategoryCarousel /> */}
+      <div className="my-8 bg-[url('/images/h5-bg01.png')]">
+        <CategoryCarousel />
       </div>
       <div className="px-6 text-violet-700 my-2">
         <ProductList productList={popularProducts} title={title} />
+      </div>
+      <div className="my-8">
+        <ThreeItemGrid />
       </div>
       <div className="px-6 text-violet-700 my-2">
         <LatestProducts latestProductsList={latestProducts} title="Latest Products" />
@@ -58,6 +64,9 @@ export default function Home({ userInput }: any) {
         >
           More
         </Link>
+      </div>
+      <div className="my-4">
+        <Banner />
       </div>
       <div className="">
         <CTA />

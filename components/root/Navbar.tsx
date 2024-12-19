@@ -1,6 +1,5 @@
 import Image from "next/image";
 import Menu from "./Menu";
-import logo from '/public/logo01.png';
 import Link from "next/link";
 import MobileMenu from "./MobileMenu";
 
@@ -9,7 +8,7 @@ const Navbar = () => {
     <main className="w-full bg-white h-24 text-[#51358C] justify-between flex items-center px-4 sticky top-0 left-0 right-0 z-10">
       {/* Logo */}
       <Link href='/' className="flex-shrink-0">
-        <Image src={logo} width={160} height={60} alt="Pawreedy Logo"/>
+        <Image src="/images/logo01.png" width={160} height={60} alt="Pawreedy Logo"/>
       </Link>
 
       {/* Menu */}

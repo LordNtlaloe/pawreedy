@@ -32,12 +32,8 @@ export default function RootLayout({
                 <Loading />
               </ClerkLoading>
               <ClerkLoaded>
-                <div>
-                  {/* Main content */}
-                </div>
                 <main className="grow">{children}</main>
               </ClerkLoaded>
-              {/* Render the Cookie Consent banner */}
             </body>
           </html>
         </CartProvider>

@@ -207,7 +207,7 @@ export const deleteUser = async (_clerkId: string) => {
     }
 }
 
-export const uppdateUserRole = async (_clerkId: string, _newRole: string) => {
+export const updateUserRole = async (_clerkId: string, _newRole: string) => {
 
 
     try {
@@ -266,6 +266,52 @@ export const getUserByRole = async (role: string) => {
         return null; // Return null if no user found
     } catch (error: any) {
         console.log("An error occurred while fetching user by role:", error.message);
+        return { error: error.message };
+    }
+};
+export const updateUserProfilePictureInMongoDB = async (clerkId: string, profilePictureUrl: string) => {
+    if (!dbConnection) await init();
+
+    try {
+        const collection = await database?.collection("users");
+
+        if (!database || !collection) {
+            console.log("Failed to connect to collection..");
+            return;
+        }
+
+        const result = await collection.updateOne(
+            { clerkId },
+            { $set: { profilePicture: profilePictureUrl } }
+        );
+        console.log("User profile picture updated in MongoDB.");
+        return result;
+    } catch (error: any) {
+        console.log("An error occurred updating user profile picture...", error.message);
+        return { error: error.message };
+    }
+};
+export const updateClerkUserProfilePicture = async (userId: string, profilePictureUrl: string) => {
+    try {
+        const res = await clerkClient.users.updateUser(userId, {
+            profileImageID: profilePictureUrl,
+        });
+        return { message: "Profile picture updated successfully", data: res };
+    } catch (error: any) {
+        console.error("Error updating Clerk profile picture:", error.message);
+        return { error: error.message };
+    }
+};
+
+
+export const updateUserProfilePicture = async (clerkId: string, profilePictureUrl: string) => {
+    try {
+        await updateClerkUserProfilePicture(clerkId, profilePictureUrl);
+        await updateUserProfilePictureInMongoDB(clerkId, profilePictureUrl);
+        revalidatePath("/dashboard/users"); // Revalidate your page
+        return { message: "Profile picture updated successfully" };
+    } catch (error: any) {
+        console.error("Error updating user profile picture:", error.message);
         return { error: error.message };
     }
 };

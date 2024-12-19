@@ -5,7 +5,7 @@ import Image from "next/image";
 
 const Hero = () => {
   return (
-    <div className="bg-[#6C548C] dark:bg-gray-900">
+    <div className="bg-[url('/images/h5-bg2.jpg')] dark:bg-gray-900">
       <div className="grid max-w-screen-xl px-4 py-8 mx-auto lg:gap-8 xl:gap-0 lg:py-16 lg:grid-cols-12">
         <div className="mr-auto place-self-center lg:col-span-7">
           <h1 className="max-w-2xl mb-4 text-4xl font-extrabold tracking-tight leading-none md:text-5xl xl:text-6xl dark:text-white text-white">“Everything Your Pet Needs, All in One Place!”</h1>
@@ -20,10 +20,10 @@ const Hero = () => {
         <div className="relative hidden lg:mt-0 lg:col-span-5 lg:flex">
           {/* Background Image */}
           <div className="absolute inset-0 transform -translate-x-5 -translate-y-10">
-            <Image src="/yellow-blog-image.png" alt="background" width={2000} height={2000} className="opacity-75" />
+            <Image src="/images/yellow-blog-image.png" alt="background" width={2000} height={2000} className="opacity-75" />
           </div>
           {/* Foreground Image */}
-          <Image src="/banner-image.png" alt="mockup" width={500} height={500} className="relative z-10" />
+          <Image src="/images/banner-image.png" alt="mockup" width={500} height={500} className="relative z-10" />
         </div>
       </div>
     </div>
