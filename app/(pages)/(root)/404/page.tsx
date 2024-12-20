@@ -1,7 +1,7 @@
 import React from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import error404 from '/public/404-1.png';
+import error404 from '/public/images/404-1.png';
 
 const ErrorPage = () => {
   return (

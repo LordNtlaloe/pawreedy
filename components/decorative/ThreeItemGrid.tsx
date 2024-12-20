@@ -1,35 +1,61 @@
 import React from 'react';
+import Image from 'next/image';
 
 export default function ThreeItemGrid() {
     return (
-        <div className="flex flex-wrap gap-4 p-4 w-full">
-            {/* Item 1 */}
-            <div className="flex-1">
-                <img
-                    src="/images/h5-banner1.jpg"
-                    alt="Image 1"
-                    className="object-contain rounded-lg shadow-md w-full"
-                />
-                <div className="relative bottom-36 px-4">
-                    <h4 className="text-violet-800 font-bold text-3xl font-sans">Large Space Cat Cage</h4>
-                    <h6 className="font-medium text-slate-500">Discount</h6>
-                    <h1 className="text-3xl font-semibold text-amber-700">20% Off</h1>
+        <div className="">
+            <div className="relative overflow-hidden bg-violet-50">
+                <div className="pt-16 pb-80 sm:pt-24 sm:pb-40 lg:pt-40 lg:pb-48">
+                    <div className="relative mx-auto max-w-7xl px-4 sm:static sm:px-6 lg:px-8">
+                        <div className="sm:max-w-lg">
+                            <h1 className="text-4xl font-bold tracking-tight text-gray-900 sm:text-6xl">Summer styles are finally here</h1>
+                            <p className="mt-4 text-xl text-gray-500">
+                                {`This year, our new summer collection will shelter you from the harsh elements of a world that doesn't care if you live or die.`}
+                            </p>
+                        </div>
+                        <div>
+                            <div className="mt-10">
+                                <div aria-hidden="true" className="pointer-events-none lg:absolute lg:inset-y-0 lg:mx-auto lg:w-full lg:max-w-7xl">
+                                    <div className="absolute transform sm:top-0 sm:left-1/2 sm:translate-x-8 lg:top-1/2 lg:left-1/2 lg:-translate-y-1/2 lg:translate-x-8">
+                                        <div className="flex items-center space-x-6 lg:space-x-8">
+                                            <div className="grid shrink-0 grid-cols-1 gap-y-6 lg:gap-y-8">
+                                                <div className="h-64 w-44 overflow-hidden rounded-lg sm:opacity-0 lg:opacity-100">
+                                                    <Image src="https://tailwindui.com/plus/img/ecommerce-images/home-page-03-hero-image-tile-01.jpg" alt="" className="size-full object-cover" />
+                                                </div>
+                                                <div className="h-64 w-44 overflow-hidden rounded-lg">
+                                                    <Image src="https://tailwindui.com/plus/img/ecommerce-images/home-page-03-hero-image-tile-02.jpg" alt="" className="size-full object-cover" />
+                                                </div>
+                                            </div>
+                                            <div className="grid shrink-0 grid-cols-1 gap-y-6 lg:gap-y-8">
+                                                <div className="h-64 w-44 overflow-hidden rounded-lg">
+                                                    <Image src="https://tailwindui.com/plus/img/ecommerce-images/home-page-03-hero-image-tile-03.jpg" alt="" className="size-full object-cover" />
+                                                </div>
+                                                <div className="h-64 w-44 overflow-hidden rounded-lg">
+                                                    <Image src="https://tailwindui.com/plus/img/ecommerce-images/home-page-03-hero-image-tile-04.jpg" alt="" className="size-full object-cover" />
+                                                </div>
+                                                <div className="h-64 w-44 overflow-hidden rounded-lg">
+                                                    <Image src="https://tailwindui.com/plus/img/ecommerce-images/home-page-03-hero-image-tile-05.jpg" alt="" className="size-full object-cover" />
+                                                </div>
+                                            </div>
+                                            <div className="grid shrink-0 grid-cols-1 gap-y-6 lg:gap-y-8">
+                                                <div className="h-64 w-44 overflow-hidden rounded-lg">
+                                                    <Image src="https://tailwindui.com/plus/img/ecommerce-images/home-page-03-hero-image-tile-06.jpg" alt="" className="size-full object-cover" />
+                                                </div>
+                                                <div className="h-64 w-44 overflow-hidden rounded-lg">
+                                                    <Image src="https://tailwindui.com/plus/img/ecommerce-images/home-page-03-hero-image-tile-07.jpg" alt="" className="size-full object-cover" />
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <a href="#" className="inline-block rounded-md border border-transparent bg-indigo-600 px-8 py-3 text-center font-medium text-white hover:bg-indigo-700">Shop Collection</a>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
 
-            {/* Item 2 */}
-            <div className="flex-1">
-                <img
-                    src="/images/h5-banner2.jpg"
-                    alt="Image 2"
-                    className="object-contain rounded-lg shadow-md w-full"
-                />
-                <div className="relative bottom-36 px-4 text-white">
-                    <h4 className="text-white font-bold text-4xl font-sans">Adult Food For Cats</h4>
-                    <h6 className="font-medium">Discount</h6>
-                    <h1 className="text-3xl font-semibold">20% Off</h1>
-                </div>
-            </div>
         </div>
 
     );

@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { DialogClose } from "@radix-ui/react-dialog";
 import { updateUserProfilePicture, updateUserRole } from "@/app/_actions/_userActions";
 import { showConfirmationMessage } from "@/lib/GeneralFunctions";
+import Image from "next/image";
 
 const UpdateUserRole = ({
     clerkId,
@@ -95,7 +96,7 @@ const UpdateUserRole = ({
                             {/* Profile Picture Update */}
                             <div className="mt-4">
                                 <h1 className="font-bold">Update Profile Picture:</h1>
-                                <img src={profilePicture} alt="Profile" className="w-24 h-24 rounded-full mt-2" />
+                                <Image src={profilePicture} alt="Profile" className="w-24 h-24 rounded-full mt-2" />
                                 <input
                                     type="file"
                                     accept="image/*"

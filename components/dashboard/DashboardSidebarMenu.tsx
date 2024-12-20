@@ -3,7 +3,7 @@
 import { dashboardMenu } from "@/lib/constants";
 import { LayoutDashboardIcon, Menu, SettingsIcon, User2Icon, Users } from "lucide-react";
 import Link from "next/link";
-import logo from '/public/logo01.png';
+import logo from '/public/images/logo01.png';
 import Image from "next/image";
 import { useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";

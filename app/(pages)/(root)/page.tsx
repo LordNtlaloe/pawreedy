@@ -11,6 +11,7 @@ import CTA from "@/components/general/CTA";
 import CookieConsentBanner from "@/components/general/Cookies";
 import CategoryCarousel from "@/components/category/CategoryCarousel";
 import ThreeItemGrid from "@/components/decorative/ThreeItemGrid";
+import BannerGrid from "@/components/decorative/BannerGrid";
 import Banner from "@/components/decorative/Banner";
 
 export default function Home({ userInput }: any) {
@@ -52,7 +53,7 @@ export default function Home({ userInput }: any) {
         <ProductList productList={popularProducts} title={title} />
       </div>
       <div className="my-8">
-        <ThreeItemGrid />
+        <BannerGrid />
       </div>
       <div className="px-6 text-violet-700 my-2">
         <LatestProducts latestProductsList={latestProducts} title="Latest Products" />

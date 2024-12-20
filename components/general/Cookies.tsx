@@ -70,11 +70,11 @@ export default function CookieConsent({
                             <br />
                             <br />
                             <span className="text-xs">
-                                By clicking "
+                                {`By clicking "`}
                                 <span className="font-medium opacity-80">
                                     Accept
                                 </span>
-                                ", you agree to our use of cookies.
+                                {`", you agree to our use of cookies.`}
                             </span>
                             <br />
                             <a href="#" className="text-xs underline">

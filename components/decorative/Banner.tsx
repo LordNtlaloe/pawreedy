@@ -1,5 +1,6 @@
 import Link from 'next/link'
 import React from 'react'
+import Image from 'next/image'
 
 export default function Banner() {
     return (
@@ -20,7 +21,7 @@ export default function Banner() {
                 </div>
 
                 <div className="relative max-md:hidden left-20">
-                    <img src="/images/h5-banner9.png" alt="Banner Image"
+                    <Image src="/images/h5-banner9.png" alt="Banner Image"
                         className="md:absolute object-fit w-64" />
                 </div>
             </div>

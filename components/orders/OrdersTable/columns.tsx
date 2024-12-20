@@ -1,13 +1,10 @@
 "use client";
 
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import React, { useState } from "react";
+import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { ColumnDef } from "@tanstack/react-table";
-import Image from "next/image";
-import Link from "next/link";
-import { useRouter } from "next/navigation";
 import ChangeStatusPopup from "../ChangeStatus/ChangeOrderStatus";
 import OrderDetailsPopup from "../OrderDetailsPopup";
-import React, { useState } from "react"
 import { TableCell } from "@/components/ui/table";
 
 export type Order = {
@@ -33,28 +30,80 @@ export type Order = {
     }[];
   };
 };
+
+// Component to handle options cell
+type OptionsCellProps = {
+  order: Order;
+};
+
+const OptionsCell: React.FC<OptionsCellProps> = ({ order }) => {
+  const [isPopupOpen, setIsPopupOpen] = useState(false);
+
+  const handleClose = () => setIsPopupOpen(false);
+
+  const handleSave = (newStatus: string) => {
+    order.orderStatus = newStatus; // Update the status locally
+    setIsPopupOpen(false);
+  };
+
+  return (
+    <div className="flex gap-2 items-center">
+      {/* Change Status Dialog */}
+      <Dialog open={isPopupOpen} onOpenChange={setIsPopupOpen}>
+        <DialogTrigger asChild>
+          <button className="btn">Change Status</button>
+        </DialogTrigger>
+        <DialogContent>
+          <ChangeStatusPopup
+            orderId={order._id}
+            initialStatus={order.orderStatus}
+            onClose={handleClose}
+            onSave={handleSave}
+          />
+        </DialogContent>
+      </Dialog>
+
+      {/* View Details Dialog */}
+      <Dialog>
+        <DialogTrigger asChild>
+          <button className="btn">View Details</button>
+        </DialogTrigger>
+        <DialogContent>
+          <OrderDetailsPopup
+            orderDetails={order}
+            onClose={() => setIsPopupOpen(false)}
+          />
+        </DialogContent>
+      </Dialog>
+    </div>
+  );
+};
+
+// Column Definitions
 export const columns: ColumnDef<Order>[] = [
   { accessorKey: "_id", header: "Order ID" },
   { accessorKey: "name", header: "Name" },
   { accessorKey: "email", header: "Email" },
-  { accessorKey: "orderStatus", header: "Status", cell: ({ row }) => {
+  {
+    accessorKey: "orderStatus",
+    header: "Status",
+    cell: ({ row }) => {
       const orderStatus = row.original.orderStatus;
-      
-      // Helper function to return status-specific class
+
       const getStatusClass = (status: string) => {
         switch (status) {
           case "Pending":
-            return "bg-yellow-200 text-yellow-700"; // Light Yellow for Pending
+            return "bg-yellow-200 text-yellow-700";
           case "Processing":
-            return "bg-blue-200 text-blue-700";  // Light Blue for Processing
+            return "bg-blue-200 text-blue-700";
           case "Shipped":
-            return "bg-green-200 text-green-700"; // Light Green for Shipped
+            return "bg-green-200 text-green-700";
           case "Delivered":
-            return "bg-purple-200 text-purple-700"; // Light Purple for Delivered
+            return "bg-purple-200 text-purple-700";
           case "Cancelled":
-            return "bg-red-200 text-red-700"; // Light Red for Cancelled
+            return "bg-red-200 text-red-700";
           default:
-            return "bg-gray-200 text-gray-700"; // Default gray
+            return "bg-gray-200 text-gray-700";
         }
       };
 
@@ -65,7 +114,7 @@ export const columns: ColumnDef<Order>[] = [
           {orderStatus}
         </TableCell>
       );
-    }
+    },
   },
   { accessorKey: "totalAmount", header: "Total Amount" },
   {
@@ -73,46 +122,7 @@ export const columns: ColumnDef<Order>[] = [
     header: "Options",
     cell: ({ row }) => {
       const order = row.original;
-
-      const [isPopupOpen, setIsPopupOpen] = useState(false);
-
-      const handleClose = () => setIsPopupOpen(false);
-
-      const handleSave = (newStatus: string) => {
-        order.orderStatus = newStatus;
-        setIsPopupOpen(false);
-      };
-
-      return (
-        <div className="flex gap-2 items-center">
-          <Dialog open={isPopupOpen} onOpenChange={setIsPopupOpen}>
-            <DialogTrigger asChild>
-              <button className="btn">Change Status</button>
-            </DialogTrigger>
-            <DialogContent>
-              <ChangeStatusPopup
-                orderId={order._id}
-                initialStatus={order.orderStatus} // Change currentStatus to initialStatus
-                onClose={handleClose}
-                onSave={handleSave}
-              />
-            </DialogContent>
-          </Dialog>
-          <Dialog>
-            <DialogTrigger asChild>
-              <button className="btn">View Details</button>
-            </DialogTrigger>
-            <DialogContent>
-              <OrderDetailsPopup
-                orderDetails={order}
-                onClose={() => setIsPopupOpen(false)}
-              />
-            </DialogContent>
-          </Dialog>
-        </div>
-      );
+      return <OptionsCell order={order} />;
     },
   },
 ];
-
-
