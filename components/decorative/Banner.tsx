@@ -12,7 +12,7 @@ export default function Banner() {
                     <p className="text-base text-gray-200 mt-4">Best tailwind css readymade UI plateform</p>
 
                     <Link href="/products" className="">
-                        <div className="bg-[url('/images/h5-lable1.png')] bg-no-repeat h-52 my-6">
+                        <div className="bg-[url('/images/h5-lable1.png')] bg-no-repeat h-40 w-40 my-6">
                             <p
                                 className="my-4 py-3 px-10 text-xl font-semibold text-white top-20">Get
                                 Started</p>
@@ -22,7 +22,7 @@ export default function Banner() {
 
                 <div className="relative max-md:hidden left-20">
                     <Image src="/images/h5-banner9.png" alt="Banner Image"
-                        className="md:absolute object-fit w-64" />
+                        className="md:absolute object-fit w-64" width={1000} height={250}/>
                 </div>
             </div>
         </div>

@@ -11,7 +11,6 @@ const DashboardPage = async () => {
   try {
     const user = await getUserByRole("Admin");
 
-    // If user is not found or not an admin, redirect
     if (!user) {
       redirect("/");
     }

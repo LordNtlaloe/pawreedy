@@ -18,6 +18,7 @@ import { motion } from "framer-motion"; // Ensure you have framer-motion install
 import { useEffect, useState } from "react";
 import { Search } from 'lucide-react'; // Adjust the import to your icon library
 import AddNewProductButton from "../AddNewProductButton";
+
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
@@ -51,7 +52,7 @@ export function ProductsTable<TData, TValue>({
   );
 
   // Create an array of the rows that match the filtered data
-  const filteredRows = table.getRowModel().rows.filter((row) => 
+  const filteredRows = table.getRowModel().rows.filter((row) =>
     filteredData.some((item: any) => item.name === row.getValue('name')) // Adjust this condition if your data structure is different
   );
 
@@ -67,7 +68,7 @@ export function ProductsTable<TData, TValue>({
         <div className="relative">
           <input
             type="text"
-            placeholder="Search products..."
+            placeholder="Search categories..."
             className="bg-violet-50 text-violet-700 placeholder-gray-400 rounded-lg pl-10 pr-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
             onChange={handleSearch}
             value={searchTerm}
@@ -77,31 +78,42 @@ export function ProductsTable<TData, TValue>({
       </div>
 
       <div className="overflow-x-auto">
-        <Table className="min-w-full divide-y divide-gray-700">
+        <Table className="min-w-full">
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
-              <TableRow key={headerGroup.id}>
+              <TableRow key={headerGroup.id} className="bg-gray-200">
                 {headerGroup.headers.map((header) => {
                   return (
-                    <TableHead key={header.id} className="px-6 py-3 text-left text-xs font-bold text-violet-700 uppercase tracking-wider">
+                    <TableHead
+                      key={header.id}
+                      className="px-6 py-3 text-left text-xs font-bold text-slate-700 uppercase tracking-wider"
+                    >
                       {header.isPlaceholder
                         ? null
                         : flexRender(
-                            header.column.columnDef.header,
-                            header.getContext()
-                          )}
+                          header.column.columnDef.header,
+                          header.getContext()
+                        )}
                     </TableHead>
                   );
                 })}
               </TableRow>
             ))}
           </TableHeader>
-          <TableBody className="divide-y divide-gray-700">
+          <TableBody>
             {filteredRows.length ? (
-              filteredRows.map((row) => (
-                <TableRow key={row.id} data-state={row.getIsSelected() ? "selected" : undefined}>
+              filteredRows.map((row, index) => (
+                <TableRow
+                  key={row.id}
+                  className={`${index % 2 === 1 ? "bg-gray-200" : "bg-white"
+                    }`}
+                  data-state={row.getIsSelected() ? "selected" : undefined}
+                >
                   {row.getVisibleCells().map((cell) => (
-                    <TableCell key={cell.id} className="px-6 py-4 whitespace-nowrap text-sm text-violet-800">
+                    <TableCell
+                      key={cell.id}
+                      className="px-6 py-4 whitespace-nowrap text-sm text-slate-800"
+                    >
                       {flexRender(cell.column.columnDef.cell, cell.getContext())}
                     </TableCell>
                   ))}
@@ -109,14 +121,18 @@ export function ProductsTable<TData, TValue>({
               ))
             ) : (
               <TableRow>
-                <TableCell colSpan={columns.length} className="h-24 text-center text-gray-100">
-                  No products found.
+                <TableCell
+                  colSpan={columns.length}
+                  className="h-24 text-center text-gray-100"
+                >
+                  No categories found.
                 </TableCell>
               </TableRow>
             )}
           </TableBody>
         </Table>
       </div>
+
     </motion.div>
   );
 }

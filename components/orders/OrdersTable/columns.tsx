@@ -10,8 +10,8 @@ import { TableCell } from "@/components/ui/table";
 export type Order = {
   createdAt: string;
   _id: string;
-  shippingDetails: { 
-    name: string; 
+  shippingDetails: {
+    name: string;
     email: string;
     address: string;
     city: string;
@@ -19,17 +19,20 @@ export type Order = {
     postalCode: string;
   };
   orderStatus: string;
-  cartSummary: { 
+  cartSummary: {
     totalAmount: number;
     items: {
-      [x: string]: any;
       name: string;
       price: string;
       quantity: number;
       image: string;
+      size?: string;
+      status?: string;
+      expectedDelivery?: string;
     }[];
   };
 };
+
 
 // Component to handle options cell
 type OptionsCellProps = {

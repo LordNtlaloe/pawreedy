@@ -7,6 +7,7 @@ import { revalidatePath } from "next/cache";
 let dbConnection: any;
 let database: any;
 
+// Initialize database connection
 const init = async () => {
   const connection = await connectToDB();
   dbConnection = connection;
@@ -21,7 +22,7 @@ export const getAllColors = async () => {
     const collection = await database?.collection("colors");
 
     if (!database || !collection) {
-      console.log("Failed to connect to collection.");
+      console.error("Failed to connect to collection.");
       return;
     }
 
@@ -31,7 +32,7 @@ export const getAllColors = async () => {
       .toArray();
     return allColors;
   } catch (error: any) {
-    console.log("An error occurred:", error.message);
+    console.error("An error occurred:", error.message);
     return { error: error.message };
   }
 };
@@ -44,7 +45,7 @@ export const getColorByName = async (colorName: string) => {
     const collection = await database?.collection("colors");
 
     if (!database || !collection) {
-      console.log("Failed to connect to collection.");
+      console.error("Failed to connect to collection.");
       return;
     }
 
@@ -54,7 +55,7 @@ export const getColorByName = async (colorName: string) => {
       .toArray();
     return color;
   } catch (error: any) {
-    console.log("An error occurred:", error.message);
+    console.error("An error occurred:", error.message);
     return { error: error.message };
   }
 };
@@ -67,7 +68,7 @@ export const deleteOneColor = async (_id: string) => {
     const collection = await database?.collection("colors");
 
     if (!database || !collection) {
-      console.log("Failed to connect to collection.");
+      console.error("Failed to connect to collection.");
       return;
     }
 
@@ -75,7 +76,7 @@ export const deleteOneColor = async (_id: string) => {
     revalidatePath("/dashboard/colors");
     return deleted;
   } catch (error: any) {
-    console.log("An error occurred:", error.message);
+    console.error("An error occurred:", error.message);
     return { error: error.message };
   }
 };
@@ -88,7 +89,7 @@ export const updateColor = async (_id: string, newName: string) => {
     const collection = await database?.collection("colors");
 
     if (!database || !collection) {
-      console.log("Failed to connect to collection.");
+      console.error("Failed to connect to collection.");
       return;
     }
 
@@ -99,7 +100,7 @@ export const updateColor = async (_id: string, newName: string) => {
     revalidatePath("/dashboard/colors");
     return updated;
   } catch (error: any) {
-    console.log("An error occurred:", error.message);
+    console.error("An error occurred:", error.message);
     return { error: error.message };
   }
 };
@@ -122,7 +123,7 @@ export const saveNewColor = async (formData: FormData) => {
     revalidatePath("/dashboard/colors");
     return { colorID: newColor.insertedId };
   } catch (error: any) {
-    console.log("An error occurred saving new color:", error.message);
+    console.error("An error occurred saving new color:", error.message);
     return { error: error.message };
   }
 };
@@ -148,6 +149,8 @@ export const seedColors = async () => {
 
     // Check if collection already has data
     const existingColors = await collection.find({}).toArray();
+    console.log("Existing colors:", existingColors);
+
     if (existingColors.length > 0) {
       console.log("Colors collection already seeded.");
       return { message: "Colors collection already seeded." };
@@ -158,7 +161,19 @@ export const seedColors = async () => {
     console.log("Colors seeded successfully:", result.insertedCount);
     return { message: "Colors seeded successfully." };
   } catch (error: any) {
-    console.log("An error occurred while seeding colors:", error.message);
+    console.error("An error occurred while seeding colors:", error.message);
+    return { error: error.message };
+  }
+};
+
+// Test Database Connection (Optional for Debugging)
+export const testDatabaseConnection = async () => {
+  try {
+    if (!dbConnection) await init();
+    console.log("Database connected:", !!database);
+    return { message: "Database connection successful." };
+  } catch (error: any) {
+    console.error("Database connection failed:", error.message);
     return { error: error.message };
   }
 };

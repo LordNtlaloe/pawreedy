@@ -3,7 +3,7 @@ import { revalidatePath } from "next/cache";
 import { connectToDB } from "../_database/database";
 import { ObjectId } from "mongodb";
 import { redirect } from "next/navigation";
-import { subDays } from "date-fns"; 
+import { subDays } from "date-fns";
 
 let dbConnection: any;
 let database: any;
@@ -13,12 +13,12 @@ const init = async () => {
         const connection = await connectToDB();
         dbConnection = connection;
         database = await dbConnection?.db("pawreedy");
-    } catch (error:any) {
+    } catch (error: any) {
         console.error("Failed to connect to the database:", error.message);
     }
 }
 
-export const saveNewProduct = async(formData: FormData) => {
+export const saveNewProduct = async (formData: FormData) => {
     const data = {
         name: formData.get("name"),
         description: formData.get("description"),
@@ -33,65 +33,65 @@ export const saveNewProduct = async(formData: FormData) => {
         updatedAt: new Date()
     };
 
-    if(!dbConnection) await init();
+    if (!dbConnection) await init();
 
-    try{
+    try {
         const collection = await database.collection("products");
-        if(!collection || !database){
-            return { error: "Failed To Get Products From Database"}
+        if (!collection || !database) {
+            return { error: "Failed To Get Products From Database" }
         }
         const newCategory = await collection.insertOne(data);
         revalidatePath('/dashboard/products');
         return { "productId": newCategory }
     }
-    catch(error: any){
+    catch (error: any) {
         console.log("An Error Occured While Saving A New Category", error.message);
         return { "error": error.message }
     }
 }
 
 export const getAllProducts = async () => {
-    if(!dbConnection) await init();
-    
+    if (!dbConnection) await init();
+
     try {
         const collection = await database?.collection("products");
 
-        if(!database || !collection){
+        if (!database || !collection) {
             console.log("Failed To Get Products");
             return;
         }
 
         const allCategories = await collection.find({})
-            .map((category:any) => ({ ...category, _id: category._id.toString() }))
+            .map((category: any) => ({ ...category, _id: category._id.toString() }))
             .toArray();
         return allCategories;
     }
-    catch(error:any){
+    catch (error: any) {
         console.log("An Error Occured... ", error.message);
-        return {"error": error.message}
+        return { "error": error.message }
     }
 }
 
 export const getAllProductsByCategory = async (categoryName: string) => {
-    if(!dbConnection) await init();
+    if (!dbConnection) await init();
 
-    try{
+    try {
         const collection = await database?.collection("products");
 
-        if(!database || !collection){
+        if (!database || !collection) {
             console.log("Failed To Get Products");
             return;
         }
 
-        const products = await collection.find({ "category": categoryName})
+        const products = await collection.find({ "category": categoryName })
             .map((products: any) => ({ ...products, id: products._id.toString() }))
             .toArray();
         return products;
     }
-    catch(error: any){
+    catch (error: any) {
         console.log("An Error Occured... ", error.message);
         return {
-            "error" : error.message
+            "error": error.message
         };
     }
 }
@@ -135,62 +135,88 @@ export const getProductById = async (_id: string) => {
 
 
 export const updateProduct = async (_id: string, formData: FormData) => {
-    const data = {
+    const data: any = {
         name: formData.get("name"),
         description: formData.get("description"),
         price: formData.get("price"),
-        image: null,
         category: formData.get("category"),
         quantity: formData.get("quantity"),
-        updatedAt: new Date()
+        sizes: (formData.get("sizes") as string)?.split(","),
+        colors: (formData.get("colors") as string)?.split(","),
+        updatedAt: new Date(),
     };
 
-    if(!dbConnection) await init ();
+    // Handle image upload if a new image is provided
+    const imageFile = formData.get("image") as File | null;
+    if (imageFile) {
+        const uploadData = new FormData();
+        uploadData.append("file", imageFile);
+        uploadData.append("upload_preset", "pawreedy");
 
-    let result;
+        try {
+            const response = await fetch(
+                "https://api.cloudinary.com/v1_1/dvbcqdbfa/image/upload",
+                { method: "POST", body: uploadData }
+            );
+            const result = await response.json();
+            if (result.secure_url) {
+                data.image = result.secure_url;
+            } else {
+                console.log("Image upload failed.");
+            }
+        } catch (error: any) {
+            console.log("Error uploading image:", error.message);
+            return { error: "Image upload failed." };
+        }
+    }
 
-    try{
+    if (!dbConnection) await init();
+
+    try {
         const collection = await database?.collection("products");
-        if(!database || !collection){
-            console.log("Failed To Get Products");
+        if (!database || !collection) {
+            console.log("Failed to connect to the products collection.");
             return;
         }
 
-        result = await collection.updateOne({"_id": new ObjectId(_id)}, {$set: data});
-        revalidatePath('/dashboard/products');
-    }
-    catch(error: any){
-        console.log("An Error Occured... ", error.message);
-        return { "error ": error.message }
-    }
+        const result = await collection.updateOne({ "_id": new ObjectId(_id) }, { $set: data });
+        revalidatePath("/dashboard/products");
 
-    if(result){
-        return redirect('/dashboard/products');
+        if (result.modifiedCount > 0) {
+            return redirect("/dashboard/products");
+        } else {
+            console.log("No documents were updated.");
+            return { error: "Update failed." };
+        }
+    } catch (error: any) {
+        console.log("An error occurred during the update:", error.message);
+        return { error: error.message };
     }
-}
+};
+
 
 export const updateProductStatus = async (_id: string, newStatus: string) => {
-    if(!dbConnection) await init();
+    if (!dbConnection) await init();
 
     let result;
 
-    try{
+    try {
         const collection = await database?.collection("products");
 
-        if(!collection || !database){
+        if (!collection || !database) {
             console.log("Failed To Get Products");
             return;
         }
 
-        result = await collection.updateOne({ "_id": new ObjectId(_id)}, { $set: { status: newStatus}});
+        result = await collection.updateOne({ "_id": new ObjectId(_id) }, { $set: { status: newStatus } });
         revalidatePath('/dashboard/products');
     }
-    catch(error: any){
+    catch (error: any) {
         console.log("An Error Occured... ", error.message);
         return { "error ": error.message }
     }
 
-    if(result){
+    if (result) {
         return redirect('/dashboard/products');
     }
 }
@@ -213,7 +239,7 @@ export const saveNewProductRating = async (formData: FormData) => {
             throw new Error("Failed to get necessary collections");
         }
 
-        
+
         const product = await productsCollection.findOne({ "name": productName });
 
         if (!product) {
@@ -282,11 +308,11 @@ export const saveNewProductRating = async (formData: FormData) => {
 };
 
 export const getProductCount = async () => {
-    if(!dbConnection) await init();
+    if (!dbConnection) await init();
 
-    try{
+    try {
         const collection = database?.collection("products");
-        if(!database || !collection){
+        if (!database || !collection) {
             console.log("Failed To Get Products");
             return { count: 0 };
         }
@@ -294,73 +320,74 @@ export const getProductCount = async () => {
         const count = await collection.countDocuments({});
         return { count };
     }
-    catch(error: any){
+    catch (error: any) {
         console.log("An Error Occured... ", error.message);
         return { "error ": error.message }
     }
 }
 
-export const getAllRatingsByProductId = async ( productId: string ) =>{
-    if(!dbConnection) await init();
-    
-    try{
+export const getAllRatingsByProductId = async (productId: string) => {
+    if (!dbConnection) await init();
+
+    try {
         const collection = database?.collection("ratings");
 
-        if(!database || !collection){
+        if (!database || !collection) {
             console.log("Failed To Get Product Ratings");
-            return { error: "Failed To Get Product Ratings"};
+            return { error: "Failed To Get Product Ratings" };
         }
 
         const ratings = await collection.find({ productId: productId })
-            .map((rating: any) => ({...rating, _id: rating._id.toString()})).toArray();
-        
+            .map((rating: any) => ({ ...rating, _id: rating._id.toString() })).toArray();
+
         return ratings;
     }
-    catch(error: any){
+    catch (error: any) {
         console.log("An Error Occured... ", error.message);
         return { "error ": error.message }
     }
 }
 
 export const getProductByName = async (productName: string) => {
-    if(!dbConnection) await init();
+    if (!dbConnection) await init();
 
-    try{
+    try {
         const collection = database?.collection("products");
-        if(!database || !collection){
+        if (!database || !collection) {
             console.log("Failed To Get Product Name");
-            return {error: "Failed To Get Product Name"};
+            return { error: "Failed To Get Product Name" };
         }
 
-        const result = await collection.find({ $or: 
-            [
-                { productName: {$regex: productName, $options: "i"}},
-                { category: {$regex: productName, $options: "i"}}
-            ]
+        const result = await collection.find({
+            $or:
+                [
+                    { productName: { $regex: productName, $options: "i" } },
+                    { category: { $regex: productName, $options: "i" } }
+                ]
         }).map((product: any) => ({ ...product, _id: product._id.toString() })).toArray();
 
         return result;
     }
-    catch(error: any){
+    catch (error: any) {
         console.log("An Error Occured... ", error.message);
         return { "error ": error.message }
     }
 }
 
 export const getUserRatingCount = async (userEmail: string, productId: string) => {
-    if(!dbConnection) await init();
+    if (!dbConnection) await init();
 
-    try{
+    try {
         const collection = database?.collection("ratings");
-        if(!database || !collection){
+        if (!database || !collection) {
             console.log("Failed To Get Product Ratings");
-            return { error: "Failed To Get Product Ratings"};
+            return { error: "Failed To Get Product Ratings" };
         }
 
-        const ratingCount = await collection.countDocuments({userEmail: userEmail, productId: new ObjectId(productId)});
+        const ratingCount = await collection.countDocuments({ userEmail: userEmail, productId: new ObjectId(productId) });
         return ratingCount;
     }
-    catch(error: any){
+    catch (error: any) {
         console.log("An Error Occured... ", error.message);
         return { "error ": error.message }
     }

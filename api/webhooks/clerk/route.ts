@@ -12,10 +12,11 @@ export async function POST(req: Request) {
         throw new Error("Please add WEBHOOK_SECRET from Clerk Dashboard to .env or .env.local");
     }
 
-    const headerPayload = headers();
-    const svix_id = headerPayload.get("svix-id");
-    const svix_timestamp = headerPayload.get("svix-timestamp");
-    const svix_signature = headerPayload.get("svix-signature");
+    // Await the headers to resolve the Promise
+    const headerPayload = await headers();
+    const svix_id = headerPayload.get('svix-id');
+    const svix_timestamp = headerPayload.get('svix-timestamp');
+    const svix_signature = headerPayload.get('svix-signature');
 
     if (!svix_id || !svix_timestamp || !svix_signature) {
         return new Response("Error occured -- no svix headers", { status: 400 });

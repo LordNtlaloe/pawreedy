@@ -8,7 +8,7 @@ const Footer = () => {
   return (
     <footer className="relative w-full my-20 bg-[#51358C] py-8">
       <div className="w-full px-8 mx-auto max-w-7xl">
-      <Image src="/logo01.png" height={160} width={80} alt="Pawreedy Logo" className=""/>
+      <Image src="/images/logo01.png" height={160} width={80} alt="Pawreedy Logo" className=""/>
         <div className="grid justify-between grid-cols-1 gap-4 md:grid-cols-1">
           <div className="grid justify-between grid-cols-4 gap-4">
             <ul>

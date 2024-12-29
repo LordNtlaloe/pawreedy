@@ -8,8 +8,6 @@ interface productState {
     setShowChangeProductStatusModal: (newStatus: boolean) => void;
     setShowProductUpdateModal: (newState: boolean) => void;
     setShowProductBookingModal: (newState: boolean) => void;
-
-
 }
 
 export const useProductStore = create<productState>()((set) => ({
@@ -20,5 +18,4 @@ export const useProductStore = create<productState>()((set) => ({
     setShowChangeProductStatusModal: (newStatus: boolean) => set({ showProductChangeStatusModal: newStatus }),
     setShowProductUpdateModal: (newState: boolean) => set({ showProductUpdateModal: newState }),
     setShowProductBookingModal: (newState: boolean) => set({ showProductBookingModal: newState })
-
 }));

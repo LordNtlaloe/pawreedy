@@ -33,11 +33,11 @@ const ActionsField = ({ id }: { id: string }) => {
                         ...
                     </p>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent className="bg-blue-950 text-white" align="end">
+                <DropdownMenuContent className="bg-white text-slate-900" align="end">
 
                     <DropdownMenuSeparator />
                     {productActions.map((action) => (
-                        <Link href={`/dashboard/products/update/${id}`} key={action.id} className="border-b px-8 border-white/20 py-2 cursor-pointer hover:bg-gray-700 rounded mx-3 flex flex-col" onClick={() => {
+                        <Link href={`/dashboard/products/update/${id}`} key={action.id} className="border-b px-8 border-white/20 py-2 cursor-pointer hover:bg-slate-100 rounded mx-3 flex flex-col" onClick={() => {
                             if (action.label === "Update Info") {
                             } else if (action.label === "Change Status") {
                                 setShowChangeProductStatusModal(true)

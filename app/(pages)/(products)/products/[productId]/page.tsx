@@ -1,17 +1,10 @@
 import ProductInfo from '@/components/products/ProductInfo';
 import React from 'react';
-import { headers as getHeaders } from 'next/headers';
 
-type ProductPageProps = {
-  params: { productId: string };
-};
 
-const ProductPage = async ({ params }: ProductPageProps) => {
-  const { productId } = params;
 
-  // Get headers if needed, you can remove this if not necessary for your logic
-  const headers = await getHeaders();
-  const contentSecurityPolicy = headers.get('Content-Security-Policy');
+const ProductPage = async ({ params } : { params: Promise<{ id: string }>}) => {
+  const  productId  = (await params).id;
 
   return (
     <main>

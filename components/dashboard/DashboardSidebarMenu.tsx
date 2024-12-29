@@ -1,32 +1,30 @@
 "use client";
 
 import { dashboardMenu } from "@/lib/constants";
-import { LayoutDashboardIcon, Menu, SettingsIcon, User2Icon, Users } from "lucide-react";
+import { Menu } from "lucide-react";
 import Link from "next/link";
-import logo from '/public/images/logo01.png';
+import logo from "/public/images/logo01.png";
 import Image from "next/image";
 import { useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
+import { usePathname } from "next/navigation";
 
 const DashboardSidebarMenu = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
-  const [isHovered, setIsHovered] = useState(false);
-
-  const handleMouseEnter = () => setIsHovered(true);
-  const handleMouseLeave = () => setIsHovered(false);
+  const pathname = usePathname(); // Get the current path
 
   return (
     <motion.div
       className={`relative z-10 transition-all duration-300 ease-in-out flex-shrink-0 ${isSidebarOpen ? "w-64" : "w-20"}`}
       animate={{ width: isSidebarOpen ? 256 : 80 }}
     >
-      <div className='h-full bg-[#51358C] text-white backdrop-blur-md px-4 flex flex-col shadow-sm shadow-violet-950'>
+      <div className="h-full bg-[#51358C] text-white backdrop-blur-md px-4 flex flex-col shadow-sm shadow-violet-950">
         <motion.button
           onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-          className='p-2'
+          className="p-2"
         >
           <div className="flex items-center justify-start -space-y-6 space-x-2">
-            <Menu size={24} className="rounded-full hover:text-white transition-colors"/>
+            <Menu size={24} className="rounded-full hover:text-white transition-colors" />
             {isSidebarOpen && (
               <motion.div
                 initial={{ opacity: 0 }}
@@ -39,27 +37,27 @@ const DashboardSidebarMenu = () => {
           </div>
         </motion.button>
 
-        <nav className='mt-0 flex-grow'>
+        <nav className="mt-0 flex-grow">
           {dashboardMenu.map((item) => (
-            <Link key={item.href} href={item.href} className="hover:text-white">
+            <Link key={item.href} href={item.href}>
               <motion.div
-                className='flex items-center p-4 text-sm font-medium rounded-lg hover:bg-violet-900 hover-text-white transition-colors mb-2'
+                className={`flex items-center p-4 text-sm font-medium rounded-lg mb-2 transition-colors ${
+                  pathname === item.href ? "bg-violet-700" : "hover:bg-violet-900"
+                }`}
               >
-              <item.icon
-                    size={20}
-                    style={{
-                      color: "white",
-                      minWidth: "20px",
-                      transition: "color 0.2s", // Optional for smooth hover effect
-                    }}
-                    className="hover:text-white"
-                    onMouseEnter={handleMouseEnter}
-                    onMouseLeave={handleMouseLeave}
-                  />                
-                  <AnimatePresence>
+                <item.icon
+                  size={20}
+                  style={{
+                    color: "white",
+                    minWidth: "20px",
+                    transition: "color 0.2s",
+                  }}
+                  className="hover:text-white"
+                />
+                <AnimatePresence>
                   {isSidebarOpen && (
                     <motion.span
-                      className='ml-4 whitespace-nowrap'
+                      className="ml-4 whitespace-nowrap"
                       initial={{ opacity: 0, width: 0 }}
                       animate={{ opacity: 1, width: "auto" }}
                       exit={{ opacity: 0, width: 0 }}
