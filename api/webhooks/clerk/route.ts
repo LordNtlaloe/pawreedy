@@ -12,19 +12,20 @@ export async function POST(req: Request) {
         throw new Error("Please add WEBHOOK_SECRET from Clerk Dashboard to .env or .env.local");
     }
 
-    // Await the headers to resolve the Promise
+    const wh = new Webhook(WEBHOOK_SECRET);
+
+    // Await the Promise from headers() to get the actual ReadonlyHeaders object
     const headerPayload = await headers();
+
     const svix_id = headerPayload.get('svix-id');
     const svix_timestamp = headerPayload.get('svix-timestamp');
     const svix_signature = headerPayload.get('svix-signature');
-
     if (!svix_id || !svix_timestamp || !svix_signature) {
-        return new Response("Error occured -- no svix headers", { status: 400 });
+        return new Response("Error occurred -- no svix headers", { status: 400 });
     }
 
     const payload = await req.json();
     const body = JSON.stringify(payload);
-    const wh = new Webhook(WEBHOOK_SECRET);
 
     let evt: WebhookEvent;
     try {
@@ -35,7 +36,7 @@ export async function POST(req: Request) {
         }) as WebhookEvent;
     } catch (err) {
         console.error("Error verifying webhook:", err);
-        return new Response("Error occured", { status: 400 });
+        return new Response("Error occurred", { status: 400 });
     }
 
     const { id } = evt.data;
@@ -51,7 +52,7 @@ export async function POST(req: Request) {
             firstName: first_name,
             lastName: last_name,
             photo: image_url,
-            role: "Member"
+            role: "Member",
         };
 
         console.log("Creating user in MongoDB:", user);
@@ -64,7 +65,7 @@ export async function POST(req: Request) {
             await clerkClient.users.updateUser(id, {
                 publicMetadata: {
                     userId: newUser.insertedId,
-                    role: user.role
+                    role: user.role,
                 },
             });
 
