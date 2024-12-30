@@ -1,4 +1,4 @@
-"use client";
+"use client"
 import { useEffect, useState } from "react";
 import ProductFilters from "@/components/products/ProductFilters";
 import Loading from "@/app/loading";
@@ -10,6 +10,7 @@ import { ShoppingCart, Star, Heart } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
 import { getAllProducts } from "@/app/_actions/_productsActions";
+import ProductListSkeleton from "@/components/skeletons/ProductListSkeleton";
 
 const MySwal = withReactContent(Swal);
 
@@ -27,6 +28,8 @@ export default function ProductList() {
     const [wishlistIds, setWishlistIds] = useState<string[]>(
         wishlist.map((item) => item.id)
     );
+    const [currentPage, setCurrentPage] = useState(1);
+    const productsPerPage = 6;
 
     const getProducts = async () => {
         const products = await getAllProducts();
@@ -105,18 +108,11 @@ export default function ProductList() {
         price: number[];
     }) => {
         setFilters(newFilters);
+        setCurrentPage(1); // Reset to the first page on filter change
     };
 
     const minPrice = Math.min(...products.map((product: any) => product.price));
     const maxPrice = Math.max(...products.map((product: any) => product.price));
-
-    const isNewProduct = (createdAt: string) => {
-        const createdDate = new Date(createdAt);
-        const currentDate = new Date();
-        const differenceInTime = currentDate.getTime() - createdDate.getTime();
-        const differenceInDays = differenceInTime / (1000 * 3600 * 24);
-        return differenceInDays <= 30;
-    };
 
     const filteredProducts = products.filter((product: any) => {
         const matchesCategory =
@@ -136,19 +132,24 @@ export default function ProductList() {
         );
     });
 
-    const allProductsVisible =
-        !filters.category &&
-        !filters.color &&
-        !filters.size &&
-        filters.price[0] === minPrice &&
-        filters.price[1] === maxPrice;
+    const totalPages = Math.ceil(filteredProducts.length / productsPerPage);
 
-    const productsToDisplay = allProductsVisible ? products : filteredProducts;
-
-    const uniqueProducts = productsToDisplay.filter(
-        (product: any, index: number, self: any[]) =>
-            index === self.findIndex((p: any) => p._id === product._id)
+    const productsToDisplay = filteredProducts.slice(
+        (currentPage - 1) * productsPerPage,
+        currentPage * productsPerPage
     );
+
+    const handlePageChange = (page: number) => {
+        setCurrentPage(page); // Update page number
+    };
+
+    const isNewProduct = (createdAt: string) => {
+        const createdDate = new Date(createdAt);
+        const currentDate = new Date();
+        const differenceInTime = currentDate.getTime() - createdDate.getTime();
+        const differenceInDays = differenceInTime / (1000 * 3600 * 24);
+        return differenceInDays <= 30;
+    };
 
     return (
         <main className="py-8">
@@ -176,9 +177,9 @@ export default function ProductList() {
                     </div>
 
                     <div className="w-full lg:w-3/4">
-                        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-4">
-                            {uniqueProducts.length > 0 ? (
-                                uniqueProducts.map((product: any) => {
+                        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+                            {productsToDisplay.length > 0 ? (
+                                productsToDisplay.map((product: any) => {
                                     const imageURL =
                                         product?.image !== "undefined"
                                             ? product.image
@@ -250,36 +251,45 @@ export default function ProductList() {
                                                             ))
                                                         )}
                                                     </div>
-                                                </div>
-
-                                                <p className="text-slate-700 mt-1 text-sm">
-                                                    {product.category}
-                                                </p>
-
-                                                <div className="mt-3 flex items-end justify-between">
-                                                    <p>
-                                                        <span className="text-lg font-bold text-slate-800">
-                                                            M{product.price}
-                                                        </span>
-                                                    </p>
-                                                    <button
-                                                        onClick={() =>
-                                                            handleAddToCart(product)
-                                                        }
-                                                        className="group inline-flex rounded-md bg-violet-700 p-2 hover:bg-violet-900 transition-colors duration-300"
-                                                    >
-                                                        <ShoppingCart className="group-hover:text-gray-100 h-4 w-4 text-white" />
-                                                    </button>
+                                                    <div className="flex justify-between items-center">
+                                                        <p className="font-bold text-lg text-[#4F4F4F]">
+                                                            R{product.price}
+                                                        </p>
+                                                        <button
+                                                            onClick={() =>
+                                                                handleAddToCart(product)
+                                                            }
+                                                            className="p-2 rounded-full bg-[#51358C] text-white hover:bg-[#3C2966] transition duration-300"
+                                                        >
+                                                            <ShoppingCart className="h-6 w-6" />
+                                                        </button>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
                                     );
                                 })
                             ) : (
-                                <div className="flex items-center justify-center">
-                                    <Loading />
-                                </div>
+                                <ProductListSkeleton />
                             )}
+                        </div>
+
+                        <div className="flex justify-center mt-6">
+                            <button
+                                disabled={currentPage === 1}
+                                onClick={() => handlePageChange(currentPage - 1)}
+                                className="bg-[#51358C] text-white py-2 px-4 rounded-full mr-2 disabled:opacity-50"
+                            >
+                                Previous
+                            </button>
+                            <span className="self-center">{`Page ${currentPage} of ${totalPages}`}</span>
+                            <button
+                                disabled={currentPage === totalPages}
+                                onClick={() => handlePageChange(currentPage + 1)}
+                                className="bg-[#51358C] text-white py-2 px-4 rounded-full ml-2 disabled:opacity-50"
+                            >
+                                Next
+                            </button>
                         </div>
                     </div>
                 </div>

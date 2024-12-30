@@ -19,36 +19,48 @@ const init = async () => {
 }
 
 export const saveNewProduct = async (formData: FormData) => {
+    // Convert form data into the expected fields
     const data = {
         name: formData.get("name"),
         description: formData.get("description"),
         price: formData.get("price"),
-        image: formData.get("imageUrl"),
+        image: formData.get("imageUrl"), // Image can still be a string for the main image
         category: formData.get("category"),
         quantity: formData.get("quantity"),
         ratings: 0,
         ratingsCount: 0,
         status: "In Stock",
         createdAt: new Date(),
-        updatedAt: new Date()
+        updatedAt: new Date(),
+        features: formData.getAll("features") as string[], // Assuming it's an array of strings
+        colors: formData.getAll("colors") as string[], // Array of color values
+        sizes: formData.getAll("sizes") as string[], // Array of size values
+        images: formData.getAll("images") as string[], // Array of image URLs or base64 strings
     };
+
+    data.features = data.features.length > 0 ? data.features : [];
+    data.colors = data.colors.length > 0 ? data.colors : [];
+    data.sizes = data.sizes.length > 0 ? data.sizes : [];
+    data.images = data.images.length > 0 ? data.images : [];
 
     if (!dbConnection) await init();
 
     try {
         const collection = await database.collection("products");
         if (!collection || !database) {
-            return { error: "Failed To Get Products From Database" }
+            return { error: "Failed To Get Products From Database" };
         }
         const newCategory = await collection.insertOne(data);
         revalidatePath('/dashboard/products');
-        return { "productId": newCategory }
+        return { "productId": newCategory };
     }
     catch (error: any) {
-        console.log("An Error Occured While Saving A New Category", error.message);
-        return { "error": error.message }
+        console.log("An Error Occurred While Saving A New Category", error.message);
+        return { "error": error.message };
     }
 }
+
+
 
 export const getAllProducts = async () => {
     if (!dbConnection) await init();
@@ -104,31 +116,31 @@ export const getProductById = async (_id: string) => {
         const collection = await database?.collection("products");
 
         if (!collection) {
-            console.error("Failed to get the product");
+            console.error("Failed to get the product: Collection is missing");
             return null;
         }
 
         const product = await collection.findOne({ _id: new ObjectId(_id) });
 
+        console.log("Fetched Product:", product); // Add logging to check if product is fetched correctly
+
         if (product) {
-            // Serialize deeply and return a plain object
             return {
                 ...product,
                 _id: product._id.toString(),
                 createdAt: product.createdAt ? new Date(product.createdAt).toISOString() : null,
                 updatedAt: product.updatedAt ? new Date(product.updatedAt).toISOString() : null,
-                price: Number(product.price), // Convert to number
-                quantity: Number(product.quantity), // Convert to number
-                ratings: Number(product.ratings), // Convert to number
-                ratingsCount: Number(product.ratingsCount), // Convert to number
-                // Convert any nested objects to plain structures if needed
+                price: Number(product.price),
+                quantity: Number(product.quantity),
+                ratings: Number(product.ratings),
+                ratingsCount: Number(product.ratingsCount),
             };
         }
 
         return null;
     } catch (error: any) {
-        console.error("An Error Occurred: ", error.message);
-        return { error: error.message };
+        console.error("Error in fetching product: ", error);
+        return null;
     }
 };
 

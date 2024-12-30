@@ -5,21 +5,19 @@ import { MapPin, Star, ShoppingCart, Heart } from "lucide-react";
 import Image from "next/image";
 import React, { useEffect, useState, useCallback } from "react";
 import { useCart } from "@/contexts/CartContext";
-import { useWishlist } from "@/contexts/WishlistContext";
 import Swal from "sweetalert2";
-import DisplayRatings from "./DislayRatings";
+import DisplayRatings from "./DisplayRatings";
 import ProductRatings from "./ProductRating";
 import SimilarProducts from "./SimilarProducts";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { ProductInfoSkeleton } from "../skeletons/ProductInfoSkeleton";
 
 const ProductInfo = ({ id }: { id: string }) => {
   const [isLoaded, setIsLoaded] = useState(false);
   const [product, setProduct] = useState<any>({});
-  const { addToWishlist, removeFromWishlist, wishlist } = useWishlist();
-  const [wishlistIds, setWishlistIds] = useState<string[]>(wishlist.map(item => item.id))
   const { addToCart } = useCart();
   let imageURL = "/placeholder-image.jpg";
-  if (product.image && product.image !== "undefined") {
+  if (product?.image && product.image !== "undefined") {
     imageURL = product.image;
   }
 
@@ -27,7 +25,6 @@ const ProductInfo = ({ id }: { id: string }) => {
   const getProduct = useCallback(async () => {
     if (id) {
       const productById = await getProductById(id);
-      console.log("Fetched Product:", productById);
       setProduct(productById);
       setIsLoaded(true);
     }
@@ -36,7 +33,6 @@ const ProductInfo = ({ id }: { id: string }) => {
   useEffect(() => {
     getProduct();
   }, [getProduct]);
-
 
   const handleAddToCart = () => {
     try {
@@ -64,40 +60,13 @@ const ProductInfo = ({ id }: { id: string }) => {
       });
     }
   };
+  function handleToggleWishlist(product: any): void {
+    throw new Error("Function not implemented.");
+  }
 
-  const handleToggleWishlist = (product: any) => {
-    const isWished = wishlistIds.includes(product._id);
-
-    if (isWished) {
-      removeFromWishlist(product._id);
-      setWishlistIds((prev) => prev.filter(id => id !== product._id));
-      Swal.fire({
-        title: "Removed!",
-        text: `${product.name} has been removed from the wishlist`,
-        icon: "info",
-        confirmButtonText: "OK",
-        timer: 2000,
-      });
-    } else {
-      addToWishlist({
-        id: product._id,
-        name: product.name,
-        price: product.price,
-        quantity: 1,
-        image: product.image,
-      });
-      setWishlistIds((prev) => [...prev, product._id]);
-      Swal.fire({
-        title: "Success!",
-        text: `${product.name} has been added to the wishlist`,
-        icon: "success",
-        confirmButtonText: "OK",
-        timer: 2000,
-      });
-    }
+  if (!isLoaded) {
+    <ProductInfoSkeleton />
   };
-
-  if (!isLoaded) return null;
 
   return (
     <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8 py-10">
@@ -105,7 +74,7 @@ const ProductInfo = ({ id }: { id: string }) => {
         <div className="relative w-full aspect-w-4 aspect-h-3 lg:aspect-h-2">
           <div className="absolute inset-0">
             <Image
-              src={product.image}
+              src={imageURL}
               alt={product.name || "Product Image"}
               layout="fill"
               objectFit="contain"
@@ -154,15 +123,19 @@ const ProductInfo = ({ id }: { id: string }) => {
             <div>
               <h3 className="text-xl font-bold text-gray-800">Choose A Size</h3>
               <div className="flex flex-wrap gap-4 mt-4">
-                {product.sizes && product.sizes.map((size: string, index: number) => (
-                  <button
-                    key={index}
-                    type="button"
-                    className="w-10 h-10 border hover:border-gray-800 font-semibold text-sm rounded-md flex items-center justify-center"
-                  >
-                    {size}
-                  </button>
-                ))}
+                {product.sizes && product.sizes.length > 0 ? (
+                  product.sizes.map((size: string) => (
+                    <button
+                      key={size}
+                      type="button"
+                      className="w-10 h-10 border hover:border-gray-800 font-semibold text-sm rounded-md flex items-center justify-center"
+                    >
+                      {size}
+                    </button>
+                  ))
+                ) : (
+                  <p className="text-gray-500">No sizes available</p>
+                )}
               </div>
             </div>
 
@@ -171,22 +144,18 @@ const ProductInfo = ({ id }: { id: string }) => {
             <div>
               <h3 className="text-xl font-bold text-gray-800">Choose A Color</h3>
               <div className="flex flex-wrap gap-4 mt-4">
-                <button
-                  type="button"
-                  className="w-10 h-10 bg-black border border-white hover:border-gray-800 rounded-md"
-                ></button>
-                <button
-                  type="button"
-                  className="w-10 h-10 bg-sky-400 border border-white hover:border-gray-800 rounded-md"
-                ></button>
-                <button
-                  type="button"
-                  className="w-10 h-10 bg-violet-700 border border-white hover:border-gray-800 rounded-md"
-                ></button>
-                <button
-                  type="button"
-                  className="w-10 h-10 bg-amber-900 border border-white hover:border-gray-800 rounded-md"
-                ></button>
+                {product.colors && product.colors.length > 0 ? (
+                  product.colors.map((color: string) => (
+                    <button
+                      key={color}
+                      type="button"
+                      className={`w-10 h-10 border border-white hover:border-gray-800 rounded-md`}
+                      style={{ backgroundColor: color }}
+                    ></button>
+                  ))
+                ) : (
+                  <p className="text-gray-500">No colors available</p>
+                )}
               </div>
             </div>
 
@@ -201,7 +170,7 @@ const ProductInfo = ({ id }: { id: string }) => {
               Add to Cart
             </button>
             <button
-              onClick={handleToggleWishlist}
+              onClick={() => handleToggleWishlist(product)}
               className="bg-white border-violet-700 border hover:bg-violet-700 hover:text-white text-violet-700 text-sm leading-6 font-medium py-2 px-3 rounded-lg flex items-center justify-center"
             >
               <Heart className="w-5 h-5 mr-2" />
@@ -210,6 +179,7 @@ const ProductInfo = ({ id }: { id: string }) => {
           </div>
         </div>
       </div>
+
       <div className="flex flex-col gap-4 w-full">
         <div className="w-full">
           <p className="text-gray-800 text-sm py-3 cursor-pointer transition-all">
@@ -237,7 +207,6 @@ const ProductInfo = ({ id }: { id: string }) => {
         </TabsContent>
       </Tabs>
     </div>
-
   );
 };
 

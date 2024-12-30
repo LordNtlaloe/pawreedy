@@ -1,17 +1,16 @@
-import ProductInfo from '@/components/products/ProductInfo';
-import React from 'react';
 
+import ProductInfo from '@/components/products/ProductInfo'
+import React from 'react'
 
+const ProductPage = ({ params }: any) => {
 
-const ProductPage = async ({ params } : { params: Promise<{ id: string }>}) => {
-  const  productId  = (await params).id;
+  const id = params.productId as string
 
   return (
     <main>
-      <h1 className="text-slate-800 my-4 text-center font-bold text-2xl mt-10">Product Info</h1>
-      <ProductInfo id={productId} />
+      <ProductInfo id={id} />
     </main>
-  );
-};
+  )
+}
 
-export default ProductPage;
+export default ProductPage
