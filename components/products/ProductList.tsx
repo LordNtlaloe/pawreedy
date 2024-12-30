@@ -94,7 +94,7 @@ export default function ProductList({ productList = [], title }: ProductProps) {
     <main className="py-8 bg-white rounded-lg">
       <div className="mx-auto max-w-full px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-8">
-          <h2 className="font-manrope font-bold text-2xl sm:text-4xl text-violet-950">
+          <h2 className="font-bold text-2xl sm:text-4xl text-violet-950">
             {title}
           </h2>
         </div>

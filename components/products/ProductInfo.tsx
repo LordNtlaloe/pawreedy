@@ -154,30 +154,15 @@ const ProductInfo = ({ id }: { id: string }) => {
             <div>
               <h3 className="text-xl font-bold text-gray-800">Choose A Size</h3>
               <div className="flex flex-wrap gap-4 mt-4">
-                <button
-                  type="button"
-                  className="w-10 h-10 border hover:border-gray-800 font-semibold text-sm rounded-md flex items-center justify-center"
-                >
-                  6
-                </button>
-                <button
-                  type="button"
-                  className="w-10 h-10 border border-gray-800 font-semibold text-sm rounded-md flex items-center justify-center"
-                >
-                  7
-                </button>
-                <button
-                  type="button"
-                  className="w-10 h-10 border hover:border-gray-800 font-semibold text-sm rounded-md flex items-center justify-center"
-                >
-                  8
-                </button>
-                <button
-                  type="button"
-                  className="w-10 h-10 border hover:border-gray-800 font-semibold text-sm rounded-md flex items-center justify-center"
-                >
-                  9
-                </button>
+                {product.sizes && product.sizes.map((size: string, index: number) => (
+                  <button
+                    key={index}
+                    type="button"
+                    className="w-10 h-10 border hover:border-gray-800 font-semibold text-sm rounded-md flex items-center justify-center"
+                  >
+                    {size}
+                  </button>
+                ))}
               </div>
             </div>
 

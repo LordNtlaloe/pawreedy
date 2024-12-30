@@ -153,7 +153,7 @@ export default function ProductList() {
     return (
         <main className="py-8">
             <div className="mx-auto max-w-full px-4 sm:px-6 lg:px-8">
-                <h2 className="font-manrope font-bold text-2xl sm:text-4xl text-[#51358C] mb-8 text-center">
+                <h2 className="font-bold text-2xl sm:text-4xl text-[#51358C] mb-8 text-center">
                     {title}
                 </h2>
                 <div className="flex flex-col lg:flex-row gap-4">

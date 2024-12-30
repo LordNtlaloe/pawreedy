@@ -1,13 +1,8 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
+import { useState, useEffect } from 'react';
 import { Slider } from '@/components/ui/slider';
+import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from '@/components/ui/accordion';
 import { Filter } from 'lucide-react';
 
 type FilterProps = {
@@ -17,10 +12,6 @@ type FilterProps = {
   priceRange: { min: number; max: number };
   onFilterChange: (filters: { category: string; color: string; size: string; price: number[] }) => void;
 };
-
-function classNames(...classes: string[]) {
-  return classes.filter(Boolean).join(' ');
-}
 
 export default function ProductFilters({
   categories,
@@ -32,153 +23,112 @@ export default function ProductFilters({
   const [selectedCategory, setSelectedCategory] = useState<string>('All Categories');
   const [selectedColor, setSelectedColor] = useState<string>('All Colors');
   const [selectedSize, setSelectedSize] = useState<string>('All Sizes');
-  const [selectedPrice, setSelectedPrice] = useState([priceRange.min, priceRange.max]);
-  const [isMobileFiltersOpen, setMobileFiltersOpen] = useState(false);
+  const [selectedPrice, setSelectedPrice] = useState<number[]>([priceRange.min, priceRange.max]);
 
-  const handleFilterChange = useCallback(() => {
-    onFilterChange({
-      category: selectedCategory === 'All Categories' ? '' : selectedCategory,
-      color: selectedColor === 'All Colors' ? '' : selectedColor,
-      size: selectedSize === 'All Sizes' ? '' : selectedSize,
-      price: selectedPrice,
-    });
-  }, [selectedCategory, selectedColor, selectedSize, selectedPrice, onFilterChange]);
-
+  // Ensure the slider updates dynamically if priceRange changes
   useEffect(() => {
     setSelectedPrice([priceRange.min, priceRange.max]);
   }, [priceRange]);
 
+  // Trigger filter change whenever a filter value updates
+  useEffect(() => {
+    onFilterChange({
+      category: selectedCategory !== 'All Categories' ? selectedCategory : '',
+      color: selectedColor !== 'All Colors' ? selectedColor : '',
+      size: selectedSize !== 'All Sizes' ? selectedSize : '',
+      price: selectedPrice,
+    });
+  }, [selectedCategory, selectedColor, selectedSize, selectedPrice, onFilterChange]);
+
   return (
     <div className="lg:block">
       <div className="block lg:hidden">
-        <button
-          onClick={() => setMobileFiltersOpen(!isMobileFiltersOpen)}
-          className="w-full text-white bg-[#F20707] p-2 rounded-md flex items-center justify-center space-x-2"
-        >
+        <button className="w-full text-white bg-[#51358C] p-2 rounded-md flex items-center justify-center space-x-2">
           <Filter className="h-5 w-5" />
-          <span>{isMobileFiltersOpen ? 'Close Filters' : 'Filters'}</span>
+          <span>Filters</span>
         </button>
       </div>
 
-      <div className={classNames('lg:block', isMobileFiltersOpen ? 'block' : 'hidden')}>
-        <div className="bg-white p-6 rounded-md">
-          <h2 className="text-xl font-bold mb-4 text-[#51358C]">Filter Products</h2>
+      <div className="bg-white p-6 rounded-md">
+        <h2 className="text-xl font-bold mb-4 text-[#51358C]">Filter Products</h2>
 
-          <form className="space-y-6">
-            {/* Category Filter */}
-            <div className="pb-4">
-              <label className="text-gray-900 font-medium mb-2">Category</label>
-              <DropdownMenu>
-                <DropdownMenuTrigger className="w-full mt-1 p-2 border border-gray-300 rounded-md bg-white">
-                  {selectedCategory}
-                </DropdownMenuTrigger>
-                <DropdownMenuContent className="bg-white text-gray-900">
-                  <DropdownMenuItem
-                    onClick={() => {
-                      setSelectedCategory('All Categories');
-                      handleFilterChange();
-                    }}
-                  >
-                    All Categories
-                  </DropdownMenuItem>
-                  {categories.map((category, index) => (
-                    <DropdownMenuItem
-                      key={index}
-                      onClick={() => {
-                        setSelectedCategory(category);
-                        handleFilterChange();
-                      }}
-                    >
-                      {category}
-                    </DropdownMenuItem>
-                  ))}
-                </DropdownMenuContent>
-              </DropdownMenu>
-            </div>
+        <Accordion type="multiple" className="space-y-4">
+          {/* Category Filter */}
+          <AccordionItem value="category">
+            <AccordionTrigger className="text-gray-900 font-medium">Category</AccordionTrigger>
+            <AccordionContent>
+              <select
+                className="w-full mt-2 p-2 border border-gray-300 rounded-md bg-white"
+                value={selectedCategory}
+                onChange={(e) => setSelectedCategory(e.target.value)}
+              >
+                <option>All Categories</option>
+                {categories.map((category, index) => (
+                  <option key={index} value={category}>
+                    {category}
+                  </option>
+                ))}
+              </select>
+            </AccordionContent>
+          </AccordionItem>
 
-            {/* Color Filter */}
-            <div className="pb-4">
-              <label className="text-gray-900 font-medium mb-2">Color</label>
-              <DropdownMenu>
-                <DropdownMenuTrigger className="w-full mt-1 p-2 border border-gray-300 rounded-md bg-white">
-                  {selectedColor}
-                </DropdownMenuTrigger>
-                <DropdownMenuContent className="bg-white text-gray-900">
-                  <DropdownMenuItem
-                    onClick={() => {
-                      setSelectedColor('All Colors');
-                      handleFilterChange();
-                    }}
-                  >
-                    All Colors
-                  </DropdownMenuItem>
-                  {colors.map((color, index) => (
-                    <DropdownMenuItem
-                      key={index}
-                      onClick={() => {
-                        setSelectedColor(color);
-                        handleFilterChange();
-                      }}
-                    >
-                      {color}
-                    </DropdownMenuItem>
-                  ))}
-                </DropdownMenuContent>
-              </DropdownMenu>
-            </div>
+          {/* Color Filter */}
+          <AccordionItem value="color">
+            <AccordionTrigger className="text-gray-900 font-medium">Color</AccordionTrigger>
+            <AccordionContent>
+              <select
+                className="w-full mt-2 p-2 border border-gray-300 rounded-md bg-white"
+                value={selectedColor}
+                onChange={(e) => setSelectedColor(e.target.value)}
+              >
+                <option>All Colors</option>
+                {colors.map((color, index) => (
+                  <option key={index} value={color}>
+                    {color}
+                  </option>
+                ))}
+              </select>
+            </AccordionContent>
+          </AccordionItem>
 
-            {/* Size Filter */}
-            <div className="pb-4">
-              <label className="text-gray-900 font-medium mb-2">Size</label>
-              <DropdownMenu>
-                <DropdownMenuTrigger className="w-full mt-1 p-2 border border-gray-300 rounded-md bg-white">
-                  {selectedSize}
-                </DropdownMenuTrigger>
-                <DropdownMenuContent className="bg-white text-gray-900">
-                  <DropdownMenuItem
-                    onClick={() => {
-                      setSelectedSize('All Sizes');
-                      handleFilterChange();
-                    }}
-                  >
-                    All Sizes
-                  </DropdownMenuItem>
-                  {sizes.map((size, index) => (
-                    <DropdownMenuItem
-                      key={index}
-                      onClick={() => {
-                        setSelectedSize(size);
-                        handleFilterChange();
-                      }}
-                    >
-                      {size}
-                    </DropdownMenuItem>
-                  ))}
-                </DropdownMenuContent>
-              </DropdownMenu>
-            </div>
+          {/* Size Filter */}
+          <AccordionItem value="size">
+            <AccordionTrigger className="text-gray-900 font-medium">Size</AccordionTrigger>
+            <AccordionContent>
+              <select
+                className="w-full mt-2 p-2 border border-gray-300 rounded-md bg-white"
+                value={selectedSize}
+                onChange={(e) => setSelectedSize(e.target.value)}
+              >
+                <option>All Sizes</option>
+                {sizes.map((size, index) => (
+                  <option key={index} value={size}>
+                    {size}
+                  </option>
+                ))}
+              </select>
+            </AccordionContent>
+          </AccordionItem>
 
-            {/* Price Range */}
-            <div className="pb-4">
-              <label className="text-gray-900 font-medium mb-2">Price Range</label>
+          {/* Price Range */}
+          <AccordionItem value="price">
+            <AccordionTrigger className="text-gray-900 font-medium">Price Range</AccordionTrigger>
+            <AccordionContent>
               <Slider
                 min={priceRange.min}
                 max={priceRange.max}
                 step={1}
                 value={selectedPrice}
-                onValueChange={(value) => {
-                  setSelectedPrice(value);
-                  handleFilterChange();
-                }}
-                className="w-full"
+                onValueChange={setSelectedPrice}
+                className="w-full mt-2"
               />
               <div className="flex justify-between mt-2">
                 <span>${selectedPrice[0]}</span>
                 <span>${selectedPrice[1]}</span>
               </div>
-            </div>
-          </form>
-        </div>
+            </AccordionContent>
+          </AccordionItem>
+        </Accordion>
       </div>
     </div>
   );
