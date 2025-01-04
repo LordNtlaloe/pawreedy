@@ -69,7 +69,7 @@ export const columns: ColumnDef<Product>[] = [
           : "bg-gray-200 text-gray-700";
 
       return (
-        <div className={`p-1 rounded-md text-center ${statusClass}`}>
+        <div className={`py-1 px-3 rounded-md text-center ${statusClass}`}>
           <p>{status}</p>
         </div>
       );

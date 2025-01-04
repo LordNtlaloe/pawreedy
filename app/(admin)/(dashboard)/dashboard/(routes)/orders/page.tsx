@@ -1,4 +1,5 @@
-"use client"
+"use client";
+
 import { getAllOrders } from "@/app/_actions/_orderActions";
 import { OrdersTable } from "@/components/orders/OrdersTable/OrderTable";
 import { columns } from "@/components/orders/OrdersTable/columns";
@@ -9,32 +10,31 @@ const OrdersPage = () => {
   const [orders, setOrders] = useState<Order[]>([]);
   const [error, setError] = useState<string | null>(null);
 
-  // In OrdersPage component
-useEffect(() => {
-  const fetchOrders = async () => {
-    try {
-      const response = await getAllOrders();
-      
-      if (response.success) {
-        const mappedOrders = response.orders.map((order: { _id: any; shippingDetails: { name: any; email: any; }; orderStatus: any; cartSummary: { totalAmount: any; }; }) => ({
-          _id: order._id,
-          name: order.shippingDetails.name,       // Ensure 'name' is defined here
-          email: order.shippingDetails.email,     // Ensure 'email' is defined here
-          orderStatus: order.orderStatus,
-          totalAmount: order.cartSummary?.totalAmount || 0, // Adjust based on actual structure
-        }));
+  useEffect(() => {
+    const fetchOrders = async () => {
+      try {
+        const response = await getAllOrders();
         
-        setOrders(mappedOrders);
-      } else {
+        if (response.success) {
+          const mappedOrders = response.orders.map((order: any) => ({
+            _id: order._id, // Now _id is a string
+            name: order.shippingDetails?.name || '',
+            email: order.shippingDetails?.email || '',
+            orderStatus: order.orderStatus,
+            totalAmount: order.cartSummary?.totalAmount || 0,
+          }));
+          
+          setOrders(mappedOrders);
+        } else {
+          setError("Failed to fetch orders");
+        }
+      } catch (err) {
         setError("Failed to fetch orders");
       }
-    } catch (err) {
-      setError("Failed to fetch orders");
-    }
-  };
+    };
 
-  fetchOrders();
-}, []);
+    fetchOrders();
+  }, []);
 
   if (error) {
     return <p className="text-red-500">{error}</p>;
@@ -52,7 +52,8 @@ useEffect(() => {
       </div>
     </section>
   );
-  
 };
 
+
 export default OrdersPage;
+

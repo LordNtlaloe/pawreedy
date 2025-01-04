@@ -1,4 +1,4 @@
-"use client"
+"use client";
 import { useEffect, useState } from "react";
 import ProductFilters from "@/components/products/ProductFilters";
 import Loading from "@/app/loading";
@@ -6,11 +6,12 @@ import { useCart } from "@/contexts/CartContext";
 import { useWishlist } from "@/contexts/WishlistContext";
 import Swal from "sweetalert2";
 import withReactContent from "sweetalert2-react-content";
-import { ShoppingCart, Star, Heart } from "lucide-react";
+import { ShoppingCart, Heart } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
 import { getAllProducts } from "@/app/_actions/_productsActions";
 import ProductListSkeleton from "@/components/skeletons/ProductListSkeleton";
+import { FaStar } from "react-icons/fa";
 
 const MySwal = withReactContent(Swal);
 
@@ -48,6 +49,8 @@ export default function ProductList() {
                 price: product.price,
                 quantity: 1,
                 image: product.image,
+                size: product.sizes[0],
+                color: product.colors[0]
             });
 
             MySwal.fire({
@@ -182,9 +185,12 @@ export default function ProductList() {
                                 productsToDisplay.map((product: any) => {
                                     const imageURL =
                                         product?.image !== "undefined"
-                                            ? product.image
+                                            ? product.images[0]
                                             : "./placeholder-image.jpg";
                                     const isWished = wishlistIds.includes(product._id);
+
+                                    // Call the isNewProduct function with the createdAt date
+                                    const isNew = isNewProduct(product.createdAt); // Assuming product has a createdAt field
 
                                     return (
                                         <div
@@ -192,7 +198,7 @@ export default function ProductList() {
                                             className="rounded-xl bg-slate-50 p-4 hover:shadow-xl transition-shadow duration-300"
                                         >
                                             <div className="relative">
-                                                {isNewProduct(product.createdAt) && (
+                                                {isNew && (
                                                     <span className="absolute z-10 top-2 left-2 bg-green-500 text-white text-xs font-bold px-2 py-1 rounded">
                                                         New
                                                     </span>
@@ -200,7 +206,7 @@ export default function ProductList() {
                                                 <Link href={`/products/${product._id}`}>
                                                     <div className="relative flex items-end overflow-hidden rounded-xl border-violet-200 border">
                                                         <Image
-                                                            src={imageURL}
+                                                            src={product.images[0]}
                                                             alt={product.name}
                                                             className="w-full h-64 object-cover rounded-xl"
                                                             width={250}
@@ -209,61 +215,43 @@ export default function ProductList() {
                                                     </div>
                                                 </Link>
                                                 <button
-                                                    onClick={() =>
-                                                        handleToggleWishlist(product)
-                                                    }
+                                                    onClick={() => handleToggleWishlist(product)}
                                                     className="absolute top-3 right-3 rounded-full bg-white p-2 shadow-md hover:bg-red-200 transition duration-300"
                                                 >
-                                                    <Heart
-                                                        className={`${
-                                                            isWished
-                                                                ? "text-red-600"
-                                                                : "text-red-500"
-                                                        } h-6 w-6`}
-                                                        fill={isWished ? "red" : "none"}
-                                                    />
+                                                    <Heart className={`${isWished ? 'text-red-600' : 'text-red-500'} h-6 w-6`} fill={isWished ? "red" : "none"} />
                                                 </button>
                                             </div>
 
                                             <div className="mt-3 px-2">
                                                 <div className="flex flex-col justify-between">
-                                                    <h2 className="text-[#0D0D0D] font-medium">
-                                                        {product.name}
-                                                    </h2>
+                                                    <h2 className="text-[#0D0D0D] font-medium">{product.name}</h2>
                                                     <div className="left-3 inline-flex items-center">
                                                         {product.ratings === 0 ? (
                                                             <div className="flex">
-                                                                <Star className="h-5 w-5 text-yellow-400" />
-                                                                <span className="text-slate-400 ml-1 text-sm">
-                                                                    {product.ratings}
-                                                                </span>
+                                                                <FaStar className="h-5 w-5 text-yellow-400" />
+                                                                <span className="text-slate-400 ml-1 text-sm">{product.ratings}</span>
                                                             </div>
                                                         ) : (
-                                                            Array.from({
-                                                                length: Math.round(
-                                                                    product.ratings
-                                                                ),
-                                                            }).map((_, index) => (
-                                                                <Star
-                                                                    key={index}
-                                                                    className="h-5 w-5 text-yellow-400"
-                                                                />
+                                                            Array.from({ length: Math.round(product.ratings) }).map((_, index) => (
+                                                                <FaStar key={index} className="h-5 w-5 text-yellow-400" />
                                                             ))
                                                         )}
                                                     </div>
-                                                    <div className="flex justify-between items-center">
-                                                        <p className="font-bold text-lg text-[#4F4F4F]">
-                                                            R{product.price}
-                                                        </p>
-                                                        <button
-                                                            onClick={() =>
-                                                                handleAddToCart(product)
-                                                            }
-                                                            className="p-2 rounded-full bg-[#51358C] text-white hover:bg-[#3C2966] transition duration-300"
-                                                        >
-                                                            <ShoppingCart className="h-6 w-6" />
-                                                        </button>
-                                                    </div>
+                                                </div>
+
+                                                <p className="text-slate-700 mt-1 text-sm">{product.category}</p>
+
+                                                <div className="mt-3 flex items-end justify-between">
+                                                    <p> <span className="text-lg font-bold text-slate-800">
+                                                        M{product.price}
+                                                        </span>
+                                                    </p>
+                                                    <button
+                                                        onClick={() => handleAddToCart(product)}
+                                                        className="group inline-flex rounded-md bg-violet-700 p-2 hover:bg-violet-900 transition-colors duration-300"
+                                                    >
+                                                        <ShoppingCart className="group-hover:text-gray-100 h-4 w-4 text-white" />
+                                                    </button>
                                                 </div>
                                             </div>
                                         </div>
@@ -294,6 +282,6 @@ export default function ProductList() {
                     </div>
                 </div>
             </div>
-        </main>
+        </main >
     );
 }

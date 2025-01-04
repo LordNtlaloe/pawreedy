@@ -24,7 +24,6 @@ export const saveNewProduct = async (formData: FormData) => {
         name: formData.get("name"),
         description: formData.get("description"),
         price: formData.get("price"),
-        image: formData.get("imageUrl"), // Image can still be a string for the main image
         category: formData.get("category"),
         quantity: formData.get("quantity"),
         ratings: 0,
@@ -32,16 +31,17 @@ export const saveNewProduct = async (formData: FormData) => {
         status: "In Stock",
         createdAt: new Date(),
         updatedAt: new Date(),
-        features: formData.getAll("features") as string[], // Assuming it's an array of strings
-        colors: formData.getAll("colors") as string[], // Array of color values
-        sizes: formData.getAll("sizes") as string[], // Array of size values
-        images: formData.getAll("images") as string[], // Array of image URLs or base64 strings
+        features: JSON.parse(formData.get("features") as string || "[]"),
+        colors: JSON.parse(formData.get("colors") as string || "[]"),
+        sizes: JSON.parse(formData.get("sizes") as string || "[]"),
+        images: formData.getAll("images") as string[]
     };
 
-    data.features = data.features.length > 0 ? data.features : [];
-    data.colors = data.colors.length > 0 ? data.colors : [];
-    data.sizes = data.sizes.length > 0 ? data.sizes : [];
-    data.images = data.images.length > 0 ? data.images : [];
+    // data.features = data.features.length > 0 ? data.features : [];
+    // data.colors = data.colors.length > 0 ? data.colors : [];
+    // data.sizes = data.sizes.length > 0 ? data.sizes : [];
+    // data.images = data.images.length > 0 ? data.images : [];
+
 
     if (!dbConnection) await init();
 
@@ -122,27 +122,36 @@ export const getProductById = async (_id: string) => {
 
         const product = await collection.findOne({ _id: new ObjectId(_id) });
 
-        console.log("Fetched Product:", product); // Add logging to check if product is fetched correctly
+        console.log("Fetched Product:", product); // Debugging log
 
         if (product) {
             return {
-                ...product,
-                _id: product._id.toString(),
-                createdAt: product.createdAt ? new Date(product.createdAt).toISOString() : null,
-                updatedAt: product.updatedAt ? new Date(product.updatedAt).toISOString() : null,
-                price: Number(product.price),
-                quantity: Number(product.quantity),
-                ratings: Number(product.ratings),
-                ratingsCount: Number(product.ratingsCount),
+                _id: product._id.toString(), // Convert _id to string
+                name: product.name || "",
+                description: product.description || "",
+                price: product.price ? Number(product.price) : 0,
+                category: product.category || "",
+                quantity: product.quantity ? Number(product.quantity) : 0,
+                ratings: product.ratings ? Number(product.ratings) : 0,
+                ratingsCount: product.ratingsCount ? Number(product.ratingsCount) : 0,
+                status: product.status || "",
+                createdAt: product.createdAt ? new Date(product.createdAt).toISOString() : "",
+                updatedAt: product.updatedAt ? new Date(product.updatedAt).toISOString() : "",
+                features: Array.isArray(product.features) ? product.features : [],
+                colors: Array.isArray(product.colors) ? product.colors : [],
+                sizes: Array.isArray(product.sizes) ? product.sizes : [],
+                images: Array.isArray(product.images) ? product.images : [],
             };
         }
 
         return null;
-    } catch (error: any) {
+    } catch (error) {
         console.error("Error in fetching product: ", error);
         return null;
     }
 };
+
+
 
 
 

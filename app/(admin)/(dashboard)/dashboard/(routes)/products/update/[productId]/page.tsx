@@ -1,14 +1,34 @@
-'use client'
-import UpdateProductForm from '@/components/products/UpdateProductForm'
-import { useParams } from 'next/navigation'
-import React, { useEffect, useState } from 'react'
-import { getProductById } from '@/app/_actions/_productsActions'
+'use client';
+import UpdateProductForm from '@/components/products/UpdateProductForm';
+import { useParams } from 'next/navigation';
+import React, { useEffect, useState } from 'react';
+import { getProductById } from '@/app/_actions/_productsActions';
+
+// Define the Product interface
+interface Product {
+    _id: string;
+    name: string;
+    description: string;
+    price: number;
+    category: string;
+    quantity: number;
+    ratings: number;
+    ratingsCount: number;
+    status: string;
+    createdAt: string;
+    updatedAt: string;
+    features: string[];
+    colors: string[];
+    sizes: string[];
+    images: string[];
+}
 
 const UpdateProductPage = () => {
     const params = useParams();
     const productId = params?.productId as string; // Assert productId as string
 
-    const [product, setProduct] = useState(null);
+    // Update the state type to Product | null
+    const [product, setProduct] = useState<Product | null>(null);
 
     const getProduct = async () => {
         if (productId) {

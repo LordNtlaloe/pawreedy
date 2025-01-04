@@ -8,6 +8,7 @@ import { ShoppingCart, Star, Heart } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
 import ProductListSkeleton from "../skeletons/ProductListSkeleton";
+import { FaStar } from "react-icons/fa";
 
 type ProductProps = {
     latestProductsList: any[];
@@ -37,6 +38,8 @@ export default function LatestProducts({ latestProductsList = [], title }: Produ
                 price: product.price,
                 quantity: 1,
                 image: product.image,
+                color: product.colors[0],
+                size: product.sizes[0]
             });
 
             MySwal.fire({
@@ -103,7 +106,7 @@ export default function LatestProducts({ latestProductsList = [], title }: Produ
                     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
                         {loading ? (
                             // Display skeleton loaders when loading
-                           <ProductListSkeleton />
+                            <ProductListSkeleton />
                         ) : uniqueProducts.length > 0 ? (
                             uniqueProducts.map((product: any) => {
                                 const imageURL = product?.image !== "undefined" ? product.image : "./placeholder-image.jpg";
@@ -122,16 +125,12 @@ export default function LatestProducts({ latestProductsList = [], title }: Produ
                                             <Link href={`/products/${product._id}`}>
                                                 <div className="relative flex items-end overflow-hidden rounded-xl border-violet-200 border">
                                                     <Image
-                                                        src={imageURL}
+                                                        src={product.images[0]}
                                                         alt={product.name}
-                                                        className="w-full h-64 object-fit rounded-xl"
+                                                        className="w-full h-64 object-cover rounded-xl"
                                                         width={250}
                                                         height={250}
                                                     />
-                                                    <div className="absolute bottom-3 left-3 inline-flex items-center rounded-lg bg-white p-2 shadow-md">
-                                                        <Star className="h-5 w-5 text-yellow-400" />
-                                                        <span className="text-slate-400 ml-1 text-sm">{product.ratings}</span>
-                                                    </div>
                                                 </div>
                                             </Link>
                                             <button
@@ -143,11 +142,27 @@ export default function LatestProducts({ latestProductsList = [], title }: Produ
                                         </div>
 
                                         <div className="mt-3 px-2">
-                                            <h2 className="text-slate-700 font-medium">{product.name}</h2>
-                                            <p className="text-slate-400 mt-1 text-sm">{product.category}</p>
+                                            <div className="flex flex-col justify-between">
+                                                <h2 className="text-[#0D0D0D] font-medium">{product.name}</h2>
+                                                <div className="left-3 inline-flex items-center">
+                                                    {product.ratings === 0 ? (
+                                                        <div className="flex">
+                                                            <FaStar className="h-5 w-5 text-yellow-400" />
+                                                            <span className="text-slate-400 ml-1 text-sm">{product.ratings}</span>
+                                                        </div>
+                                                    ) : (
+                                                        Array.from({ length: Math.round(product.ratings) }).map((_, index) => (
+                                                            <FaStar key={index} className="h-5 w-5 text-yellow-400" />
+                                                        ))
+                                                    )}
+                                                </div>
+                                            </div>
+
+                                            <p className="text-slate-700 mt-1 text-sm">{product.category}</p>
+
                                             <div className="mt-3 flex items-end justify-between">
                                                 <p>
-                                                    <span className="text-lg font-bold text-violet-700">
+                                                    <span className="text-lg font-bold text-slate-800">
                                                         M{product.price}
                                                     </span>
                                                 </p>

@@ -35,13 +35,16 @@ const AddNewProductForm: React.FC = () => {
   const [imagePreviews, setImagePreviews] = useState<string[]>([]); // Previews for multiple images
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [categoryList, setCategoryList] = useState<Category[]>([]);
-  const [selectedCategory, setSelectedCategory] = useState<string>("");
-  const [sizesList, setSizesList] = useState<Size[]>([]);
-  const [selectedSizes, setSelectedSizes] = useState<string[]>([]); // Array for multiple sizes
-  const [colorsList, setColorsList] = useState<Color[]>([]);
-  const [selectedColors, setSelectedColors] = useState<string[]>([]); // Array for multiple colors
-  const [keyFeatures, setKeyFeatures] = useState<string[]>([]); // Array for multiple key features
 
+  // States for category, sizes, colors, and features
+  const [selectedCategory, setSelectedCategory] = useState<string>('');
+  const [sizesList, setSizesList] = useState<Size[]>([]);
+  const [selectedSizes, setSelectedSizes] = useState<string[]>([]);
+  const [colorsList, setColorsList] = useState<Color[]>([]);
+  const [selectedColors, setSelectedColors] = useState<string[]>([]);
+  const [keyFeatures, setKeyFeatures] = useState<string[]>([]);
+
+  // Fetch data functions
   const getCategoryList = async () => {
     const categories = await getAllCategories();
     setCategoryList(categories);
@@ -80,16 +83,17 @@ const AddNewProductForm: React.FC = () => {
     newFeatures[index] = value;
     setKeyFeatures(newFeatures);
   };
-  
+
   const handleAddFeature = () => {
     setKeyFeatures((prevFeatures) => [...prevFeatures, '']);
   };
+
   const handleRemoveFeature = (index: number) => {
     const newFeatures = keyFeatures.filter((_, i) => i !== index);
     setKeyFeatures(newFeatures);
   };
-  
 
+  // Handling Image Upload
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
     if (files) {
@@ -130,13 +134,17 @@ const AddNewProductForm: React.FC = () => {
       showConfirmationMessage("Error: ", "Please Add At Least One Key Feature");
       return false;
     }
+  
     formData.append("category", selectedCategory);
-    formData.append("sizes", JSON.stringify(selectedSizes)); // Append sizes as JSON
-    formData.append("colors", JSON.stringify(selectedColors)); // Append colors as JSON
-    formData.append("keyFeatures", JSON.stringify(keyFeatures)); // Append key features as JSON
+    formData.append("sizes", JSON.stringify(selectedSizes)); // Append sizes as JSON string
+    formData.append("colors", JSON.stringify(selectedColors)); // Append colors as JSON string
+    formData.append("features", JSON.stringify(keyFeatures)); // Append features as JSON string
+  
     return true;
   };
+  
 
+  // Save product
   const saveProduct = async (formData: FormData) => {
     if (!validateInputs(formData)) return;
 
@@ -156,9 +164,10 @@ const AddNewProductForm: React.FC = () => {
           showConfirmationMessage("Error: ", "Failed To Upload Images!!");
           return;
         }
-        imageUrls.forEach((url, index) => {
-          formData.append("imageUrls[]", url); // Append each image URL to formData
+        imageUrls.forEach((url) => {
+          formData.append("images", url); // Use [] to append multiple values for the same key
         });
+
 
         const newProduct = await saveNewProduct(formData);
         setIsLoading(false);
@@ -174,14 +183,14 @@ const AddNewProductForm: React.FC = () => {
     });
   };
 
+  // Image upload function to handle Cloudinary
   const uploadImages = async (): Promise<string[] | null> => {
     if (images.length === 0) {
       showConfirmationMessage("Error: ", "At Least One Image Is Required");
       return null;
     }
 
-    const uploadedUrls: string[] = [];
-    for (const image of images) {
+    const uploadPromises = images.map(async (image) => {
       const imageData = new FormData();
       imageData.append("file", image);
       imageData.append("upload_preset", "pawreedy");
@@ -192,15 +201,15 @@ const AddNewProductForm: React.FC = () => {
           { method: "POST", body: imageData }
         );
         const uploadedImageData = await response.json();
-        if (uploadedImageData?.secure_url) {
-          uploadedUrls.push(uploadedImageData.secure_url);
-        }
+        return uploadedImageData?.secure_url;
       } catch (error) {
         showConfirmationMessage("Error: ", `Error Uploading Image: ${(error as Error).message}`);
+        return null;
       }
-    }
+    });
 
-    return uploadedUrls.length > 0 ? uploadedUrls : null;
+    const uploadedUrls = await Promise.all(uploadPromises);
+    return uploadedUrls.filter(Boolean) as string[]; // Remove null values from the array
   };
 
   return (

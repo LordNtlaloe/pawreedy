@@ -42,6 +42,8 @@ export default function ProductList({ productList = [], title }: ProductProps) {
         price: product.price,
         quantity: 1,
         image: product.image,
+        color: product.colors[0],
+        size: product.sizes[0]
       });
 
       MySwal.fire({
@@ -142,7 +144,7 @@ export default function ProductList({ productList = [], title }: ProductProps) {
                     <Link href={`/products/${product._id}`}>
                       <div className="relative flex items-end overflow-hidden rounded-xl border-violet-200 border">
                         <Image
-                          src={imageURL}
+                          src={product.images[0]}
                           alt={product.name}
                           className="w-full h-64 object-cover rounded-xl"
                           width={250}

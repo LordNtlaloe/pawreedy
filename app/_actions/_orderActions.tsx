@@ -121,14 +121,26 @@ export const getAllOrders = async () => {
         // Fetch all orders
         const orders = await ordersCollection.find().toArray();
 
-        return { success: true, orders };
+        // Map and convert _id and other problematic fields to strings
+        const ordersWithStringId = orders.map((order: { _id: { toString: () => any; }; shippingDetails: any; cartSummary: any; createdAt: any; updatedAt: any; userEmail: any; orderStatus: any; status: any; orderStauts: any; }) => ({
+            _id: order._id.toString(),  // Convert the _id to string
+            shippingDetails: order.shippingDetails,
+            cartSummary: order.cartSummary,
+            createdAt: order.createdAt,
+            updatedAt: order.updatedAt,
+            userEmail: order.userEmail,
+            orderStatus: order.orderStatus,
+            status: order.status,
+            orderStauts: order.orderStauts
+        }));
+
+        return { success: true, orders: ordersWithStringId };
     } catch (error: any) {
         console.error("Error fetching all orders:", error.message);
         return { error: error.message };
     }
 };
 
-// Function to update the status of an order
 export const updateOrderStatus = async (orderId: string, newStatus: string) => {
     if (!dbConnection) await init();
 

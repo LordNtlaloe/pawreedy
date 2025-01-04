@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { ColumnDef } from "@tanstack/react-table";
 import ChangeStatusPopup from "../ChangeStatus/ChangeOrderStatus";
 import OrderDetailsPopup from "../OrderDetailsPopup";
@@ -34,47 +34,46 @@ export type Order = {
 };
 
 
-// Component to handle options cell
-type OptionsCellProps = {
-  order: Order;
-};
+const OptionsCell: React.FC<{ order: Order }> = ({ order }) => {
+  const [isChangeStatusPopupOpen, setIsChangeStatusPopupOpen] = useState(false);
+  const [isDetailsPopupOpen, setIsDetailsPopupOpen] = useState(false);
 
-const OptionsCell: React.FC<OptionsCellProps> = ({ order }) => {
-  const [isPopupOpen, setIsPopupOpen] = useState(false);
-
-  const handleClose = () => setIsPopupOpen(false);
+  const handleCloseChangeStatus = () => setIsChangeStatusPopupOpen(false);
+  const handleCloseDetails = () => setIsDetailsPopupOpen(false);
 
   const handleSave = (newStatus: string) => {
     order.orderStatus = newStatus; // Update the status locally
-    setIsPopupOpen(false);
+    setIsChangeStatusPopupOpen(false);
   };
-
+  
   return (
     <div className="flex gap-2 items-center">
       {/* Change Status Dialog */}
-      <Dialog open={isPopupOpen} onOpenChange={setIsPopupOpen}>
+      <Dialog open={isChangeStatusPopupOpen} onOpenChange={setIsChangeStatusPopupOpen}>
         <DialogTrigger asChild>
           <button className="btn">Change Status</button>
         </DialogTrigger>
         <DialogContent>
+        <DialogTitle>Change Order Status</DialogTitle>
           <ChangeStatusPopup
             orderId={order._id}
             initialStatus={order.orderStatus}
-            onClose={handleClose}
+            onClose={handleCloseChangeStatus}
             onSave={handleSave}
           />
         </DialogContent>
       </Dialog>
 
       {/* View Details Dialog */}
-      <Dialog>
+      <Dialog open={isDetailsPopupOpen} onOpenChange={setIsDetailsPopupOpen}>
         <DialogTrigger asChild>
           <button className="btn">View Details</button>
         </DialogTrigger>
         <DialogContent>
+          <DialogTitle>Order Details</DialogTitle>
           <OrderDetailsPopup
             orderDetails={order}
-            onClose={() => setIsPopupOpen(false)}
+            onClose={handleCloseDetails}
           />
         </DialogContent>
       </Dialog>

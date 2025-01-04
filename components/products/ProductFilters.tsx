@@ -1,5 +1,4 @@
 'use client';
-
 import { useState, useEffect } from 'react';
 import { Slider } from '@/components/ui/slider';
 import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from '@/components/ui/accordion';
@@ -24,20 +23,36 @@ export default function ProductFilters({
   const [selectedColor, setSelectedColor] = useState<string>('All Colors');
   const [selectedSize, setSelectedSize] = useState<string>('All Sizes');
   const [selectedPrice, setSelectedPrice] = useState<number[]>([priceRange.min, priceRange.max]);
+  const [previousFilters, setPreviousFilters] = useState({
+    category: '',
+    color: '',
+    size: '',
+    price: [priceRange.min, priceRange.max],
+  });
 
-  // Ensure the slider updates dynamically if priceRange changes
   useEffect(() => {
-    setSelectedPrice([priceRange.min, priceRange.max]);
+    if (selectedPrice[0] !== priceRange.min || selectedPrice[1] !== priceRange.max) {
+      setSelectedPrice([priceRange.min, priceRange.max]);
+    }
   }, [priceRange]);
 
-  // Trigger filter change whenever a filter value updates
   useEffect(() => {
-    onFilterChange({
+    const newFilters = {
       category: selectedCategory !== 'All Categories' ? selectedCategory : '',
       color: selectedColor !== 'All Colors' ? selectedColor : '',
       size: selectedSize !== 'All Sizes' ? selectedSize : '',
       price: selectedPrice,
-    });
+    };
+
+    if (
+      newFilters.category !== previousFilters.category ||
+      newFilters.color !== previousFilters.color ||
+      newFilters.size !== previousFilters.size ||
+      newFilters.price !== previousFilters.price
+    ) {
+      onFilterChange(newFilters);
+      setPreviousFilters(newFilters);
+    }
   }, [selectedCategory, selectedColor, selectedSize, selectedPrice, onFilterChange]);
 
   return (

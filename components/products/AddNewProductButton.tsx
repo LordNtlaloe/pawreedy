@@ -9,9 +9,9 @@ const AddNewProductButton = () => {
     return (
         <main>
             <Link href="products/create"
-                className="bg-blue-600 text-white flex p-1 px-3 rounded hover:cursor-pointer hover:bg-blue-800 items-center"
+                className="bg-violet-800 text-white flex p-1 px-3 rounded hover:cursor-pointer hover:bg-violet-900 items-center"
             >
-                <Plus /> add New Product
+                <Plus /> Add New Product
             </Link>
         </main>
     )

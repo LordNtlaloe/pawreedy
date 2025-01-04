@@ -55,7 +55,7 @@ const ChangeStatusPopup: React.FC<ChangeStatusPopupProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 flex justify-center items-center">
+    <div className="">
       <div className="bg-white p-6 rounded-lg space-y-4 w-80">
         <h3 className="text-lg font-semibold">Change Order Status</h3>
         <p>Order ID: {orderId}</p>
