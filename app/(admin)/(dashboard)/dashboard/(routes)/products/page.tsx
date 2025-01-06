@@ -1,7 +1,7 @@
 import { getAllProducts } from "@/app/_actions/_productsActions";
 import { ProductsTable } from "@/components/products/ProductsTable/ProductsTable";
 import { columns } from "@/components/products/ProductsTable/colums";
-
+import SalesTrendChart from "@/components/dashboard/products/SalesTrendChart";
 
 const getProducts = async () => {
   const data = await getAllProducts();
@@ -16,12 +16,13 @@ const ProductsPage = async () => {
         <div className="flex item-center justify-between mb-2">
           <h1 className="mb-3 md:text-3xl font-bold">Products</h1>
         </div>
+        
         <div>
           <ProductsTable columns={columns} data={products} />
         </div>
 
       </div>
-
+      {/* <SalesTrendChart /> */}
     </section>
   );
 };

@@ -80,7 +80,7 @@ export default function CategoryCarousel() {
                                         className="rounded-xl"
                                     />
                                 </div>
-                                <Link href={'/category/' + category.name} className="text-xs md:text-sm lg:text-md text-center font-semibold text-violet-700">
+                                <Link href={'/products/category/' + category.name} className="text-xs md:text-sm lg:text-md text-center font-semibold text-violet-700">
                                     {category.name}
                                 </Link>
                             </div>

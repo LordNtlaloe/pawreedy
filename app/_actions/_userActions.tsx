@@ -315,3 +315,30 @@ export const updateUserProfilePicture = async (clerkId: string, profilePictureUr
         return { error: error.message };
     }
 };
+
+
+export const getNewUsersCount = async () => {
+    if (!dbConnection) await init();
+  
+    try {
+      const collection = await database.collection("users");
+  
+      if (!collection || !database) {
+        throw new Error("Failed to connect to the users collection");
+      }
+  
+      // Get the date one month ago from now
+      const oneMonthAgo = new Date();
+      oneMonthAgo.setMonth(oneMonthAgo.getMonth() - 1);
+  
+      // Query users created within the last month
+      const newUsersCount = await collection.countDocuments({
+        createdAt: { $gte: oneMonthAgo },
+      });
+  
+      return { success: true, count: newUsersCount };
+    } catch (error: any) {
+      console.error("Error fetching new users:", error.message);
+      return { success: false, error: error.message };
+    }
+  };

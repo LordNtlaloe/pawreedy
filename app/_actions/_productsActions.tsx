@@ -84,6 +84,40 @@ export const getAllProducts = async () => {
     }
 }
 
+export const getAllProductsCount = async () => {
+    if (!dbConnection) {
+        console.error("Database connection not initialized.");
+        await init();
+    }
+
+    try {
+        const collection = await database?.collection("products");
+
+        if (!database || !collection) {
+            console.error("Failed to connect to the products collection.");
+            return { success: false, error: "Failed to connect to the products collection" };
+        }
+
+        const allProducts = await collection.find({}).toArray();
+
+        if (!allProducts || allProducts.length === 0) {
+            console.warn("No products found in the database.");
+            return { success: true, totalProducts: 0, totalQuantity: 0 };
+        }
+
+        const totalQuantity = allProducts.reduce(
+            (sum: number, product: any) => sum + (product.quantity || 0),
+            0
+        );
+
+        return { success: true, totalProducts: allProducts.length, totalQuantity };
+    } catch (error: any) {
+        console.error("An Error Occurred:", error.message);
+        return { success: false, error: error.message };
+    }
+};
+
+
 export const getAllProductsByCategory = async (categoryName: string) => {
     if (!dbConnection) await init();
 
@@ -483,6 +517,65 @@ export const getLatestProducts = async () => {
         return latestProducts;
     } catch (error: any) {
         console.log("An Error Occurred... ", error.message);
+        return { error: error.message };
+    }
+};
+
+export const getSalesDataByProduct = async (productName: string) => {
+    if (!dbConnection) await init();
+
+    try {
+        const ordersCollection = database?.collection("orders");
+        if (!ordersCollection) {
+            console.log("Failed To Get Orders Collection");
+            return { error: "Failed to get orders collection" };
+        }
+
+        // Fetch orders containing the product
+        const orders = await ordersCollection.aggregate([
+            { $unwind: "$cartSummary.items" },
+            { $match: { "cartSummary.items.name": productName } },
+            {
+                $group: {
+                    _id: { product: "$cartSummary.items.name", month: { $month: "$createdAt" } },
+                    totalSales: { $sum: "$cartSummary.items.quantity" }
+                }
+            },
+            { $sort: { "_id.month": 1 } }
+        ]).toArray();
+
+        return orders;
+    } catch (error: any) {
+        console.log("An Error Occurred...", error.message);
+        return { error: error.message };
+    }
+};
+
+export const updateProductQuantity = async (_id: string, newQuantity: number) => {
+    if (!dbConnection) await init();
+
+    try {
+        const collection = await database?.collection("products");
+
+        if (!collection || !database) {
+            console.log("Failed to connect to the products collection.");
+            return { error: "Failed to connect to the products collection." };
+        }
+
+        const result = await collection.updateOne(
+            { _id: new ObjectId(_id) },
+            { $set: { quantity: newQuantity, updatedAt: new Date() } }
+        );
+
+        if (result.matchedCount === 0) {
+            console.log("No matching product found to update.");
+            return { error: "No matching product found." };
+        }
+
+        revalidatePath('/dashboard/products');
+        return { success: true };
+    } catch (error: any) {
+        console.error("An error occurred while updating product quantity:", error.message);
         return { error: error.message };
     }
 };

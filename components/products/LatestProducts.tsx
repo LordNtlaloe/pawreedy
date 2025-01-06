@@ -37,7 +37,7 @@ export default function LatestProducts({ latestProductsList = [], title }: Produ
                 name: product.name,
                 price: product.price,
                 quantity: 1,
-                image: product.image,
+                image: product.images[0],
                 color: product.colors[0],
                 size: product.sizes[0]
             });

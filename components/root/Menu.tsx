@@ -1,28 +1,45 @@
 "use client";
+
 import Link from "next/link";
-import { SignedIn, SignedOut, SignInButton, SignUpButton, UserButton, SignOutButton, useUser } from "@clerk/nextjs";
+import {
+  SignedIn,
+  SignedOut,
+  SignInButton,
+  SignUpButton,
+  UserButton,
+  SignOutButton,
+  useUser,
+} from "@clerk/nextjs";
 import { ShoppingCart, Heart, User as UserIcon, Search } from "lucide-react";
-import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem } from "@/components/ui/dropdown-menu";
+import {
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuItem,
+} from "@/components/ui/dropdown-menu";
 import { useState } from "react";
-import ShoppingCartModal from "@/components/products/cart/ShoppingCartModal"; // Adjust the import path as needed
+import ShoppingCartModal from "@/components/products/cart/ShoppingCartModal";
 import { useCart } from "@/contexts/CartContext";
 import { useWishlist } from "@/contexts/WishlistContext";
+import { usePathname } from "next/navigation";
 
-const Menu = ({ userInput = () => { } }: any) => {
+const Menu = ({ userInput = () => {} }: any) => {
   const [searchText, setSearchText] = useState<string>("");
   const [isCartOpen, setIsCartOpen] = useState<boolean>(false);
   const { cart } = useCart();
   const { wishlist } = useWishlist();
-  const { user } = useUser();  // Get the user information
-  const userRole = user?.publicMetadata?.role; // Assuming the role is stored in publicMetadata
+  const { user } = useUser();
+  const userRole = user?.publicMetadata?.role;
+  const pathname = usePathname(); // Get the current route
 
   const openCart = () => setIsCartOpen(true);
   const closeCart = () => setIsCartOpen(false);
 
+  const isActive = (href: string) => pathname === href; // Check if the link is active
+
   return (
     <div className="flex justify-between gap-4 px-4 py-2 w-[75%]">
       {/* Search Bar on the left */}
-      {/* <div className="flex-1"> */}
       <div className="relative flex">
         <input
           type="text"
@@ -38,8 +55,6 @@ const Menu = ({ userInput = () => { } }: any) => {
         />
       </div>
 
-      {/* </div> */}
-
       {/* Icons on the right */}
       <div className="flex items-center gap-4 relative">
         {/* Cart Icon */}
@@ -53,7 +68,12 @@ const Menu = ({ userInput = () => { } }: any) => {
         </button>
 
         {/* Wishlist Icon */}
-        <Link href="/wishlist" className="relative hover:scale-105 transition-transform">
+        <Link
+          href="/wishlist"
+          className={`relative hover:scale-105 transition-transform ${
+            isActive("/wishlist") ? "text-violet-700 font-bold" : ""
+          }`}
+        >
           <Heart size={24} />
           {wishlist.length > 0 && (
             <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
@@ -76,17 +96,28 @@ const Menu = ({ userInput = () => { } }: any) => {
           </DropdownMenuTrigger>
           <DropdownMenuContent className="bg-white shadow-md rounded p-2">
             <SignedIn>
-              {/* Role-based Navigation */}
-              {userRole === "admin" ? (
+              {userRole === "Admin" ? (
                 <DropdownMenuItem>
                   <Link href="/dashboard">
-                    <button className="w-full text-left">Dashboard</button>
+                    <button
+                      className={`w-full text-left ${
+                        isActive("/dashboard") ? "text-violet-700 font-bold" : ""
+                      }`}
+                    >
+                      Dashboard
+                    </button>
                   </Link>
                 </DropdownMenuItem>
               ) : (
                 <DropdownMenuItem>
                   <Link href="/profile">
-                    <button className="w-full text-left">Profile</button>
+                    <button
+                      className={`w-full text-left ${
+                        isActive("/profile") ? "text-violet-700 font-bold" : ""
+                      }`}
+                    >
+                      Profile
+                    </button>
                   </Link>
                 </DropdownMenuItem>
               )}
